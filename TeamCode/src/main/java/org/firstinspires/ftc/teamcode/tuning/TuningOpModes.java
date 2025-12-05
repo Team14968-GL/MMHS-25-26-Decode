@@ -191,7 +191,7 @@ public final class TuningOpModes {
                                 md.leftBack
                         ),
                         Arrays.asList(
-                                md.rightBack,
+                                md.rightFront,
                                 md.rightBack
                         ),
                         leftEncs,
