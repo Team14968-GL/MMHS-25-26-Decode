@@ -8,12 +8,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous(name = "Launch Autonomous RJ LE", preselectTeleOp = "BasicTeleopRJ")
 public class LaunchAutoRJ extends LinearOpMode {
 
-    /**
-     * This sample contains the bare minimum Blocks for any regular OpMode. The 3 blue Comment
-     * Blocks show where to place Initialization code (runs once, after touching the DS INIT
-     * button, and before touching the DS Start arrow), Run code (runs once, after touching
-     * Start), and Loop code (runs repeatedly while the OpMode is active, namely not Stopped).
-     */
     @Override
     public void runOpMode() {
         double Wheel_PWR;
@@ -27,7 +21,6 @@ public class LaunchAutoRJ extends LinearOpMode {
         DcMotor leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
         DcMotor rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
 
-        // Put initialization blocks here.
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -37,8 +30,6 @@ public class LaunchAutoRJ extends LinearOpMode {
         Wheel_PWR = 0.55;
         waitForStart();
         if (opModeIsActive()) {
-            // Put run blocks here.
-            // Put loop blocks here.
             backLeft.setPower(Wheel_PWR);
             backRight.setPower(Wheel_PWR);
             frontLeft.setPower(Wheel_PWR);
