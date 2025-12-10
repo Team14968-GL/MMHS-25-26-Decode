@@ -43,7 +43,7 @@ public class limelightTest extends LinearOpMode {
 
             LLResult result = limelight.getLatestResult();
             double tx = 0;
-            double ty = 0;
+            double ty;
             double ta = 0;
             if (result != null && result.isValid()) {
                 tx = result.getTx();
