@@ -19,10 +19,10 @@ public class limelightTest extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
-        DcMotor backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        DcMotor backRight = hardwareMap.get(DcMotor.class, "backRight");
-        DcMotor frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        DcMotor frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        DcMotor backLeft = hardwareMap.get(DcMotor.class, "leftBack");
+        DcMotor backRight = hardwareMap.get(DcMotor.class, "rightBack");
+        DcMotor frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
+        DcMotor frontRight = hardwareMap.get(DcMotor.class, "rightFront");
 
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
@@ -40,6 +40,7 @@ public class limelightTest extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
+            telemetry.update();
 
             LLResult result = limelight.getLatestResult();
             double tx = 0;
@@ -57,8 +58,6 @@ public class limelightTest extends LinearOpMode {
                 telemetry.addData("Limelight", "No Targets");
 
             }
-
-
             if (tx < txMin) {
                 backLeft.setPower(.1);
                 frontLeft.setPower(.1);
