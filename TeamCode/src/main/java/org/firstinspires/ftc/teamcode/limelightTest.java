@@ -31,12 +31,14 @@ public class limelightTest extends LinearOpMode {
 
         limelight.pipelineSwitch(0);
 
-        int txMax = 0;
-        int txMin = 0;
-        int tyMax = 0;
-        int tyMin = 0;
-        int taMax = 0;
-        int taMin = 0;
+        double power = .3;
+
+        double txMax = 15;
+        double txMin = 9;
+        double tyMax = 13.5;
+        double tyMin = 12;
+        double taMax = 2.35;
+        double taMin = 2.07;
 
         waitForStart();
         while (opModeIsActive()) {
@@ -54,51 +56,58 @@ public class limelightTest extends LinearOpMode {
                 telemetry.addData("Target X", tx);
                 telemetry.addData("Target Y", ty);
                 telemetry.addData("Target Area", ta);
+
+                if (tx < txMin) {
+                    backLeft.setPower(-power);
+                    frontLeft.setPower(-power);
+                    backRight.setPower(power);
+                    frontRight.setPower(-power);
+                    sleep(50);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                } else if (tx > txMax) {
+                    backLeft.setPower(power);
+                    frontLeft.setPower(power);
+                    backRight.setPower(-power);
+                    frontRight.setPower(-power);
+                    sleep(50);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                } else if (ta > taMax) {
+                    backLeft.setPower(-power);
+                    frontLeft.setPower(-power);
+                    backRight.setPower(-power);
+                    frontRight.setPower(-power);
+                    sleep(50);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                } else if (ta > taMax) {
+                    backLeft.setPower(power);
+                    frontLeft.setPower(power);
+                    backRight.setPower(power);
+                    frontRight.setPower(power);
+                    sleep(50);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                }
+
             } else {
                 telemetry.addData("Limelight", "No Targets");
 
+                backLeft.setPower(0);
+                frontLeft.setPower(0);
+                backRight.setPower(0);
+                frontRight.setPower(0);
             }
-            if (tx < txMin) {
-                backLeft.setPower(.1);
-                frontLeft.setPower(.1);
-                backRight.setPower(-.1);
-                frontLeft.setPower(-.1);
-                sleep(50);
-                backLeft.setPower(0);
-                frontLeft.setPower(0);
-                backRight.setPower(0);
-                frontLeft.setPower(0);
-            } else if (tx > txMax) {
-                backLeft.setPower(-.1);
-                frontLeft.setPower(-.1);
-                backRight.setPower(.1);
-                frontLeft.setPower(.1);
-                sleep(50);
-                backLeft.setPower(0);
-                frontLeft.setPower(0);
-                backRight.setPower(0);
-                frontLeft.setPower(0);
-            } else if (ta > taMax) {
-                backLeft.setPower(-.1);
-                frontLeft.setPower(-.1);
-                backRight.setPower(-.1);
-                frontLeft.setPower(-.1);
-                sleep(50);
-                backLeft.setPower(0);
-                frontLeft.setPower(0);
-                backRight.setPower(0);
-                frontLeft.setPower(0);
-            } else if (ta > taMax) {
-                backLeft.setPower(.1);
-                frontLeft.setPower(.1);
-                backRight.setPower(.1);
-                frontLeft.setPower(.1);
-                sleep(50);
-                backLeft.setPower(0);
-                frontLeft.setPower(0);
-                backRight.setPower(0);
-                frontLeft.setPower(0);
-            }
+
         }
     }
 }
