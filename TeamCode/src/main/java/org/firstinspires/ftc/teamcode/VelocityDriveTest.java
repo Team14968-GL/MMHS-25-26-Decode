@@ -26,7 +26,7 @@ public class VelocityDriveTest extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()) {
-            rpm = 1;
+            rpm = 1000;
             while (opModeIsActive()) {
                 controlY = gamepad1.left_stick_x;
                 controlX = gamepad1.right_stick_x;
