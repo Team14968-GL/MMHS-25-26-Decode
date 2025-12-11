@@ -61,7 +61,7 @@ public class limelightTest extends LinearOpMode {
                     backLeft.setPower(-power);
                     frontLeft.setPower(-power);
                     backRight.setPower(power);
-                    frontRight.setPower(-power);
+                    frontRight.setPower(power);
                     sleep(50);
                     backLeft.setPower(0);
                     frontLeft.setPower(0);
@@ -78,20 +78,20 @@ public class limelightTest extends LinearOpMode {
                     backRight.setPower(0);
                     frontRight.setPower(0);
                 } else if (ta > taMax) {
-                    backLeft.setPower(-power);
-                    frontLeft.setPower(-power);
-                    backRight.setPower(-power);
-                    frontRight.setPower(-power);
+                    backLeft.setPower(power);
+                    frontLeft.setPower(power);
+                    backRight.setPower(power);
+                    frontRight.setPower(power);
                     sleep(50);
                     backLeft.setPower(0);
                     frontLeft.setPower(0);
                     backRight.setPower(0);
                     frontRight.setPower(0);
-                } else if (ta > taMax) {
-                    backLeft.setPower(power);
-                    frontLeft.setPower(power);
-                    backRight.setPower(power);
-                    frontRight.setPower(power);
+                } else if (ta < taMin) {
+                    backLeft.setPower(-power);
+                    frontLeft.setPower(-power);
+                    backRight.setPower(-power);
+                    frontRight.setPower(-power);
                     sleep(50);
                     backLeft.setPower(0);
                     frontLeft.setPower(0);
