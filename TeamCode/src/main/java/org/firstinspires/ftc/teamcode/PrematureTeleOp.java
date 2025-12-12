@@ -32,7 +32,6 @@ public class BasicTeleopRJ2 extends LinearOpMode {
     private TouchSensor BottomBump;
     private DistanceSensor distance;
     private DistanceSensor color_DistanceSensor;
-
     int triangleFuncRunning;
     int turnTablePos2;
     int launcherSpeed;
@@ -204,7 +203,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
             turnTableServo.setPosition(turnTablePos2);
         }
         if (gamepad2.rightBumperWasPressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
-            turnTablePos2 += -0.5;
+            turnTablePos2 -= 0.5;
             if (-0.5 >= turnTablePos2) {
                 turnTablePos2 = 0;
             }
@@ -246,7 +245,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
         if (gamepad2.touchpadWasReleased()) {
             ReKickClock = new ElapsedTime();
             ReKickClock.reset();
-            telemetry.addData("elapsedtime", ReKickClock.seconds());
+            telemetry.addData("Elapsed Time", ReKickClock.seconds());
             RekickTrig = 1;
         }
         if (RekickTrig == 1) {
@@ -265,7 +264,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
     /**
      * Describe this function...
      */
-    private void launchmotorOn() {
+    private void launchMotorOn() {
         leftLauncher.setPower(launcherSpeed);
         rightLauncher.setPower(launcherSpeed);
     }
@@ -276,35 +275,35 @@ public class BasicTeleopRJ2 extends LinearOpMode {
     private void timeTriangleFunction() {
         ElapsedTime triangleClock;
         int triSafe;
-        int tritrig;
+        int triTrig;
 
         if (gamepad2.triangleWasReleased()) {
             triangleFuncRunning = 1;
             triangleClock = new ElapsedTime();
             triangleClock.reset();
-            telemetry.addData("elapsedtime", triangleClock.seconds());
-            tritrig = 1;
+            telemetry.addData("Elapsed Time", triangleClock.seconds());
+            triTrig = 1;
             triSafe = 1;
         }
-        if (tritrig == 1) {
+        if (triTrig == 1) {
             if (triangleClock.seconds() >= 0 && triangleClock.seconds() <= 0.5) {
                 triangleFuncRunning = 0;
-                launchmotorOnTriangle();
+                launchMotorOnTriangle();
                 backDoor.setPosition(0);
                 telemetry.update();
             }
             if (triangleClock.seconds() >= 0.5 && triangleClock.seconds() <= 1.5) {
-                launchmotorOnTriangle();
+                launchMotorOnTriangle();
                 goofyAhhhhFrontDoor.setPosition(0);
                 telemetry.update();
             }
             if (triangleClock.seconds() >= 1.5 && triangleClock.seconds() <= 2) {
-                launchmotorOnTriangle();
+                launchMotorOnTriangle();
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 telemetry.update();
             }
             if (triangleClock.seconds() >= 2.5 && triangleClock.seconds() <= 3) {
-                launchmotorOnTriangle();
+                launchMotorOnTriangle();
                 scoop.setPosition(0.5);
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 telemetry.update();
@@ -315,7 +314,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
                 leftLauncher.setPower(0);
                 rightLauncher.setPower(0);
                 triangleFuncRunning = 0;
-                tritrig = 2;
+                triTrig = 2;
             }
         }
     }
@@ -330,7 +329,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
         if (gamepad2.dpadUpWasPressed()) {
             ScoopClock = new ElapsedTime();
             ScoopClock.reset();
-            telemetry.addData("elapsedtime", ScoopClock.seconds());
+            telemetry.addData("Elapsed Time", ScoopClock.seconds());
             scoopTrig = 1;
         }
         if (scoopTrig == 1) {
@@ -381,7 +380,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
     /**
      * Describe this function...
      */
-    private void launchmotorOnTriangle() {
+    private void launchMotorOnTriangle() {
         ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
         ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
     }
