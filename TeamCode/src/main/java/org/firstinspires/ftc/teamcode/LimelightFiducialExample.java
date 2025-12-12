@@ -44,21 +44,20 @@ public class LimelightFiducialExample extends LinearOpMode {
                 // Iterate through each detected tag
                 for (LLResultTypes.FiducialResult fiducial : fiducialList) {
                     int id = fiducial.getFiducialId();
-                    double tx = fiducial.getSkew(); // Normalized X angle in degrees
-                    double ty = fiducial.getSkew(); // Normalized Y angle in degrees
+
 
                     // You can also get pose data (X, Y, Z, Pitch, Yaw, Roll)
-                    double tagZDistance = fiducial.getTargetArea(); // Distance in meters
+
 
                     telemetry.addData("Tag ID", id);
-                    telemetry.addData("Tag Range (m)", tagZDistance);
-                    telemetry.addData("Tag TX", tx);
+
                 }
             } else {
                 telemetry.addData("Detections Found", "None");
             }
         } else {
             telemetry.addData("Limelight Data", "Invalid or Stale");
+            telemetry.addData("Staleness",result.getStaleness());
         }
         telemetry.update();
     }

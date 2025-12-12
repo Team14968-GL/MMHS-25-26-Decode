@@ -9,6 +9,8 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import java.util.List;
+
 @Autonomous(name = "limelight Telemetry")
 public class limelightTelemetry extends LinearOpMode {
 
@@ -38,23 +40,58 @@ public class limelightTelemetry extends LinearOpMode {
             double tx;
             double ty;
             double ta;
-            if (result != null && result.isValid()) {
-                tx = result.getTx();
-                ty = result.getTy(); // How far up or down the target is (degrees)
-                ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-                telemetry.addData("Target X", tx);
-                telemetry.addData("Target Y", ty);
-                telemetry.addData("Target Area", ta);
-                telemetry.addData("Target ID", fiducialResult);
-            } else {
-                telemetry.addData("Limelight", "No Targets");
+            processLimeLightResults();
 
-            }
 
-            }
         }
+
     }
+
+    private void processLimeLightResults() {
+        double tx;
+        double ty;
+        double ta;
+        LLResult result = limelight.getLatestResult();
+        if (result != null && result.isValid()) {
+            // Get the list of ALL detected fiducials (AprilTags)
+            List<LLResultTypes.FiducialResult> fiducialList = result.getFiducialResults();
+
+            tx = result.getTx();
+            ty = result.getTy(); // How far up or down the target is (degrees)
+            ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+
+            telemetry.addData("Target X", tx);
+            telemetry.addData("Target Y", ty);
+            telemetry.addData("Target Area", ta);
+
+            if (!fiducialList.isEmpty()) {
+                telemetry.addData("Detections Found", fiducialList.size());
+
+                // Iterate through each detected tag
+                for (LLResultTypes.FiducialResult fiducial : fiducialList) {
+                    int id = fiducial.getFiducialId();
+
+
+                    // You can also get pose data (X, Y, Z, Pitch, Yaw, Roll)
+
+
+                    telemetry.addData("Tag ID", id);
+
+                }
+            } else {
+                telemetry.addData("Detections Found", "None");
+            }
+        } else {
+            telemetry.addData("Limelight Data", "Invalid or Stale");
+            telemetry.addData("Staleness", result.getStaleness());
+        }
+        telemetry.update();
+    }
+}
+
+
 
 
 
