@@ -127,19 +127,12 @@ public class BasicTeleopRJ2 extends LinearOpMode {
      * Describe this function...
      */
     private void BackDoorControl() {
-        if (gamepad2.square() == 1) {
+        if (gamepad2.squareWasPressed()) {
             backDoor.setPosition(1);
         }
-        if (gamepad2.circle() == 1) {
+        if (gamepad2.circleWasPressed()) {
             backDoor.setPosition(0);
         }
-    }
-
-    /**
-     * Describe this function...
-     */
-    // TODO: Enter the correct return type for function named do_something
-    private UNKNOWN_TYPE do_something() {
     }
 
     /**
