@@ -53,8 +53,6 @@ public class prematureTeleOp extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
-        int intakeON;
-        int halfLaunch;
 
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         goofyAhhhhFrontDoor = hardwareMap.get(Servo.class, "goofyAhhhhFrontDoor");
@@ -93,14 +91,12 @@ public class prematureTeleOp extends LinearOpMode {
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
         speed = 0.75;
-        intakeON = 0;
         backDoor.setPosition(1);
         goofyAhhhhFrontDoor.setPosition(0.5);
         scoop.setPosition(0);
         turnTableServo.setPosition(0.5);
         turnTablePos2 = 0;
         launcherSpeed = (1700 * 28) / 60;
-        halfLaunch = 0;
         triangleFuncRunning = 1;
         if (opModeIsActive()) {
             while (opModeIsActive()) {
