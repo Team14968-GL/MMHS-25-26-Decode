@@ -35,7 +35,7 @@ public class limelightAutonomous extends LinearOpMode {
 
         limelight.pipelineSwitch(0);
 
-        LLResultTypes.FiducialResult fiducialResult;
+        LLResultTypes.FiducialResult fiducialResult = null;
 
         double power = .5;
         double localPower = .3;
@@ -94,7 +94,7 @@ public class limelightAutonomous extends LinearOpMode {
             if (result != null && result.isValid()){
 
 
-                telemetry.addData("Tag ID" ,fiducialResult.getFiducialId());
+                telemetry.addData("Tag ID", fiducialResult.getFiducialId());
             }
 
 

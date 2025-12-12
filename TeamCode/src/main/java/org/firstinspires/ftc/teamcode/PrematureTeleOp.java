@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "BasicTeleopRJ2 (Blocks to Java)")
-public class BasicTeleopRJ2 extends LinearOpMode {
+public class PrematureTeleOp extends LinearOpMode {
 
     private DcMotor intakeMotor;
     private Servo goofyAhhhhFrontDoor;
