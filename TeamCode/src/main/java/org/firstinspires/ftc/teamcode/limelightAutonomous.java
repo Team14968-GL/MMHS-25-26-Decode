@@ -12,11 +12,6 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 @Autonomous(name = "limeLightAutonomous")
 public class limelightAutonomous extends LinearOpMode {
-    private DcMotor backLeft;
-    private DcMotor backRight;
-    private DcMotor frontLeft;
-    private DcMotor frontRight;
-    private GoBildaPinpointDriver pinpoint;
 
     Limelight3A limelight;
 
@@ -25,11 +20,11 @@ public class limelightAutonomous extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
-        backLeft = hardwareMap.get(DcMotor.class, "leftBack");
-        backRight = hardwareMap.get(DcMotor.class, "rightBack");
-        frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
-        frontRight = hardwareMap.get(DcMotor.class, "rightFront");
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        DcMotor backLeft = hardwareMap.get(DcMotor.class, "leftBack");
+        DcMotor backRight = hardwareMap.get(DcMotor.class, "rightBack");
+        DcMotor frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
+        DcMotor frontRight = hardwareMap.get(DcMotor.class, "rightFront");
+        GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
@@ -87,6 +82,7 @@ public class limelightAutonomous extends LinearOpMode {
           //  int tagID = limelight.getAprilTagID();
 
             if (result != null && result.isValid()) {
+                LLResultTypes.DetectorResult
 
             }
 
