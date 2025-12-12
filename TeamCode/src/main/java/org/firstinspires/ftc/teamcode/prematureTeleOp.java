@@ -1,4 +1,4 @@
-/**
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -32,10 +33,16 @@ public class prematureTeleOp extends LinearOpMode {
     private TouchSensor BottomBump;
     private DistanceSensor distance;
     private DistanceSensor color_DistanceSensor;
-    int triangleFuncRunning;
-    double turnTablePos2;
-    int launcherSpeed;
-    double speed;
+    int triangleFuncRunning = 0;
+    double turnTablePos2 = 0;
+    int launcherSpeed = 0;
+    double speed = 0;
+
+    ElapsedTime ReKickClock = null;
+    ElapsedTime ScoopClock = null;
+    ElapsedTime triangleClock = null;
+
+
 
     private void intakeControl() {
         if (gamepad1.left_trigger == 1) {
@@ -206,8 +213,8 @@ public class prematureTeleOp extends LinearOpMode {
     }
 
     private void TimeReKick() {
-        ElapsedTime ReKickClock;
-        int RekickTrig;
+
+        int RekickTrig = 0;
 
         if (gamepad2.touchpadWasReleased()) {
             ReKickClock = new ElapsedTime();
@@ -234,9 +241,9 @@ public class prematureTeleOp extends LinearOpMode {
     }
 
     private void timeTriangleFunction() {
-        ElapsedTime triangleClock;
-        int triSafe;
-        int triTrig;
+
+        int triSafe = 0;
+        int triTrig = 0;
 
         if (gamepad2.triangleWasReleased()) {
             triangleFuncRunning = 1;
@@ -281,8 +288,8 @@ public class prematureTeleOp extends LinearOpMode {
     }
 
     private void TimeScoop() {
-        ElapsedTime ScoopClock;
-        int scoopTrig;
+
+        int scoopTrig = 0;
 
         if (gamepad2.dpadUpWasPressed()) {
             ScoopClock = new ElapsedTime();
@@ -304,7 +311,7 @@ public class prematureTeleOp extends LinearOpMode {
     }
 
     private void controlLauncher() {
-        int LauncherON;
+        int LauncherON = 0;
 
         if (gamepad2.left_trigger == 1) {
             ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
@@ -337,4 +344,3 @@ public class prematureTeleOp extends LinearOpMode {
         ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
     }
 }
-*/

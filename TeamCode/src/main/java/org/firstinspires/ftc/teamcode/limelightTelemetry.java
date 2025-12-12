@@ -33,8 +33,8 @@ public class limelightTelemetry extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             telemetry.update();
-
             LLResult result = limelight.getLatestResult();
+
             double tx;
             double ty;
             double ta;
