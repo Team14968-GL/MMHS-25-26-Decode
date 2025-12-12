@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -169,11 +170,11 @@ public class BasicTeleopRJ2 extends LinearOpMode {
      * Describe this function...
      */
     private void goofyAhhhhFrontDoorControl() {
-        if (gamepad1.square_was_released()) {
+        if (gamepad1.squareWasReleased()) {
             goofyAhhhhFrontDoor.setPosition(1);
-        } else if (gamepad1.circle_was_released()) {
+        } else if (gamepad1.circleWasReleased()) {
             goofyAhhhhFrontDoor.setPosition(0);
-        } else if (gamepad1.cross_was_released()) {
+        } else if (gamepad1.crossWasReleased()) {
             goofyAhhhhFrontDoor.setPosition(0.5);
         }
     }
@@ -182,7 +183,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
      * Describe this function...
      */
     private void KillSwitch() {
-        if (gamepad1.touchpad_was_pressed()) {
+        if (gamepad1.touchpadWasPressed()) {
             leftLauncher.setPower(0);
             rightLauncher.setPower(0);
             intakeMotor.setPower(0);
@@ -202,14 +203,14 @@ public class BasicTeleopRJ2 extends LinearOpMode {
      * Describe this function...
      */
     private void turnTablePos() {
-        if (gamepad2.left_bumper_was_pressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
+        if (gamepad2.leftBumperWasPressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
             turnTablePos2 += 0.5;
             if (1.5 <= turnTablePos2) {
                 turnTablePos2 = 1;
             }
             turnTableServo.setPosition(turnTablePos2);
         }
-        if (gamepad2.right_bumper_was_pressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
+        if (gamepad2.rightBumperWasPressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
             turnTablePos2 += -0.5;
             if (-0.5 >= turnTablePos2) {
                 turnTablePos2 = 0;
@@ -249,7 +250,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
         ElapsedTime ReKickClock;
         int RekickTrig;
 
-        if (gamepad2.touchpad_was_released()) {
+        if (gamepad2.touchpadWasReleased()) {
             ReKickClock = new ElapsedTime();
             ReKickClock.reset();
             telemetry.addData("elapsedtime", ReKickClock.seconds());
@@ -284,7 +285,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
         int triSafe;
         int tritrig;
 
-        if (gamepad2.triangle_was_released()) {
+        if (gamepad2.triangleWasReleased()) {
             triangleFuncRunning = 1;
             triangleClock = new ElapsedTime();
             triangleClock.reset();
@@ -333,7 +334,7 @@ public class BasicTeleopRJ2 extends LinearOpMode {
         ElapsedTime ScoopClock;
         int scoopTrig;
 
-        if (gamepad2.dpad_up_was_pressed()) {
+        if (gamepad2.dpadUpWasPressed()) {
             ScoopClock = new ElapsedTime();
             ScoopClock.reset();
             telemetry.addData("elapsedtime", ScoopClock.seconds());
@@ -367,14 +368,14 @@ public class BasicTeleopRJ2 extends LinearOpMode {
             ((DcMotorEx) rightLauncher).setVelocity(0);
             LauncherON = 0;
         }
-        if (gamepad2.dpad_left_was_released()) {
+        if (gamepad2.dpadLeftWasPressed()) {
             launcherSpeed = (1700 * 28) / 60;
             gamepad2.rumbleBlips(1);
             if (1 == LauncherON) {
                 ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
                 ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
             }
-        } else if (gamepad2.dpad_right_was_released()) {
+        } else if (gamepad2.dpadRightWasReleased()) {
             launcherSpeed = (2100 * 28) / 60;
             gamepad2.rumbleBlips(2);
             if (1 == LauncherON) {

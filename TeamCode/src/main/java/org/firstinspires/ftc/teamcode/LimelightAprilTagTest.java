@@ -13,7 +13,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Autonomous(name = "limelightAprilTagTest")
-public class limelightAprilTagTest extends LinearOpMode {
+public class LimelightAprilTagTest extends LinearOpMode {
 
     Limelight3A limelight;
 
