@@ -1,3 +1,4 @@
+/**
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -32,13 +33,10 @@ public class prematureTeleOp extends LinearOpMode {
     private DistanceSensor distance;
     private DistanceSensor color_DistanceSensor;
     int triangleFuncRunning;
-    int turnTablePos2;
+    double turnTablePos2;
     int launcherSpeed;
     double speed;
 
-    /**
-     * Describe this function...
-     */
     private void intakeControl() {
         if (gamepad1.left_trigger == 1) {
             intakeMotor.setPower(0.8);
@@ -48,9 +46,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Evil Bloc
-     */
     @Override
     public void runOpMode() {
 
@@ -117,9 +112,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void BackDoorControl() {
         if (gamepad2.squareWasPressed()) {
             backDoor.setPosition(1);
@@ -129,9 +121,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void LauncherTiltControl() {
         if (-0.1 >= gamepad2.right_stick_y && !BottomBump.isPressed()) {
             launchLiftRight.setPower(gamepad2.right_stick_y * 0.35);
@@ -153,9 +142,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void goofyAhhhhFrontDoorControl() {
         if (gamepad1.squareWasReleased()) {
             goofyAhhhhFrontDoor.setPosition(1);
@@ -166,9 +152,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void KillSwitch() {
         if (gamepad1.touchpadWasPressed()) {
             leftLauncher.setPower(0);
@@ -177,18 +160,13 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void distanceSensorControl() {
         if (distance.getDistance(DistanceUnit.CM) <= 0) {
+            opModeIsActive(); //this is a useless function
         }
         telemetry.addData("Distance", color_DistanceSensor.getDistance(DistanceUnit.CM));
     }
 
-    /**
-     * Describe this function...
-     */
     private void turnTablePos() {
         if (gamepad2.leftBumperWasPressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
             turnTablePos2 += 0.5;
@@ -206,9 +184,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void drive() {
         float ControlY;
         float ControlX;
@@ -230,9 +205,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void TimeReKick() {
         ElapsedTime ReKickClock;
         int RekickTrig;
@@ -256,17 +228,11 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void launchMotorOn() {
         leftLauncher.setPower(launcherSpeed);
         rightLauncher.setPower(launcherSpeed);
     }
 
-    /**
-     * Describe this function...
-     */
     private void timeTriangleFunction() {
         ElapsedTime triangleClock;
         int triSafe;
@@ -314,9 +280,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void TimeScoop() {
         ElapsedTime ScoopClock;
         int scoopTrig;
@@ -340,9 +303,6 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void controlLauncher() {
         int LauncherON;
 
@@ -372,11 +332,9 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    /**
-     * Describe this function...
-     */
     private void launchMotorOnTriangle() {
         ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
         ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
     }
 }
+*/

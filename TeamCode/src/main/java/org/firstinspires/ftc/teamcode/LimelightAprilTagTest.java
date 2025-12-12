@@ -12,9 +12,13 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Autonomous(name = "limelightAprilTagTest")
 public class LimelightAprilTagTest extends LinearOpMode {
 
+    private static final Logger log = LoggerFactory.getLogger(LimelightAprilTagTest.class);
     Limelight3A limelight;
 
     @Override
@@ -22,6 +26,8 @@ public class LimelightAprilTagTest extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
+        telemetry.addData("status", limelight.getStatus());
+        telemetry.update();
         DcMotor backLeft = hardwareMap.get(DcMotor.class, "leftBack");
         DcMotor backRight = hardwareMap.get(DcMotor.class, "rightBack");
         DcMotor frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
@@ -34,6 +40,7 @@ public class LimelightAprilTagTest extends LinearOpMode {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
 
         limelight.pipelineSwitch(0);
+        
 
         LLResultTypes.FiducialResult fiducialResult = null;
 
@@ -54,7 +61,9 @@ public class LimelightAprilTagTest extends LinearOpMode {
             LLResult result = limelight.getLatestResult();
             if (result != null && result.isValid()){
                 telemetry.addData("Tag ID" ,fiducialResult.getFiducialId());
+                log.info("Tag ID", fiducialResult.getFiducialId());
             }
+            telemetry.update();
         }
     }
 }

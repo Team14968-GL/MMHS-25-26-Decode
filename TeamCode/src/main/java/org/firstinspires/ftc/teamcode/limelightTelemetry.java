@@ -19,7 +19,6 @@ public class limelightTelemetry extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
-
         limelight.pipelineSwitch(0);
 
         int txMax = 0;
@@ -28,6 +27,8 @@ public class limelightTelemetry extends LinearOpMode {
         int tyMin = 0;
         int taMax = 0;
         int taMin = 0;
+
+        LLResultTypes.FiducialResult fiducialResult = null;
 
         waitForStart();
         while (opModeIsActive()) {
@@ -45,7 +46,7 @@ public class limelightTelemetry extends LinearOpMode {
                 telemetry.addData("Target X", tx);
                 telemetry.addData("Target Y", ty);
                 telemetry.addData("Target Area", ta);
-                telemetry.addData("Target ID", limelight.getLatestResult());
+                telemetry.addData("Target ID", fiducialResult);
             } else {
                 telemetry.addData("Limelight", "No Targets");
 
