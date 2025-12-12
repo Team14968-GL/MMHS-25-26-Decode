@@ -1,0 +1,394 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+@TeleOp(name = "BasicTeleopRJ2 (Blocks to Java)")
+public class BasicTeleopRJ2 extends LinearOpMode {
+
+    private DcMotor intakeMotor;
+    private Servo goofyAhhhhFrontDoor;
+    private DcMotor leftBack;
+    private DcMotor rightBack;
+    private DcMotor leftFront;
+    private DcMotor rightFront;
+    private DcMotor leftLauncher;
+    private DcMotor rightLauncher;
+    private CRServo launchLiftRight;
+    private CRServo launchLiftLeft;
+    private Servo backDoor;
+    private Servo scoop;
+    private Servo turnTableServo;
+    private TouchSensor TopBump;
+    private TouchSensor BottomBump;
+    private DistanceSensor distance;
+    private DistanceSensor color_DistanceSensor;
+
+    int triangleFuncRunning;
+    int turnTablePos2;
+    int launcherSpeed;
+    double speed;
+
+    /**
+     * Describe this function...
+     */
+    private void intakeControl() {
+        if (gamepad1.left_trigger == 1) {
+            intakeMotor.setPower(0.8);
+            goofyAhhhhFrontDoor.setPosition(1);
+        } else if (gamepad1.right_trigger == 1) {
+            intakeMotor.setPower(0);
+        }
+    }
+
+    /**
+     * Evil Bloc
+     */
+    @Override
+    public void runOpMode() {
+        int intakeON;
+        int halfLaunch;
+
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        goofyAhhhhFrontDoor = hardwareMap.get(Servo.class, "goofyAhhhhFrontDoor");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
+        rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
+        launchLiftRight = hardwareMap.get(CRServo.class, "launchLiftRight");
+        launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
+        backDoor = hardwareMap.get(Servo.class, "backDoor");
+        scoop = hardwareMap.get(Servo.class, "scoop");
+        turnTableServo = hardwareMap.get(Servo.class, "turnTableServo");
+        TopBump = hardwareMap.get(TouchSensor.class, "TopBump");
+        BottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
+        color_DistanceSensor = hardwareMap.get(DistanceSensor.class, "color");
+
+        // Put initialization blocks here.
+        triangleFuncRunning = 0;
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftLauncher.setDirection(DcMotor.Direction.REVERSE);
+        rightLauncher.setDirection(DcMotor.Direction.FORWARD);
+        launchLiftRight.setDirection(CRServo.Direction.REVERSE);
+        launchLiftLeft.setDirection(CRServo.Direction.FORWARD);
+        leftLauncher.setPower(0);
+        rightLauncher.setPower(0);
+        leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        waitForStart();
+        speed = 0.75;
+        intakeON = 0;
+        backDoor.setPosition(1);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        scoop.setPosition(0);
+        turnTableServo.setPosition(0.5);
+        turnTablePos2 = 0;
+        launcherSpeed = (1700 * 28) / 60;
+        halfLaunch = 0;
+        triangleFuncRunning = 1;
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                telemetry.update();
+                intakeControl();
+                drive();
+                turnTablePos();
+                timeTriangleFunction();
+                BackDoorControl();
+                TimeReKick();
+                TimeScoop();
+                controlLauncher();
+                goofyAhhhhFrontDoorControl();
+                LauncherTiltControl();
+                distanceSensorControl();
+                KillSwitch();
+            }
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void BackDoorControl() {
+        if (gamepad2.square() == 1) {
+            backDoor.setPosition(1);
+        }
+        if (gamepad2.circle() == 1) {
+            backDoor.setPosition(0);
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    // TODO: Enter the correct return type for function named do_something
+    private UNKNOWN_TYPE do_something() {
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void LauncherTiltControl() {
+        if (-0.1 >= gamepad2.right_stick_y && !BottomBump.isPressed()) {
+            launchLiftRight.setPower(gamepad2.right_stick_y * 0.35);
+            launchLiftLeft.setPower(gamepad2.right_stick_y * 0.35);
+        } else if (0.1 <= gamepad2.right_stick_y && !TopBump.isPressed()) {
+            launchLiftRight.setPower(gamepad2.right_stick_y * 0.35);
+            launchLiftLeft.setPower(gamepad2.right_stick_y * 0.35);
+        } else if (0.1 <= gamepad2.right_stick_y && TopBump.isPressed()) {
+            launchLiftRight.setPower(0);
+            launchLiftLeft.setPower(0);
+            gamepad2.rumbleBlips(1);
+        } else if (-0.1 >= gamepad2.right_stick_y && BottomBump.isPressed()) {
+            launchLiftRight.setPower(0);
+            launchLiftLeft.setPower(0);
+            gamepad2.rumbleBlips(1);
+        } else {
+            launchLiftRight.setPower(0);
+            launchLiftLeft.setPower(0);
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void goofyAhhhhFrontDoorControl() {
+        if (gamepad1.square_was_released()) {
+            goofyAhhhhFrontDoor.setPosition(1);
+        } else if (gamepad1.circle_was_released()) {
+            goofyAhhhhFrontDoor.setPosition(0);
+        } else if (gamepad1.cross_was_released()) {
+            goofyAhhhhFrontDoor.setPosition(0.5);
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void KillSwitch() {
+        if (gamepad1.touchpad_was_pressed()) {
+            leftLauncher.setPower(0);
+            rightLauncher.setPower(0);
+            intakeMotor.setPower(0);
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void distanceSensorControl() {
+        if (distance.getDistance(DistanceUnit.CM) <= 0) {
+        }
+        telemetry.addData("Distance", color_DistanceSensor.getDistance(DistanceUnit.CM));
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void turnTablePos() {
+        if (gamepad2.left_bumper_was_pressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
+            turnTablePos2 += 0.5;
+            if (1.5 <= turnTablePos2) {
+                turnTablePos2 = 1;
+            }
+            turnTableServo.setPosition(turnTablePos2);
+        }
+        if (gamepad2.right_bumper_was_pressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
+            turnTablePos2 += -0.5;
+            if (-0.5 >= turnTablePos2) {
+                turnTablePos2 = 0;
+            }
+            turnTableServo.setPosition(turnTablePos2);
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void drive() {
+        float ControlY;
+        float ControlX;
+        float ControlRX;
+
+        ControlY = gamepad1.left_stick_x;
+        ControlX = -gamepad1.right_stick_x;
+        ControlRX = -gamepad1.right_stick_y;
+        leftFront.setPower(((ControlY - ControlX) + ControlRX) * speed);
+        leftBack.setPower((ControlY + ControlX + ControlRX) * speed);
+        rightFront.setPower(((ControlY - ControlX) - ControlRX) * speed);
+        rightBack.setPower(((ControlY + ControlX) - ControlRX) * speed);
+        if (gamepad1.dpad_up) {
+            speed = 1;
+        } else if (gamepad1.dpad_right) {
+            speed = 0.75;
+        } else if (gamepad1.dpad_down) {
+            speed = 0.35;
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void TimeReKick() {
+        ElapsedTime ReKickClock;
+        int RekickTrig;
+
+        if (gamepad2.touchpad_was_released()) {
+            ReKickClock = new ElapsedTime();
+            ReKickClock.reset();
+            telemetry.addData("elapsedtime", ReKickClock.seconds());
+            RekickTrig = 1;
+        }
+        if (RekickTrig == 1) {
+            if (ReKickClock.seconds() >= 0 && ReKickClock.seconds() <= 0.75) {
+                goofyAhhhhFrontDoor.setPosition(0);
+                telemetry.update();
+            }
+            if (ReKickClock.seconds() >= 0.75 && ReKickClock.seconds() <= 1) {
+                goofyAhhhhFrontDoor.setPosition(0.5);
+                telemetry.update();
+                RekickTrig = 2;
+            }
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void launchmotorOn() {
+        leftLauncher.setPower(launcherSpeed);
+        rightLauncher.setPower(launcherSpeed);
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void timeTriangleFunction() {
+        ElapsedTime triangleClock;
+        int triSafe;
+        int tritrig;
+
+        if (gamepad2.triangle_was_released()) {
+            triangleFuncRunning = 1;
+            triangleClock = new ElapsedTime();
+            triangleClock.reset();
+            telemetry.addData("elapsedtime", triangleClock.seconds());
+            tritrig = 1;
+            triSafe = 1;
+        }
+        if (tritrig == 1) {
+            if (triangleClock.seconds() >= 0 && triangleClock.seconds() <= 0.5) {
+                triangleFuncRunning = 0;
+                launchmotorOnTriangle();
+                backDoor.setPosition(0);
+                telemetry.update();
+            }
+            if (triangleClock.seconds() >= 0.5 && triangleClock.seconds() <= 1.5) {
+                launchmotorOnTriangle();
+                goofyAhhhhFrontDoor.setPosition(0);
+                telemetry.update();
+            }
+            if (triangleClock.seconds() >= 1.5 && triangleClock.seconds() <= 2) {
+                launchmotorOnTriangle();
+                goofyAhhhhFrontDoor.setPosition(0.5);
+                telemetry.update();
+            }
+            if (triangleClock.seconds() >= 2.5 && triangleClock.seconds() <= 3) {
+                launchmotorOnTriangle();
+                scoop.setPosition(0.5);
+                goofyAhhhhFrontDoor.setPosition(0.5);
+                telemetry.update();
+            }
+            if (triangleClock.seconds() >= 3 && triangleClock.seconds() <= 3.6) {
+                scoop.setPosition(0);
+                telemetry.update();
+                leftLauncher.setPower(0);
+                rightLauncher.setPower(0);
+                triangleFuncRunning = 0;
+                tritrig = 2;
+            }
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void TimeScoop() {
+        ElapsedTime ScoopClock;
+        int scoopTrig;
+
+        if (gamepad2.dpad_up_was_pressed()) {
+            ScoopClock = new ElapsedTime();
+            ScoopClock.reset();
+            telemetry.addData("elapsedtime", ScoopClock.seconds());
+            scoopTrig = 1;
+        }
+        if (scoopTrig == 1) {
+            if (ScoopClock.seconds() >= 0 && ScoopClock.seconds() <= 0.5) {
+                scoop.setPosition(0.5);
+                telemetry.update();
+            }
+            if (ScoopClock.seconds() >= 0.5 && ScoopClock.seconds() <= 1) {
+                scoop.setPosition(0);
+                telemetry.update();
+                scoopTrig = 2;
+            }
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void controlLauncher() {
+        int LauncherON;
+
+        if (gamepad2.left_trigger == 1) {
+            ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
+            ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
+            LauncherON = 1;
+        } else if (gamepad2.right_trigger == 1) {
+            ((DcMotorEx) leftLauncher).setVelocity(0);
+            ((DcMotorEx) rightLauncher).setVelocity(0);
+            LauncherON = 0;
+        }
+        if (gamepad2.dpad_left_was_released()) {
+            launcherSpeed = (1700 * 28) / 60;
+            gamepad2.rumbleBlips(1);
+            if (1 == LauncherON) {
+                ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
+                ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
+            }
+        } else if (gamepad2.dpad_right_was_released()) {
+            launcherSpeed = (2100 * 28) / 60;
+            gamepad2.rumbleBlips(2);
+            if (1 == LauncherON) {
+                ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
+                ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
+            }
+        }
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void launchmotorOnTriangle() {
+        ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
+        ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
+    }
+}

@@ -1,71 +1,62 @@
 package org.firstinspires.ftc.teamcode;
 
+
+import com.qualcomm.hardware.limelightvision.LLFieldMap;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.LLStatus;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+@Autonomous(name = "limelightAprilTagTest")
+public class limelightAprilTagTest extends LinearOpMode {
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-@TeleOp(name = "Limelight AprilTag ID Test", group = "Test")
-public class LimelightAprilTagTest extends LinearOpMode {
-
-    // CHANGE THIS: Limelight's IP address
-    private final String LIMELIGHT_IP = "http://172.29.0.30:5800";
+    Limelight3A limelight;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.start(); // This tells Limelight to start looking!
+        DcMotor backLeft = hardwareMap.get(DcMotor.class, "leftBack");
+        DcMotor backRight = hardwareMap.get(DcMotor.class, "rightBack");
+        DcMotor frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
+        DcMotor frontRight = hardwareMap.get(DcMotor.class, "rightFront");
+        GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        telemetry.addLine("Ready to read AprilTags from Limelight...");
-        telemetry.update();
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+
+        limelight.pipelineSwitch(0);
+
+        LLResultTypes.FiducialResult fiducialResult = null;
+
+        double power = .5;
+        double localPower = .3;
+
+        double txMax = 15;
+        double txMin = 9;
+        double tyMax = 13.5;
+        double tyMin = 12;
+        double taMax = 2.35;
+        double taMin = 2.07;
+
+        double xValue = 0;
 
         waitForStart();
-
         while (opModeIsActive()) {
-
-            try {
-                // --- Read LL3 JSON pipeline data ---
-                URL url = new URL(LIMELIGHT_IP + "/json");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(conn.getInputStream())
-                );
-
-                StringBuilder response = new StringBuilder();
-                String line;
-
-                while ((line = in.readLine()) != null) {
-                    response.append(line);
-                }
-                in.close();
-
-                // --- Parse JSON ---
-                JSONObject obj = new JSONObject(response.toString());
-
-                JSONArray results = obj.getJSONArray("Results");
-
-                if (results.length() > 0) {
-                    JSONObject tag = results.getJSONObject(0);
-
-                    int id = tag.getInt("tid"); // APRILTAG ID
-
-                    //telemetry.addData("AprilTag ID", id);
-                    telemetry.addData("tag",tag);
-                } else {
-                    telemetry.addLine("No AprilTag Detected");
-                }
-
-            } catch (Exception e) {
-                telemetry.addData("Error", e.getMessage());
+            LLResult result = limelight.getLatestResult();
+            if (result != null && result.isValid()){
+                telemetry.addData("Tag ID" ,fiducialResult.getFiducialId());
             }
-
-            telemetry.update();
         }
     }
 }
+
+
