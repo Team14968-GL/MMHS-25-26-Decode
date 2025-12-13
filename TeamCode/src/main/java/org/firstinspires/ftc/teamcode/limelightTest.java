@@ -13,16 +13,32 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 public class limelightTest extends LinearOpMode {
 
     Limelight3A limelight;
+    public DcMotor backLeft;
+    public DcMotor backRight;
+    public DcMotor frontLeft;
+    public DcMotor frontRight;
+
+    int sleepTime = 30;
+    double power = .35;
+
+    double txMax = 15;
+    double txMin = 9;
+    double tyMax = 13.5;
+    double tyMin = 12;
+    double taMax = 2.35;
+    double taMin = 2.07;
+
 
     @Override
     public void runOpMode() {
+
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
-        DcMotor backLeft = hardwareMap.get(DcMotor.class, "leftBack");
-        DcMotor backRight = hardwareMap.get(DcMotor.class, "rightBack");
-        DcMotor frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
-        DcMotor frontRight = hardwareMap.get(DcMotor.class, "rightFront");
+        backLeft = hardwareMap.get(DcMotor.class, "leftBack");
+        backRight = hardwareMap.get(DcMotor.class, "rightBack");
+        frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
+        frontRight = hardwareMap.get(DcMotor.class, "rightFront");
 
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
@@ -31,19 +47,22 @@ public class limelightTest extends LinearOpMode {
 
         limelight.pipelineSwitch(0);
 
-        double power = .3;
 
-        double txMax = 15;
-        double txMin = 9;
-        double tyMax = 13.5;
-        double tyMin = 12;
-        double taMax = 2.35;
-        double taMin = 2.07;
 
         waitForStart();
+
+        localize();
+
         while (opModeIsActive()) {
             telemetry.update();
 
+
+
+        }
+    }
+    public void localize() {
+        //boolean localizeing = true;
+        while (true) {
             LLResult result = limelight.getLatestResult();
             double tx = 0;
             double ty;
@@ -56,6 +75,7 @@ public class limelightTest extends LinearOpMode {
                 telemetry.addData("Target X", tx);
                 telemetry.addData("Target Y", ty);
                 telemetry.addData("Target Area", ta);
+                telemetry.update();
 
                 if (tx < txMin) {
                     // turn right
@@ -63,7 +83,7 @@ public class limelightTest extends LinearOpMode {
                     frontLeft.setPower(-power);
                     backRight.setPower(power);
                     frontRight.setPower(power);
-                    sleep(50);
+                    sleep(sleepTime);
                     backLeft.setPower(0);
                     frontLeft.setPower(0);
                     backRight.setPower(0);
@@ -74,7 +94,7 @@ public class limelightTest extends LinearOpMode {
                     frontLeft.setPower(power);
                     backRight.setPower(-power);
                     frontRight.setPower(-power);
-                    sleep(50);
+                    sleep(sleepTime);
                     backLeft.setPower(0);
                     frontLeft.setPower(0);
                     backRight.setPower(0);
@@ -85,7 +105,7 @@ public class limelightTest extends LinearOpMode {
                     frontLeft.setPower(power);
                     backRight.setPower(power);
                     frontRight.setPower(power);
-                    sleep(50);
+                    sleep(sleepTime);
                     backLeft.setPower(0);
                     frontLeft.setPower(0);
                     backRight.setPower(0);
@@ -96,11 +116,92 @@ public class limelightTest extends LinearOpMode {
                     frontLeft.setPower(-power);
                     backRight.setPower(-power);
                     frontRight.setPower(-power);
-                    sleep(50);
+                    sleep(sleepTime);
                     backLeft.setPower(0);
                     frontLeft.setPower(0);
                     backRight.setPower(0);
                     frontRight.setPower(0);
+                } else {
+
+                    break;
+                }
+
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+
+                backLeft.setPower(0);
+                frontLeft.setPower(0);
+                backRight.setPower(0);
+                frontRight.setPower(0);
+            }
+        }
+        int count = 0;
+        while (count <= 5000) {
+            LLResult result = limelight.getLatestResult();
+            double tx = 0;
+            double ty;
+            double ta = 0;
+            if (result != null && result.isValid()) {
+                tx = result.getTx();
+                ty = result.getTy(); // How far up or down the target is (degrees)
+                ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+                telemetry.update();
+
+                if (tx < txMin) {
+                    // turn right
+                    backLeft.setPower(-power);
+                    frontLeft.setPower(-power);
+                    backRight.setPower(power);
+                    frontRight.setPower(power);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (tx > txMax) {
+                    //turn left
+                    backLeft.setPower(power);
+                    frontLeft.setPower(power);
+                    backRight.setPower(-power);
+                    frontRight.setPower(-power);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (ta > taMax) {
+                    //move backward
+                    backLeft.setPower(power);
+                    frontLeft.setPower(power);
+                    backRight.setPower(power);
+                    frontRight.setPower(power);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (ta < taMin) {
+                    //move Forward
+                    backLeft.setPower(-power);
+                    frontLeft.setPower(-power);
+                    backRight.setPower(-power);
+                    frontRight.setPower(-power);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else {
+                    count++;
+
                 }
 
             } else {
@@ -112,8 +213,16 @@ public class limelightTest extends LinearOpMode {
                 frontRight.setPower(0);
             }
 
+
+
         }
+        telemetry.addData("done", 0);
+
     }
+
+
+
+
 }
 
 

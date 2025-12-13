@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name = "BasicTeleopRJ2 (Blocks to Java)")
+@TeleOp(name = "prematureTeleOp")
 public class prematureTeleOp extends LinearOpMode {
 
     private DcMotor intakeMotor;

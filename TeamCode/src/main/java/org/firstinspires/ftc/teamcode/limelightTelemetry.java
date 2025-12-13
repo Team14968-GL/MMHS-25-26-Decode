@@ -78,6 +78,7 @@ public class limelightTelemetry extends LinearOpMode {
 
 
                     telemetry.addData("Tag ID", id);
+                    telemetry.addData("Tag ID2", fiducial.getFiducialId());
 
                 }
             } else {
