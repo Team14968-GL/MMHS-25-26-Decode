@@ -1,27 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name = "limeLightAutonomous")
-public class limelightAutonomous extends LinearOpMode {
+@Autonomous(name = "CloseRedLLAuto")
+public class CloseRedLLAuto extends LinearOpMode {
 
     Limelight3A limelight;
 
@@ -107,7 +106,7 @@ public class limelightAutonomous extends LinearOpMode {
             xValue = pinpoint.getEncoderX();
             moveBackward(power,1000);
             sleep(500);
-            turnLeft(power, 500);
+            turnRight(power, 500);
 
             int count = 0;
             processTrig = true;
@@ -122,19 +121,19 @@ public class limelightAutonomous extends LinearOpMode {
             telemetry.update();
 
             sleep(500);
-            turnRight(power,500);
+            turnLeft(power,500);
 
             sleep(500);
             localize();
             if (IDs.size() == 1) {
                 Motif = IDs.get(0) - 21;
             } else if (IDs.size() == 2) {
-                Motif = IDs.get(1) - 21;
+                Motif = IDs.get(0) - 21;
             } else {
                 Motif = 0;
             }
             launchMotif(Motif, launcherSpeed);
-            strafeLeft(.6, 2000);
+            strafeRight(.6, 2000);
             scoop.setPosition(0);
             backDoor.setPosition(0);
             turnTableServo.setPosition(0.5);
@@ -199,24 +198,29 @@ public class limelightAutonomous extends LinearOpMode {
             telemetry.addData("Target X", tx);
             telemetry.addData("Target Y", ty);
             telemetry.addData("Target Area", ta);
+            telemetry.update();
 
             if (!fiducialList.isEmpty()) {
                 telemetry.addData("Detections Found", fiducialList.size());
+                telemetry.update();
 
                 // Iterate through each detected tag
                 for (LLResultTypes.FiducialResult fiducial : fiducialList) {
                     id = fiducial.getFiducialId();
                     IDs.add(id);
                     telemetry.addData("Tag ID", id);
+                    telemetry.update();
                 }
                 processTrig = false;
             } else {
                 telemetry.addData("Detections Found", "None");
+                telemetry.update();
             }
         } else {
             telemetry.addData("Limelight Data", "Invalid or Stale");
             assert result != null;
             telemetry.addData("Staleness", result.getStaleness());
+            telemetry.update();
         }
         telemetry.update();
 
@@ -355,6 +359,7 @@ public class limelightAutonomous extends LinearOpMode {
 
             } else {
                 telemetry.addData("Limelight", "No Targets");
+                telemetry.update();
 
                 backLeft.setPower(0);
                 frontLeft.setPower(0);
@@ -432,6 +437,7 @@ public class limelightAutonomous extends LinearOpMode {
 
             } else {
                 telemetry.addData("Limelight", "No Targets");
+                telemetry.update();
 
                 backLeft.setPower(0);
                 frontLeft.setPower(0);
