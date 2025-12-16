@@ -8,11 +8,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class LaunchFunc {
 
-    private DcMotor leftLauncher = null;
-    private DcMotor rightLauncher = null;
-    private Servo backDoor = null;
-    private Servo scoop = null;
-    private Servo goofyAhhhhFrontDoor = null;
+    private DcMotor leftLauncher;
+    private DcMotor rightLauncher;
+    private Servo backDoor;
+    private Servo scoop;
+    private Servo goofyAhhhhFrontDoor;
 
     public static int triangleFuncRunning;
     public static double launcherSpeed;
