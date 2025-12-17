@@ -42,15 +42,21 @@ public class prematureTeleOp extends LinearOpMode {
     private DistanceSensor distance;
     private DistanceSensor color_DistanceSensor;
     private GoBildaPinpointDriver pinpoint;
+
     
     int triangleFuncRunning = 0;
     double turnTablePos2 = 0;
     int launcherSpeed = 0;
     double speed = 0;
 
-    ElapsedTime ReKickClock = null;
-    ElapsedTime ScoopClock = null;
-    ElapsedTime triangleClock = null;
+
+
+    ElapsedTime triangleClock = new ElapsedTime();
+    ElapsedTime ReKickClock = new ElapsedTime();;
+    ElapsedTime ScoopClock = new ElapsedTime();
+    int RekickTrig = 0;
+    int scoopTrig = 0;
+    int triTrig = 0;
 
     double txMax = 15;
     double txMin = 9;
@@ -83,6 +89,7 @@ public class prematureTeleOp extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
+
         // Put initialization blocks here.
         triangleFuncRunning = 0;
         leftBack.setDirection(DcMotor.Direction.FORWARD);
@@ -102,6 +109,10 @@ public class prematureTeleOp extends LinearOpMode {
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        limelight.pipelineSwitch(0);
+        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.start();
+
         waitForStart();
         speed = 0.75;
         backDoor.setPosition(1);
@@ -117,6 +128,12 @@ public class prematureTeleOp extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 telemetry.update();
+                pinpoint.update();
+                telemetry.addData("x", pinpoint.getEncoderX());
+                telemetry.addData("y", pinpoint.getEncoderY());
+                telemetry.addData("posX", pinpoint.getPosX(DistanceUnit.MM));
+                telemetry.addData("posY", pinpoint.getPosY(DistanceUnit.MM));
+                telemetry.addData("headingDeg", pinpoint.getHeading(AngleUnit.DEGREES));
                 intakeControl();
                 drive();
                 turnTablePos();
@@ -127,16 +144,10 @@ public class prematureTeleOp extends LinearOpMode {
                 controlLauncher();
                 goofyAhhhhFrontDoorControl();
                 launcherTiltControl();
-                distanceSensorControl();
+                //distanceSensorControl();
                 killSwitch();
                 localize(0.3, 50);
                 //lift();
-                pinpoint.update();
-                telemetry.addData("x", pinpoint.getEncoderX());
-                telemetry.addData("y", pinpoint.getEncoderY());
-                telemetry.addData("posX", pinpoint.getPosX(DistanceUnit.MM));
-                telemetry.addData("posY", pinpoint.getPosY(DistanceUnit.MM));
-                telemetry.addData("headingDeg", pinpoint.getHeading(AngleUnit.DEGREES));
             }
         }
     }
@@ -209,14 +220,14 @@ public class prematureTeleOp extends LinearOpMode {
         if (gamepad2.leftBumperWasPressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
             turnTablePos2 += 0.5;
             if (1.5 <= turnTablePos2) {
-                turnTablePos2 = 1;
+                turnTablePos2 = 0;
             }
             turnTableServo.setPosition(turnTablePos2);
         }
         if (gamepad2.rightBumperWasPressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
             turnTablePos2 -= 0.5;
             if (-0.5 >= turnTablePos2) {
-                turnTablePos2 = 0;
+                turnTablePos2 = 1;
             }
             turnTableServo.setPosition(turnTablePos2);
         }
@@ -241,10 +252,8 @@ public class prematureTeleOp extends LinearOpMode {
 
     private void timeReKick() {
 
-        int RekickTrig = 0;
 
         if (gamepad2.touchpadWasReleased()) {
-            ReKickClock = new ElapsedTime();
             ReKickClock.reset();
             telemetry.addData("Elapsed Time", ReKickClock.seconds());
             RekickTrig = 1;
@@ -257,17 +266,16 @@ public class prematureTeleOp extends LinearOpMode {
             if (ReKickClock.seconds() >= 0.75 && ReKickClock.seconds() <= 1) {
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 telemetry.update();
+                RekickTrig = 0;
             }
         }
     }
 
     private void timeTriangleFunction() {
 
-        int triTrig = 0;
-
         if (gamepad2.triangleWasReleased()) {
             triangleFuncRunning = 1;
-            triangleClock = new ElapsedTime();
+
             triangleClock.reset();
             telemetry.addData("Elapsed Time", triangleClock.seconds());
             triTrig = 1;
@@ -287,32 +295,25 @@ public class prematureTeleOp extends LinearOpMode {
             if (triangleClock.seconds() >= 1.5 && triangleClock.seconds() <= 2) {
                 launchMotorOnTriangle();
                 goofyAhhhhFrontDoor.setPosition(0.5);
+                scoop.setPosition(0.5);
                 telemetry.update();
             }
             if (triangleClock.seconds() >= 2.5 && triangleClock.seconds() <= 3) {
                 launchMotorOnTriangle();
-                scoop.setPosition(0.5);
-                goofyAhhhhFrontDoor.setPosition(0.5);
-                telemetry.update();
-            }
-            if (triangleClock.seconds() >= 3 && triangleClock.seconds() <= 3.6) {
                 scoop.setPosition(0);
                 telemetry.update();
-                leftLauncher.setPower(0);
-                rightLauncher.setPower(0);
                 triangleFuncRunning = 0;
+                triTrig = 0;
             }
+
         }
     }
 
     private void timeScoop() {
 
-        int scoopTrig = 0;
-
-        if (gamepad2.dpadUpWasPressed()) {
-            ScoopClock = new ElapsedTime();
+        if (gamepad2.dpad_up) {
             ScoopClock.reset();
-            telemetry.addData("Elapsed Time", ScoopClock.seconds());
+            telemetry.addData("elapsedtime", ScoopClock.seconds());
             scoopTrig = 1;
         }
         if (scoopTrig == 1) {
@@ -323,6 +324,7 @@ public class prematureTeleOp extends LinearOpMode {
             if (ScoopClock.seconds() >= 0.5 && ScoopClock.seconds() <= 1) {
                 scoop.setPosition(0);
                 telemetry.update();
+                scoopTrig = 0;
             }
         }
     }
@@ -361,86 +363,123 @@ public class prematureTeleOp extends LinearOpMode {
         ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
     }
     public void localize(double localizerMotorPower, int sleepTimeMilli) {
-        if (gamepad1.ps) {
+        while (gamepad1.ps) {
             //boolean localizing = true;
-            while (opModeIsActive()) {
-                LLResult result = limelight.getLatestResult();
-                double tx;
-                double ty;
-                double ta;
-                if (result != null && result.isValid()) {
-                    tx = result.getTx();
-                    ty = result.getTy(); // How far up or down the target is (degrees)
-                    ta = result.getTa(); // How big the target looks (0%-100% of the image)
+            LLResult result = limelight.getLatestResult();
+            double tx;
+            double ty;
+            double ta;
+            if (result != null && result.isValid()) {
+                tx = result.getTx();
+                ty = result.getTy(); // How far up or down the target is (degrees)
+                ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-                    telemetry.addData("Target X", tx);
-                    telemetry.addData("Target Y", ty);
-                    telemetry.addData("Target Area", ta);
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+
+
+                if (tx < txMin) {
+                    // turn right
+                    turnRight(localizerMotorPower,sleepTimeMilli);
+                    telemetry.addData("localizing", 0);
                     telemetry.update();
-
-                    if (tx < txMin) {
-                        // turn right
-                        leftBack.setPower(-localizerMotorPower);
-                        leftFront.setPower(-localizerMotorPower);
-                        rightBack.setPower(localizerMotorPower);
-                        rightFront.setPower(localizerMotorPower);
-                        sleep(sleepTimeMilli);
-                        leftBack.setPower(0);
-                        leftFront.setPower(0);
-                        rightBack.setPower(0);
-                        rightFront.setPower(0);
-                    } else if (tx > txMax) {
-                        //turn left
-                        leftBack.setPower(localizerMotorPower);
-                        leftFront.setPower(localizerMotorPower);
-                        rightBack.setPower(-localizerMotorPower);
-                        rightFront.setPower(-localizerMotorPower);
-                        sleep(sleepTimeMilli);
-                        leftBack.setPower(0);
-                        leftFront.setPower(0);
-                        rightBack.setPower(0);
-                        rightFront.setPower(0);
-                    } else if (ta > taMax) {
-                        //move backward
-                        leftBack.setPower(localizerMotorPower);
-                        leftFront.setPower(localizerMotorPower);
-                        rightBack.setPower(localizerMotorPower);
-                        rightFront.setPower(localizerMotorPower);
-                        sleep(sleepTimeMilli);
-                        leftBack.setPower(0);
-                        leftFront.setPower(0);
-                        rightBack.setPower(0);
-                        rightFront.setPower(0);
-                    } else if (ta < taMin) {
-                        //move Forward
-                        leftBack.setPower(-localizerMotorPower);
-                        leftFront.setPower(-localizerMotorPower);
-                        rightBack.setPower(-localizerMotorPower);
-                        rightFront.setPower(-localizerMotorPower);
-                        sleep(sleepTimeMilli);
-                        leftBack.setPower(0);
-                        leftFront.setPower(0);
-                        rightBack.setPower(0);
-                        rightFront.setPower(0);
-                    } else if (gamepad1.ps) {
-                        break;
-                    } else {
-                        break;
-                    }
-
-                } else if (gamepad1.ps) {
-                    break;
+                } else if (tx > txMax) {
+                    //turn left
+                    turnLeft(localizerMotorPower,sleepTimeMilli);
+                    telemetry.addData("localizing", 0);
+                    telemetry.update();
+                } else if (ta > taMax) {
+                    //move backward
+                    moveForward(localizerMotorPower,sleepTimeMilli);
+                    telemetry.addData("localizing", 0);
+                    telemetry.update();
+                } else if (ta < taMin) {
+                    //move Forward
+                    moveBackward(localizerMotorPower,sleepTimeMilli);
+                    telemetry.addData("localizing", 0);
+                    telemetry.update();
                 } else {
-                    telemetry.addData("Limelight", "No Targets");
+                    telemetry.addData("done", 0);
                     telemetry.update();
-
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
                 }
+
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+                telemetry.update();
+
+                leftBack.setPower(0);
+                leftFront.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
             }
         }
+    }
+    public void strafeLeft(double Speed, int time) {
+        leftBack.setPower(Speed);
+        leftFront.setPower(-Speed);
+        rightBack.setPower(-Speed);
+        rightFront.setPower(Speed);
+        sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+    public void strafeRight(double Speed, int time) {
+        leftBack.setPower(-Speed);
+        leftFront.setPower(Speed);
+        rightBack.setPower(Speed);
+        rightFront.setPower(-Speed);
+        sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+    public void turnRight(double Speed, int time) {
+        leftBack.setPower(Speed);
+        leftFront.setPower(Speed);
+        rightBack.setPower(-Speed);
+        rightFront.setPower(-Speed);
+        sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+    public void turnLeft(double Speed, int time) {
+        leftBack.setPower(-Speed);
+        leftFront.setPower(-Speed);
+        rightBack.setPower(Speed);
+        rightFront.setPower(Speed);
+        sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+    public void moveBackward(double Speed, int time) {
+        leftBack.setPower(Speed);
+        leftFront.setPower(Speed);
+        rightBack.setPower(Speed);
+        rightFront.setPower(Speed);
+        sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+    public void moveForward(double Speed, int time) {
+        leftBack.setPower(-Speed);
+        leftFront.setPower(-Speed);
+        rightBack.setPower(-Speed);
+        rightFront.setPower(-Speed);
+        sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
     }
     private void lift(){
         if (gamepad1.dpad_up){

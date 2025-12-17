@@ -133,7 +133,7 @@ public class CloseBlueLLAuto extends LinearOpMode {
                 Motif = 0;
             }
             launchMotif(Motif, launcherSpeed);
-            strafeRight(.6, 2000);
+            strafeRight(.6, 1000);
             scoop.setPosition(0);
             backDoor.setPosition(0);
             turnTableServo.setPosition(0.5);
