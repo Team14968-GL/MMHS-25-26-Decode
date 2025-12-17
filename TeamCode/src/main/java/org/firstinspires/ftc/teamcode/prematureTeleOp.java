@@ -1,6 +1,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -15,6 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "prematureTeleOp")
 public class prematureTeleOp extends LinearOpMode {
+
+    Limelight3A limelight;
 
     private DcMotor intakeMotor;
     private Servo goofyAhhhhFrontDoor;
@@ -33,14 +37,24 @@ public class prematureTeleOp extends LinearOpMode {
     private TouchSensor BottomBump;
     private DistanceSensor distance;
     private DistanceSensor color_DistanceSensor;
+    
     int triangleFuncRunning = 0;
     double turnTablePos2 = 0;
     int launcherSpeed = 0;
     double speed = 0;
+    int sleepTime = 50;
+    double localPower = .3;
 
     ElapsedTime ReKickClock = null;
     ElapsedTime ScoopClock = null;
     ElapsedTime triangleClock = null;
+
+    double txMax = 15;
+    double txMin = 9;
+    double tyMax = 13.5;
+    double tyMin = 12;
+    double taMax = 2.35;
+    double taMin = 2.07;
 
 
 
@@ -107,19 +121,20 @@ public class prematureTeleOp extends LinearOpMode {
                 drive();
                 turnTablePos();
                 timeTriangleFunction();
-                BackDoorControl();
-                TimeReKick();
-                TimeScoop();
+                backDoorControl();
+                timeReKick();
+                timeScoop();
                 controlLauncher();
                 goofyAhhhhFrontDoorControl();
-                LauncherTiltControl();
+                launcherTiltControl();
                 distanceSensorControl();
-                KillSwitch();
+                killSwitch();
+                localize();
             }
         }
     }
 
-    private void BackDoorControl() {
+    private void backDoorControl() {
         if (gamepad2.squareWasPressed()) {
             backDoor.setPosition(1);
         }
@@ -128,7 +143,7 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    private void LauncherTiltControl() {
+    private void launcherTiltControl() {
         if (-0.1 >= gamepad2.right_stick_y && !BottomBump.isPressed()) {
             launchLiftRight.setPower(gamepad2.right_stick_y * 0.35);
             launchLiftLeft.setPower(gamepad2.right_stick_y * 0.35);
@@ -159,7 +174,7 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    private void KillSwitch() {
+    private void killSwitch() {
         if (gamepad1.touchpadWasPressed()) {
             leftLauncher.setPower(0);
             rightLauncher.setPower(0);
@@ -212,7 +227,7 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    private void TimeReKick() {
+    private void timeReKick() {
 
         int RekickTrig = 0;
 
@@ -287,7 +302,7 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
 
-    private void TimeScoop() {
+    private void timeScoop() {
 
         int scoopTrig = 0;
 
@@ -342,5 +357,83 @@ public class prematureTeleOp extends LinearOpMode {
     private void launchMotorOnTriangle() {
         ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
         ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
+    }
+    public void localize() {
+        if (gamepad1.ps == true) {
+            //boolean localizing = true;
+            while (true) {
+                LLResult result = limelight.getLatestResult();
+                double tx;
+                double ty;
+                double ta;
+                if (result != null && result.isValid()) {
+                    tx = result.getTx();
+                    ty = result.getTy(); // How far up or down the target is (degrees)
+                    ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                    telemetry.addData("Target X", tx);
+                    telemetry.addData("Target Y", ty);
+                    telemetry.addData("Target Area", ta);
+                    telemetry.update();
+
+                    if (tx < txMin) {
+                        // turn right
+                        leftBack.setPower(-localPower);
+                        leftFront.setPower(-localPower);
+                        rightBack.setPower(localPower);
+                        rightFront.setPower(localPower);
+                        sleep(sleepTime);
+                        leftBack.setPower(0);
+                        leftFront.setPower(0);
+                        rightBack.setPower(0);
+                        rightFront.setPower(0);
+                    } else if (tx > txMax) {
+                        //turn left
+                        leftBack.setPower(localPower);
+                        leftFront.setPower(localPower);
+                        rightBack.setPower(-localPower);
+                        rightFront.setPower(-localPower);
+                        sleep(sleepTime);
+                        leftBack.setPower(0);
+                        leftFront.setPower(0);
+                        rightBack.setPower(0);
+                        rightFront.setPower(0);
+                    } else if (ta > taMax) {
+                        //move backward
+                        leftBack.setPower(localPower);
+                        leftFront.setPower(localPower);
+                        rightBack.setPower(localPower);
+                        rightFront.setPower(localPower);
+                        sleep(sleepTime);
+                        leftBack.setPower(0);
+                        leftFront.setPower(0);
+                        rightBack.setPower(0);
+                        rightFront.setPower(0);
+                    } else if (ta < taMin) {
+                        //move Forward
+                        leftBack.setPower(-localPower);
+                        leftFront.setPower(-localPower);
+                        rightBack.setPower(-localPower);
+                        rightFront.setPower(-localPower);
+                        sleep(sleepTime);
+                        leftBack.setPower(0);
+                        leftFront.setPower(0);
+                        rightBack.setPower(0);
+                        rightFront.setPower(0);
+                    } else {
+                        break;
+                    }
+
+                } else {
+                    telemetry.addData("Limelight", "No Targets");
+                    telemetry.update();
+
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                }
+            }
+        }
     }
 }
