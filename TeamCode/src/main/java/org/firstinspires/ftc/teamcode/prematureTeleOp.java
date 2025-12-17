@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -28,6 +27,7 @@ public class prematureTeleOp extends LinearOpMode {
     private DcMotor rightFront;
     private DcMotor leftLauncher;
     private DcMotor rightLauncher;
+    private DcMotor lift;
     private CRServo launchLiftRight;
     private CRServo launchLiftLeft;
     private Servo backDoor;
@@ -42,8 +42,6 @@ public class prematureTeleOp extends LinearOpMode {
     double turnTablePos2 = 0;
     int launcherSpeed = 0;
     double speed = 0;
-    int sleepTime = 50;
-    double localPower = .3;
 
     ElapsedTime ReKickClock = null;
     ElapsedTime ScoopClock = null;
@@ -56,17 +54,6 @@ public class prematureTeleOp extends LinearOpMode {
     double taMax = 2.35;
     double taMin = 2.07;
 
-
-
-    private void intakeControl() {
-        if (gamepad1.left_trigger == 1) {
-            intakeMotor.setPower(0.8);
-            goofyAhhhhFrontDoor.setPosition(1);
-        } else if (gamepad1.right_trigger == 1) {
-            intakeMotor.setPower(0);
-        }
-    }
-
     @Override
     public void runOpMode() {
 
@@ -78,6 +65,7 @@ public class prematureTeleOp extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
         rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
+        lift = hardwareMap.get(DcMotor.class, "lift");
         launchLiftRight = hardwareMap.get(CRServo.class, "launchLiftRight");
         launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
         backDoor = hardwareMap.get(Servo.class, "backDoor");
@@ -105,6 +93,8 @@ public class prematureTeleOp extends LinearOpMode {
         rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         waitForStart();
         speed = 0.75;
         backDoor.setPosition(1);
@@ -114,6 +104,7 @@ public class prematureTeleOp extends LinearOpMode {
         turnTablePos2 = 0;
         launcherSpeed = (1700 * 28) / 60;
         triangleFuncRunning = 1;
+
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 telemetry.update();
@@ -129,8 +120,18 @@ public class prematureTeleOp extends LinearOpMode {
                 launcherTiltControl();
                 distanceSensorControl();
                 killSwitch();
-                localize();
+                localize(0.3, 50);
+                //lift();
             }
+        }
+    }
+
+    private void intakeControl() {
+        if (gamepad1.left_trigger == 1) {
+            intakeMotor.setPower(0.8);
+            goofyAhhhhFrontDoor.setPosition(1);
+        } else if (gamepad1.right_trigger == 1) {
+            intakeMotor.setPower(0);
         }
     }
 
@@ -207,13 +208,9 @@ public class prematureTeleOp extends LinearOpMode {
     }
 
     private void drive() {
-        float ControlY;
-        float ControlX;
-        float ControlRX;
-
-        ControlY = gamepad1.left_stick_x;
-        ControlX = -gamepad1.right_stick_x;
-        ControlRX = -gamepad1.right_stick_y;
+        float ControlY = gamepad1.left_stick_x;
+        float ControlX = -gamepad1.right_stick_x;
+        float ControlRX = -gamepad1.right_stick_y;
         leftFront.setPower(((ControlY - ControlX) + ControlRX) * speed);
         leftBack.setPower((ControlY + ControlX + ControlRX) * speed);
         rightFront.setPower(((ControlY - ControlX) - ControlRX) * speed);
@@ -245,19 +242,12 @@ public class prematureTeleOp extends LinearOpMode {
             if (ReKickClock.seconds() >= 0.75 && ReKickClock.seconds() <= 1) {
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 telemetry.update();
-                RekickTrig = 2;
             }
         }
     }
 
-    private void launchMotorOn() {
-        leftLauncher.setPower(launcherSpeed);
-        rightLauncher.setPower(launcherSpeed);
-    }
-
     private void timeTriangleFunction() {
 
-        int triSafe = 0;
         int triTrig = 0;
 
         if (gamepad2.triangleWasReleased()) {
@@ -266,7 +256,6 @@ public class prematureTeleOp extends LinearOpMode {
             triangleClock.reset();
             telemetry.addData("Elapsed Time", triangleClock.seconds());
             triTrig = 1;
-            triSafe = 1;
         }
         if (triTrig == 1) {
             if (triangleClock.seconds() >= 0 && triangleClock.seconds() <= 0.5) {
@@ -297,7 +286,6 @@ public class prematureTeleOp extends LinearOpMode {
                 leftLauncher.setPower(0);
                 rightLauncher.setPower(0);
                 triangleFuncRunning = 0;
-                triTrig = 2;
             }
         }
     }
@@ -320,7 +308,6 @@ public class prematureTeleOp extends LinearOpMode {
             if (ScoopClock.seconds() >= 0.5 && ScoopClock.seconds() <= 1) {
                 scoop.setPosition(0);
                 telemetry.update();
-                scoopTrig = 2;
             }
         }
     }
@@ -358,8 +345,8 @@ public class prematureTeleOp extends LinearOpMode {
         ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
         ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
     }
-    public void localize() {
-        if (gamepad1.ps == true) {
+    public void localize(double localizerMotorPower, int sleepTimeMilli) {
+        if (gamepad1.ps) {
             //boolean localizing = true;
             while (true) {
                 LLResult result = limelight.getLatestResult();
@@ -378,44 +365,44 @@ public class prematureTeleOp extends LinearOpMode {
 
                     if (tx < txMin) {
                         // turn right
-                        leftBack.setPower(-localPower);
-                        leftFront.setPower(-localPower);
-                        rightBack.setPower(localPower);
-                        rightFront.setPower(localPower);
-                        sleep(sleepTime);
+                        leftBack.setPower(-localizerMotorPower);
+                        leftFront.setPower(-localizerMotorPower);
+                        rightBack.setPower(localizerMotorPower);
+                        rightFront.setPower(localizerMotorPower);
+                        sleep(sleepTimeMilli);
                         leftBack.setPower(0);
                         leftFront.setPower(0);
                         rightBack.setPower(0);
                         rightFront.setPower(0);
                     } else if (tx > txMax) {
                         //turn left
-                        leftBack.setPower(localPower);
-                        leftFront.setPower(localPower);
-                        rightBack.setPower(-localPower);
-                        rightFront.setPower(-localPower);
-                        sleep(sleepTime);
+                        leftBack.setPower(localizerMotorPower);
+                        leftFront.setPower(localizerMotorPower);
+                        rightBack.setPower(-localizerMotorPower);
+                        rightFront.setPower(-localizerMotorPower);
+                        sleep(sleepTimeMilli);
                         leftBack.setPower(0);
                         leftFront.setPower(0);
                         rightBack.setPower(0);
                         rightFront.setPower(0);
                     } else if (ta > taMax) {
                         //move backward
-                        leftBack.setPower(localPower);
-                        leftFront.setPower(localPower);
-                        rightBack.setPower(localPower);
-                        rightFront.setPower(localPower);
-                        sleep(sleepTime);
+                        leftBack.setPower(localizerMotorPower);
+                        leftFront.setPower(localizerMotorPower);
+                        rightBack.setPower(localizerMotorPower);
+                        rightFront.setPower(localizerMotorPower);
+                        sleep(sleepTimeMilli);
                         leftBack.setPower(0);
                         leftFront.setPower(0);
                         rightBack.setPower(0);
                         rightFront.setPower(0);
                     } else if (ta < taMin) {
                         //move Forward
-                        leftBack.setPower(-localPower);
-                        leftFront.setPower(-localPower);
-                        rightBack.setPower(-localPower);
-                        rightFront.setPower(-localPower);
-                        sleep(sleepTime);
+                        leftBack.setPower(-localizerMotorPower);
+                        leftFront.setPower(-localizerMotorPower);
+                        rightBack.setPower(-localizerMotorPower);
+                        rightFront.setPower(-localizerMotorPower);
+                        sleep(sleepTimeMilli);
                         leftBack.setPower(0);
                         leftFront.setPower(0);
                         rightBack.setPower(0);
@@ -434,6 +421,18 @@ public class prematureTeleOp extends LinearOpMode {
                     rightFront.setPower(0);
                 }
             }
+        }
+    }
+    private void lift(){
+        if (gamepad1.dpad_up){
+            lift.setPower(.7);
+        } else {
+            lift.setPower(0.0);
+        }
+        if (gamepad1.dpad_down) {
+            lift.setPower(-.7);
+        } else {
+            lift.setPower(0.0);
         }
     }
 }
