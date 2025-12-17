@@ -8,10 +8,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "prematureTeleOp")
@@ -37,6 +41,7 @@ public class prematureTeleOp extends LinearOpMode {
     private TouchSensor BottomBump;
     private DistanceSensor distance;
     private DistanceSensor color_DistanceSensor;
+    private GoBildaPinpointDriver pinpoint;
     
     int triangleFuncRunning = 0;
     double turnTablePos2 = 0;
@@ -76,6 +81,7 @@ public class prematureTeleOp extends LinearOpMode {
         distance = hardwareMap.get(DistanceSensor.class, "distance");
         color_DistanceSensor = hardwareMap.get(DistanceSensor.class, "color");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         // Put initialization blocks here.
         triangleFuncRunning = 0;
@@ -106,6 +112,8 @@ public class prematureTeleOp extends LinearOpMode {
         launcherSpeed = (1700 * 28) / 60;
         triangleFuncRunning = 1;
 
+        pinpoint.initialize();
+
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 telemetry.update();
@@ -123,6 +131,12 @@ public class prematureTeleOp extends LinearOpMode {
                 killSwitch();
                 localize(0.3, 50);
                 //lift();
+                pinpoint.update();
+                telemetry.addData("x", pinpoint.getEncoderX());
+                telemetry.addData("y", pinpoint.getEncoderY());
+                telemetry.addData("posX", pinpoint.getPosX(DistanceUnit.MM));
+                telemetry.addData("posY", pinpoint.getPosY(DistanceUnit.MM));
+                telemetry.addData("headingDeg", pinpoint.getHeading(AngleUnit.DEGREES));
             }
         }
     }
