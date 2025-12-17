@@ -75,6 +75,7 @@ public class prematureTeleOp extends LinearOpMode {
         BottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
         distance = hardwareMap.get(DistanceSensor.class, "distance");
         color_DistanceSensor = hardwareMap.get(DistanceSensor.class, "color");
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         // Put initialization blocks here.
         triangleFuncRunning = 0;
@@ -348,7 +349,7 @@ public class prematureTeleOp extends LinearOpMode {
     public void localize(double localizerMotorPower, int sleepTimeMilli) {
         if (gamepad1.ps) {
             //boolean localizing = true;
-            while (true) {
+            while (opModeIsActive()) {
                 LLResult result = limelight.getLatestResult();
                 double tx;
                 double ty;
@@ -407,10 +408,14 @@ public class prematureTeleOp extends LinearOpMode {
                         leftFront.setPower(0);
                         rightBack.setPower(0);
                         rightFront.setPower(0);
+                    } else if (gamepad1.ps) {
+                        break;
                     } else {
                         break;
                     }
 
+                } else if (gamepad1.ps) {
+                    break;
                 } else {
                     telemetry.addData("Limelight", "No Targets");
                     telemetry.update();
