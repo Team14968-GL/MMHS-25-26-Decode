@@ -57,7 +57,7 @@ public class prematureTeleOp extends LinearOpMode {
 
 
     ElapsedTime triangleClock = new ElapsedTime();
-    ElapsedTime ReKickClock = new ElapsedTime();;
+    ElapsedTime ReKickClock = new ElapsedTime();
     ElapsedTime ScoopClock = new ElapsedTime();
     int RekickTrig = 0;
     int scoopTrig = 0;
@@ -258,7 +258,7 @@ public class prematureTeleOp extends LinearOpMode {
     }
 
     private void drive() {
-        float ControlY = gamepad1.left_stick_x;
+        @SuppressWarnings("SuspiciousNameCombination") float ControlY = gamepad1.left_stick_x;
         float ControlX = -gamepad1.right_stick_x;
         float ControlRX = -gamepad1.right_stick_y;
         leftFront.setPower(((ControlY - ControlX) + ControlRX) * speed);
@@ -341,7 +341,7 @@ public class prematureTeleOp extends LinearOpMode {
 
         if (gamepad2.dpad_up) {
             ScoopClock.reset();
-            telemetry.addData("elapsedtime", ScoopClock.seconds());
+            telemetry.addData("Elapsed Time", ScoopClock.seconds());
             scoopTrig = 1;
         }
         if (scoopTrig == 1) {
@@ -396,9 +396,9 @@ public class prematureTeleOp extends LinearOpMode {
             //boolean localizing = true;
 
             LLResult result = limelight.getLatestResult();
-            double tx = 0;
+            double tx;
             double ty;
-            double ta = 0;
+            double ta;
             if (result != null && result.isValid()) {
                 tx = result.getTx();
                 ty = result.getTy(); // How far up or down the target is (degrees)
@@ -421,6 +421,7 @@ public class prematureTeleOp extends LinearOpMode {
                     rightBack.setPower(0);
                     rightFront.setPower(0);
                     ledManager("Clear");
+                    LocalTrig = 1;
                 } else if (tx > txMax) {
                     //turn left
                     leftBack.setPower(localizerMotorPower);
@@ -433,6 +434,7 @@ public class prematureTeleOp extends LinearOpMode {
                     rightBack.setPower(0);
                     rightFront.setPower(0);
                     ledManager("Clear");
+                    LocalTrig = 1;
                 } else if (ta > taMax) {
                     //move backward
                     leftBack.setPower(localizerMotorPower);
@@ -445,6 +447,7 @@ public class prematureTeleOp extends LinearOpMode {
                     rightBack.setPower(0);
                     rightFront.setPower(0);
                     ledManager("Clear");
+                    LocalTrig = 1;
                 } else if (ta < taMin) {
                     //move Forward
                     leftBack.setPower(-localizerMotorPower);
@@ -457,14 +460,17 @@ public class prematureTeleOp extends LinearOpMode {
                     rightBack.setPower(0);
                     rightFront.setPower(0);
                     ledManager("Clear");
+                    LocalTrig = 1;
                 } else {
                     telemetry.addData("done", 0);
                     ledManager("Good");
+                    LocalTrig = 1;
                 }
 
             } else {
                 telemetry.addData("Limelight", "No Targets");
                 ledManager("Error");
+                LocalTrig = 1;
                 leftBack.setPower(0);
                 leftFront.setPower(0);
                 rightBack.setPower(0);
@@ -554,28 +560,50 @@ public class prematureTeleOp extends LinearOpMode {
         }
     }
     private void ledManager(String type){
-        if (type.equals("Clear")){
-            LED1.setPower(.5); //White
-        } else if (type.equals("Good")){
-            LED1.setPower(0); //Green
-        } else if (type.equals("Warn")){
-            LED1.setPower(-.25); //Yellow
-        } else if (type.equals("Alert")){
-            LED1.setPower(-.35); //Orange
-        } else if (type.equals("Error")){
-            LED1.setPower(-0.44); //red
-        } else if (type.equals("Null")){
-            LED1.setPower(-.6); //Blank
-        } else if (type.equals("Match Alert")){
-            LED1.setPower(0); //Purple
-        } else if (type.equals("Blue")){
-            LED1.setPower(0.216); //Blue
-        } else if (type.equals("Purple")){
-            LED1.setPower(0.415); //Purple
-        } else if (type.equals("Pink")){
-            LED1.setPower(0.275); //Pink
-        } else {
-            telemetry.addData("Led Manager Error", "Wrong Input");
+        switch (type) {
+            case "Clear":
+                LED1.setPower(.5); //White
+
+                break;
+            case "Good":
+                LED1.setPower(0); //Green
+
+                break;
+            case "Warn":
+                LED1.setPower(-.25); //Yellow
+
+                break;
+            case "Alert":
+                LED1.setPower(-.35); //Orange
+
+                break;
+            case "Error":
+                LED1.setPower(-0.44); //red
+
+                break;
+            case "Null":
+                LED1.setPower(-.6); //Blank
+
+                break;
+            case "Match Alert":
+                LED1.setPower(0); //Purple
+
+                break;
+            case "Blue":
+                LED1.setPower(0.216); //Blue
+
+                break;
+            case "Purple":
+                LED1.setPower(0.415); //Purple
+
+                break;
+            case "Pink":
+                LED1.setPower(0.275); //Pink
+
+                break;
+            default:
+                telemetry.addData("Led Manager Error", "Wrong or Invalid Input");
+                break;
         }
     }
 }
