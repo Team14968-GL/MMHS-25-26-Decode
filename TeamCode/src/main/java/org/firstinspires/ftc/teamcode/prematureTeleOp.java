@@ -1,6 +1,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -41,13 +43,16 @@ public class prematureTeleOp extends LinearOpMode {
     private TouchSensor BottomBump;
     private DistanceSensor distance;
     private DistanceSensor color_DistanceSensor;
+    private CRServo LED1;
     private GoBildaPinpointDriver pinpoint;
 
-    
+    int highLauncherSpeed = 2165;
+    int lowLauncherSpeed = 1700;
     int triangleFuncRunning = 0;
     double turnTablePos2 = 0;
     int launcherSpeed = 0;
     double speed = 0;
+
 
 
 
@@ -57,13 +62,15 @@ public class prematureTeleOp extends LinearOpMode {
     int RekickTrig = 0;
     int scoopTrig = 0;
     int triTrig = 0;
+    int LocalTrig = 0;
+    int ledTrig = 0;
 
-    double txMax = 15;
-    double txMin = 9;
+    double txMax = 14.700;
+    double txMin = 14.400;
     double tyMax = 13.5;
     double tyMin = 12;
-    double taMax = 2.35;
-    double taMin = 2.07;
+    double taMax = .88;
+    double taMin = .91;
 
     @Override
     public void runOpMode() {
@@ -87,6 +94,7 @@ public class prematureTeleOp extends LinearOpMode {
         distance = hardwareMap.get(DistanceSensor.class, "distance");
         color_DistanceSensor = hardwareMap.get(DistanceSensor.class, "color");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        LED1 = hardwareMap.get(CRServo.class, "Led1");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
 
@@ -107,11 +115,16 @@ public class prematureTeleOp extends LinearOpMode {
         rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         limelight.pipelineSwitch(0);
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start();
+        ledManager("Null");
 
         waitForStart();
         speed = 0.75;
@@ -127,6 +140,9 @@ public class prematureTeleOp extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
+                if (ledTrig == 0) {
+                    ledManager("Null");
+                }
                 telemetry.update();
                 pinpoint.update();
                 telemetry.addData("x", pinpoint.getEncoderX());
@@ -146,11 +162,12 @@ public class prematureTeleOp extends LinearOpMode {
                 launcherTiltControl();
                 //distanceSensorControl();
                 killSwitch();
-                localize(0.3, 50);
+                localize(0.3, 10);
                 //lift();
             }
         }
     }
+
 
     private void intakeControl() {
         if (gamepad1.left_trigger == 1) {
@@ -179,6 +196,7 @@ public class prematureTeleOp extends LinearOpMode {
             launchLiftLeft.setPower(gamepad2.right_stick_y * 0.35);
         } else if (0.1 <= gamepad2.right_stick_y && TopBump.isPressed()) {
             launchLiftRight.setPower(0);
+            launchLiftRight.setPower(0);
             launchLiftLeft.setPower(0);
             gamepad2.rumbleBlips(1);
         } else if (-0.1 >= gamepad2.right_stick_y && BottomBump.isPressed()) {
@@ -188,6 +206,12 @@ public class prematureTeleOp extends LinearOpMode {
         } else {
             launchLiftRight.setPower(0);
             launchLiftLeft.setPower(0);
+        }
+        if (BottomBump.isPressed() || TopBump.isPressed()) {
+            ledManager("Blue");
+            ledTrig = 1;
+        } else {
+            ledTrig = 0;
         }
     }
 
@@ -286,6 +310,8 @@ public class prematureTeleOp extends LinearOpMode {
                 launchMotorOnTriangle();
                 backDoor.setPosition(0);
                 telemetry.update();
+                ledManager("Alert");
+                ledTrig = 1;
             }
             if (triangleClock.seconds() >= 0.5 && triangleClock.seconds() <= 1.5) {
                 launchMotorOnTriangle();
@@ -304,6 +330,8 @@ public class prematureTeleOp extends LinearOpMode {
                 telemetry.update();
                 triangleFuncRunning = 0;
                 triTrig = 0;
+                ledManager("Null");
+                ledTrig = 0;
             }
 
         }
@@ -342,14 +370,14 @@ public class prematureTeleOp extends LinearOpMode {
             LauncherON = 0;
         }
         if (gamepad2.dpadLeftWasPressed()) {
-            launcherSpeed = (1700 * 28) / 60;
+            launcherSpeed = (lowLauncherSpeed * 28) / 60;
             gamepad2.rumbleBlips(1);
             if (1 == LauncherON) {
                 ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
                 ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
             }
         } else if (gamepad2.dpadRightWasReleased()) {
-            launcherSpeed = (2100 * 28) / 60;
+            launcherSpeed = (highLauncherSpeed * 28) / 60;
             gamepad2.rumbleBlips(2);
             if (1 == LauncherON) {
                 ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
@@ -363,12 +391,14 @@ public class prematureTeleOp extends LinearOpMode {
         ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
     }
     public void localize(double localizerMotorPower, int sleepTimeMilli) {
-        while (gamepad1.ps) {
+        if (gamepad1.ps) {
+            LocalTrig = 1;
             //boolean localizing = true;
+
             LLResult result = limelight.getLatestResult();
-            double tx;
+            double tx = 0;
             double ty;
-            double ta;
+            double ta = 0;
             if (result != null && result.isValid()) {
                 tx = result.getTx();
                 ty = result.getTy(); // How far up or down the target is (degrees)
@@ -377,42 +407,72 @@ public class prematureTeleOp extends LinearOpMode {
                 telemetry.addData("Target X", tx);
                 telemetry.addData("Target Y", ty);
                 telemetry.addData("Target Area", ta);
-
+                telemetry.update();
 
                 if (tx < txMin) {
                     // turn right
-                    turnRight(localizerMotorPower,sleepTimeMilli);
-                    telemetry.addData("localizing", 0);
-                    telemetry.update();
+                    leftBack.setPower(-localizerMotorPower);
+                    leftFront.setPower(-localizerMotorPower);
+                    rightBack.setPower(-localizerMotorPower);
+                    rightFront.setPower(-localizerMotorPower);
+                    sleep(sleepTimeMilli);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    ledManager("Clear");
                 } else if (tx > txMax) {
                     //turn left
-                    turnLeft(localizerMotorPower,sleepTimeMilli);
-                    telemetry.addData("localizing", 0);
-                    telemetry.update();
+                    leftBack.setPower(localizerMotorPower);
+                    leftFront.setPower(localizerMotorPower);
+                    rightBack.setPower(localizerMotorPower);
+                    rightFront.setPower(localizerMotorPower);
+                    sleep(sleepTimeMilli);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    ledManager("Clear");
                 } else if (ta > taMax) {
                     //move backward
-                    moveForward(localizerMotorPower,sleepTimeMilli);
-                    telemetry.addData("localizing", 0);
-                    telemetry.update();
+                    leftBack.setPower(localizerMotorPower);
+                    leftFront.setPower(localizerMotorPower);
+                    rightBack.setPower(-localizerMotorPower);
+                    rightFront.setPower(-localizerMotorPower);
+                    sleep(sleepTimeMilli);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    ledManager("Clear");
                 } else if (ta < taMin) {
                     //move Forward
-                    moveBackward(localizerMotorPower,sleepTimeMilli);
-                    telemetry.addData("localizing", 0);
-                    telemetry.update();
+                    leftBack.setPower(-localizerMotorPower);
+                    leftFront.setPower(-localizerMotorPower);
+                    rightBack.setPower(localizerMotorPower);
+                    rightFront.setPower(localizerMotorPower);
+                    sleep(sleepTimeMilli);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    ledManager("Clear");
                 } else {
                     telemetry.addData("done", 0);
-                    telemetry.update();
+                    ledManager("Good");
                 }
 
             } else {
                 telemetry.addData("Limelight", "No Targets");
-                telemetry.update();
-
+                ledManager("Error");
                 leftBack.setPower(0);
                 leftFront.setPower(0);
                 rightBack.setPower(0);
                 rightFront.setPower(0);
             }
+        } else if (LocalTrig == 1){
+            ledManager("Null");
+            LocalTrig = 0;
         }
     }
     public void strafeLeft(double Speed, int time) {
@@ -491,6 +551,31 @@ public class prematureTeleOp extends LinearOpMode {
             lift.setPower(-.7);
         } else {
             lift.setPower(0.0);
+        }
+    }
+    private void ledManager(String type){
+        if (type.equals("Clear")){
+            LED1.setPower(.5); //White
+        } else if (type.equals("Good")){
+            LED1.setPower(0); //Green
+        } else if (type.equals("Warn")){
+            LED1.setPower(-.25); //Yellow
+        } else if (type.equals("Alert")){
+            LED1.setPower(-.35); //Orange
+        } else if (type.equals("Error")){
+            LED1.setPower(-0.44); //red
+        } else if (type.equals("Null")){
+            LED1.setPower(-.6); //Blank
+        } else if (type.equals("Match Alert")){
+            LED1.setPower(0); //Purple
+        } else if (type.equals("Blue")){
+            LED1.setPower(0.216); //Blue
+        } else if (type.equals("Purple")){
+            LED1.setPower(0.415); //Purple
+        } else if (type.equals("Pink")){
+            LED1.setPower(0.275); //Pink
+        } else {
+            telemetry.addData("Led Manager Error", "Wrong Input");
         }
     }
 }

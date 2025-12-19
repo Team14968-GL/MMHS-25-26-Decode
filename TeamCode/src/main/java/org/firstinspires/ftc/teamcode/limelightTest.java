@@ -53,18 +53,17 @@ public class limelightTest extends LinearOpMode {
 
         waitForStart();
 
-        localize();
+
 
         while (opModeIsActive()) {
             telemetry.update();
-
-
+            localize();
 
         }
     }
     public void localize() {
         //boolean localizeing = true;
-        while (true) {
+
             LLResult result = limelight.getLatestResult();
             double tx = 0;
             double ty;
@@ -124,8 +123,7 @@ public class limelightTest extends LinearOpMode {
                     backRight.setPower(0);
                     frontRight.setPower(0);
                 } else {
-
-                    break;
+                    telemetry.addData("done", 0);
                 }
 
             } else {
@@ -136,95 +134,5 @@ public class limelightTest extends LinearOpMode {
                 backRight.setPower(0);
                 frontRight.setPower(0);
             }
-        }
-        int count = 0;
-        while (count <= 5000) {
-            LLResult result = limelight.getLatestResult();
-            double tx = 0;
-            double ty;
-            double ta = 0;
-            if (result != null && result.isValid()) {
-                tx = result.getTx();
-                ty = result.getTy(); // How far up or down the target is (degrees)
-                ta = result.getTa(); // How big the target looks (0%-100% of the image)
-
-                telemetry.addData("Target X", tx);
-                telemetry.addData("Target Y", ty);
-                telemetry.addData("Target Area", ta);
-                telemetry.update();
-
-                if (tx < txMin) {
-                    // turn right
-                    backLeft.setPower(-power);
-                    frontLeft.setPower(-power);
-                    backRight.setPower(power);
-                    frontRight.setPower(power);
-                    sleep(sleepTime);
-                    backLeft.setPower(0);
-                    frontLeft.setPower(0);
-                    backRight.setPower(0);
-                    frontRight.setPower(0);
-                    count = count + sleepTime;
-                } else if (tx > txMax) {
-                    //turn left
-                    backLeft.setPower(power);
-                    frontLeft.setPower(power);
-                    backRight.setPower(-power);
-                    frontRight.setPower(-power);
-                    sleep(sleepTime);
-                    backLeft.setPower(0);
-                    frontLeft.setPower(0);
-                    backRight.setPower(0);
-                    frontRight.setPower(0);
-                    count = count + sleepTime;
-                } else if (ta > taMax) {
-                    //move backward
-                    backLeft.setPower(power);
-                    frontLeft.setPower(power);
-                    backRight.setPower(power);
-                    frontRight.setPower(power);
-                    sleep(sleepTime);
-                    backLeft.setPower(0);
-                    frontLeft.setPower(0);
-                    backRight.setPower(0);
-                    frontRight.setPower(0);
-                    count = count + sleepTime;
-                } else if (ta < taMin) {
-                    //move Forward
-                    backLeft.setPower(-power);
-                    frontLeft.setPower(-power);
-                    backRight.setPower(-power);
-                    frontRight.setPower(-power);
-                    sleep(sleepTime);
-                    backLeft.setPower(0);
-                    frontLeft.setPower(0);
-                    backRight.setPower(0);
-                    frontRight.setPower(0);
-                    count = count + sleepTime;
-                } else {
-                    count++;
-
-                }
-
-            } else {
-                telemetry.addData("Limelight", "No Targets");
-
-                backLeft.setPower(0);
-                frontLeft.setPower(0);
-                backRight.setPower(0);
-                frontRight.setPower(0);
-            }
-
-
-
-        }
-        telemetry.addData("done", 0);
-
     }
-
-
-
-
 }
-
-

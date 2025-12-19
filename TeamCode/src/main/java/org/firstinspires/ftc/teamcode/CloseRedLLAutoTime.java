@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name = "CloseBlueLLAuto")
-public class CloseBlueLLAuto extends LinearOpMode {
+@Autonomous(name = "CloseRedLLAutoTime")
+public class CloseRedLLAutoTime extends LinearOpMode {
 
     Limelight3A limelight;
 
@@ -40,6 +40,9 @@ public class CloseBlueLLAuto extends LinearOpMode {
     private Servo scoop;
     private Servo goofyAhhhhFrontDoor;
     private Servo turnTableServo;
+    private GoBildaPinpointDriver pinpoint;
+
+
 
 
     double txMax = 15;
@@ -76,8 +79,8 @@ public class CloseBlueLLAuto extends LinearOpMode {
         turnTableServo = hardwareMap.get(Servo.class, "turnTableServo");
         goofyAhhhhFrontDoor = hardwareMap.get(Servo.class, "goofyAhhhhFrontDoor");
         scoop = hardwareMap.get(Servo.class, "scoop");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
@@ -91,6 +94,7 @@ public class CloseBlueLLAuto extends LinearOpMode {
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         limelight.pipelineSwitch(0);
+        pinpoint.initialize();
 
         LLResultTypes.FiducialResult fiducialResult = null;
         scoop.setPosition(0);
@@ -106,7 +110,7 @@ public class CloseBlueLLAuto extends LinearOpMode {
             xValue = pinpoint.getEncoderX();
             moveBackward(power,1000);
             sleep(500);
-            turnRight(power, 500);
+            turnLeft(power, 500);
 
             int count = 0;
             processTrig = true;
@@ -121,19 +125,19 @@ public class CloseBlueLLAuto extends LinearOpMode {
             telemetry.update();
 
             sleep(500);
-            turnLeft(power,500);
+            turnRight(power,500);
 
             sleep(500);
             localize();
             if (IDs.size() == 1) {
                 Motif = IDs.get(0) - 21;
             } else if (IDs.size() == 2) {
-                Motif = IDs.get(1) - 21;
+                Motif = IDs.get(0) - 21;
             } else {
                 Motif = 0;
             }
             launchMotif(Motif, launcherSpeed);
-            strafeRight(.6, 1000);
+            strafeLeft(.6, 1000);
             scoop.setPosition(0);
             backDoor.setPosition(0);
             turnTableServo.setPosition(0.5);
@@ -226,23 +230,27 @@ public class CloseBlueLLAuto extends LinearOpMode {
 
         return id;
     }
-    public void turnRight(double Speed, int time) {
-        backLeft.setPower(Speed);
-        frontLeft.setPower(Speed);
-        backRight.setPower(-Speed);
-        frontRight.setPower(-Speed);
-        sleep(time);
-        backLeft.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        frontRight.setPower(0);
-    }
     public void strafeLeft(double Speed, int time) {
         backLeft.setPower(Speed);
         frontLeft.setPower(-Speed);
         backRight.setPower(-Speed);
         frontRight.setPower(Speed);
         sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+    public void strafeLeftTics(double Speed, int tic) {
+        pinpoint.update();
+        int xvalue = pinpoint.getEncoderY();
+        while (xvalue - pinpoint.getEncoderY() <= tic) {
+            pinpoint.update();
+            backLeft.setPower(Speed);
+            frontLeft.setPower(-Speed);
+            backRight.setPower(-Speed);
+            frontRight.setPower(Speed);
+        }
         backLeft.setPower(0);
         frontLeft.setPower(0);
         backRight.setPower(0);
@@ -259,6 +267,47 @@ public class CloseBlueLLAuto extends LinearOpMode {
         backRight.setPower(0);
         frontRight.setPower(0);
     }
+    public void strafeRightTics(double Speed, int tic) {
+        pinpoint.update();
+        int xvalue = pinpoint.getEncoderY();
+        while (xvalue - pinpoint.getEncoderY() <= tic) {
+            pinpoint.update();
+            backLeft.setPower(-Speed);
+            frontLeft.setPower(Speed);
+            backRight.setPower(Speed);
+            frontRight.setPower(-Speed);
+        }
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+    public void turnRight(double Speed, int time) {
+        backLeft.setPower(Speed);
+        frontLeft.setPower(Speed);
+        backRight.setPower(-Speed);
+        frontRight.setPower(-Speed);
+        sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+    public void turnRightTics(double Speed, int tic) {
+        pinpoint.update();
+        int xvalue = pinpoint.getEncoderX();
+        while (xvalue - pinpoint.getEncoderX() <= tic) {
+            pinpoint.update();
+            backLeft.setPower(Speed);
+            frontLeft.setPower(Speed);
+            backRight.setPower(-Speed);
+            frontRight.setPower(-Speed);
+        }
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
     public void turnLeft(double Speed, int time) {
         backLeft.setPower(-Speed);
         frontLeft.setPower(-Speed);
@@ -270,6 +319,22 @@ public class CloseBlueLLAuto extends LinearOpMode {
         backRight.setPower(0);
         frontRight.setPower(0);
     }
+    public void turnLeftTics(double Speed, int tic) {
+        pinpoint.update();
+        int xvalue = pinpoint.getEncoderX();
+        while (xvalue - pinpoint.getEncoderX() <= tic) {
+            pinpoint.update();
+            backLeft.setPower(-Speed);
+            frontLeft.setPower(-Speed);
+            backRight.setPower(Speed);
+            frontRight.setPower(Speed);
+        }
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+
     public void moveBackward(double Speed, int time) {
         backLeft.setPower(Speed);
         frontLeft.setPower(Speed);
@@ -281,12 +346,42 @@ public class CloseBlueLLAuto extends LinearOpMode {
         backRight.setPower(0);
         frontRight.setPower(0);
     }
+    public void moveBackwardTics(double Speed, int tic) {
+        pinpoint.update();
+        int xvalue = pinpoint.getEncoderX();
+        while (xvalue - pinpoint.getEncoderX() <= tic) {
+            pinpoint.update();
+            backLeft.setPower(Speed);
+            frontLeft.setPower(Speed);
+            backRight.setPower(Speed);
+            frontRight.setPower(Speed);
+        }
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
     public void moveForward(double Speed, int time) {
         backLeft.setPower(-Speed);
         frontLeft.setPower(-Speed);
         backRight.setPower(-Speed);
         frontRight.setPower(-Speed);
         sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+    public void moveForwardTics(double Speed, int tic) {
+        pinpoint.update();
+        int xvalue = pinpoint.getEncoderX();
+        while (xvalue - pinpoint.getEncoderX() <= tic) {
+            pinpoint.update();
+            backLeft.setPower(-Speed);
+            frontLeft.setPower(-Speed);
+            backRight.setPower(-Speed);
+            frontRight.setPower(-Speed);
+        }
         backLeft.setPower(0);
         frontLeft.setPower(0);
         backRight.setPower(0);
