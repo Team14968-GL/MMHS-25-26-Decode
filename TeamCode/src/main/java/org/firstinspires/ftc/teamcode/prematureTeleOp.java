@@ -1,13 +1,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import androidx.annotation.NonNull;
-
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -64,6 +63,7 @@ public class prematureTeleOp extends LinearOpMode {
     int triTrig = 0;
     int LocalTrig = 0;
     int ledTrig = 0;
+    int bumpTrig = 0;
 
     double txMax = 14.700;
     double txMin = 14.400;
@@ -140,9 +140,12 @@ public class prematureTeleOp extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
+                /*
                 if (ledTrig == 0) {
                     ledManager("Null");
                 }
+
+                 */
                 telemetry.update();
                 pinpoint.update();
                 telemetry.addData("x", pinpoint.getEncoderX());
@@ -163,7 +166,7 @@ public class prematureTeleOp extends LinearOpMode {
                 //distanceSensorControl();
                 killSwitch();
                 localize(0.3, 10);
-                //lift();
+                lift();
             }
         }
     }
@@ -188,6 +191,7 @@ public class prematureTeleOp extends LinearOpMode {
     }
 
     private void launcherTiltControl() {
+
         if (-0.1 >= gamepad2.right_stick_y && !BottomBump.isPressed()) {
             launchLiftRight.setPower(gamepad2.right_stick_y * 0.35);
             launchLiftLeft.setPower(gamepad2.right_stick_y * 0.35);
@@ -207,11 +211,15 @@ public class prematureTeleOp extends LinearOpMode {
             launchLiftRight.setPower(0);
             launchLiftLeft.setPower(0);
         }
-        if (BottomBump.isPressed() || TopBump.isPressed()) {
+        if (TopBump.isPressed()) {
             ledManager("Blue");
-            ledTrig = 1;
-        } else {
-            ledTrig = 0;
+            bumpTrig = 1;
+        } else if  (BottomBump.isPressed()) {
+            ledManager("Blue");
+            bumpTrig = 1;
+        }else if (bumpTrig == 1 && !(BottomBump.isPressed() || TopBump.isPressed())){
+            ledManager("Null");
+            bumpTrig = 0;
         }
     }
 
@@ -548,16 +556,17 @@ public class prematureTeleOp extends LinearOpMode {
         rightFront.setPower(0);
     }
     private void lift(){
-        if (gamepad1.dpad_up){
-            lift.setPower(.7);
+        lift.setPower(gamepad2.left_stick_y);
+        /*
+        if (!liftLimit.isPressed()) {
+            lift.setPower(gamepad2.right_stick_y);
         } else {
-            lift.setPower(0.0);
+            lift.setPower(0);
+            ledManager("Good");
         }
-        if (gamepad1.dpad_down) {
-            lift.setPower(-.7);
-        } else {
-            lift.setPower(0.0);
-        }
+
+         */
+
     }
     private void ledManager(String type){
         switch (type) {
