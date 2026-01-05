@@ -53,7 +53,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
     double taMax = 2.35;
     double taMin = 2.07;
 
-    double power = .5;
+    double power = .7;
     double localPower = .3;
     double launcherSpeed = (1750 * 28) / 60;
 
@@ -116,7 +116,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
 
         if (opModeIsActive()) {
             xValue = pinpoint.getEncoderX();
-            moveBackwardTics(power, ticPerIn*55);
+            moveBackwardTics(power, ticPerIn*45);
             sleep(500);
             turnRightTics(power, 60);
 
@@ -155,35 +155,43 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
     }
     private void launchMotif(int motiff, double launcherSpeedd) {
         launchMotorOn(launcherSpeedd);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(motifArray.get(motiff*3));
-        sleep(500);
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+1));
         sleep(500);
+        scoop.setPosition(0);
+                /*
+        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
+            sleep(250);
+        }
+                */
+
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+2));
         sleep(500);
+        scoop.setPosition(0);
+        /*
+        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
+            sleep(250);
+        }
+        */
+
+        sleep(500);
         launch(launcherSpeedd);
+        sleep(500);
+        scoop.setPosition(0);
         launchMotorOff();
-
-
 
     }
     private void launch(double launcherSpeedd) {
         backDoor.setPosition(0);
-        sleep(500);
+        sleep(250);
         goofyAhhhhFrontDoor.setPosition(0);
-        sleep(1000);
+        sleep(1250);
+        backDoor.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(500);
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(1000);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(500);
         scoop.setPosition(0.5);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(1000);
-        scoop.setPosition(0);
     }
     private void launchMotorOn(double launcherSpeedd) {
         ((DcMotorEx) leftLauncher).setVelocity(launcherSpeedd);

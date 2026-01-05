@@ -162,13 +162,7 @@ public class CloseBlueLLAutoTime extends LinearOpMode {
         goofyAhhhhFrontDoor.setPosition(0);
         sleep(1000);
         goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(500);
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(1000);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(500);
         scoop.setPosition(0.5);
-        goofyAhhhhFrontDoor.setPosition(0.5);
         sleep(1000);
         scoop.setPosition(0);
     }

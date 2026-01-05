@@ -13,14 +13,17 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name = "CloseRedLLAutoTime")
-public class CloseRedLLAutoTime extends LinearOpMode {
+@Autonomous(name = "RedLLAutoTest")
+public class RedLLAutoTest extends LinearOpMode {
 
     Limelight3A limelight;
 
@@ -40,6 +43,10 @@ public class CloseRedLLAutoTime extends LinearOpMode {
     private Servo scoop;
     private Servo goofyAhhhhFrontDoor;
     private Servo turnTableServo;
+    private CRServo launchLiftRight;
+    private CRServo launchLiftLeft;
+    private TouchSensor TopBump;
+    private TouchSensor BottomBump;
     private GoBildaPinpointDriver pinpoint;
 
 
@@ -52,7 +59,7 @@ public class CloseRedLLAutoTime extends LinearOpMode {
     double taMax = 2.35;
     double taMin = 2.07;
 
-    double power = .5;
+    double power = .7;
     double localPower = .3;
     double launcherSpeed = (1750 * 28) / 60;
 
@@ -60,6 +67,7 @@ public class CloseRedLLAutoTime extends LinearOpMode {
     boolean processTrig = true;
 
     double xValue = 0;
+    double ticPerIn = 254.7;
 
 
     int Motif;
@@ -79,6 +87,10 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         turnTableServo = hardwareMap.get(Servo.class, "turnTableServo");
         goofyAhhhhFrontDoor = hardwareMap.get(Servo.class, "goofyAhhhhFrontDoor");
         scoop = hardwareMap.get(Servo.class, "scoop");
+        TopBump = hardwareMap.get(TouchSensor.class, "TopBump");
+        BottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
+        launchLiftRight = hardwareMap.get(CRServo.class, "launchLiftRight");
+        launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
 
@@ -88,6 +100,12 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
+        launchLiftRight.setDirection(CRServo.Direction.REVERSE);
+        launchLiftLeft.setDirection(CRServo.Direction.FORWARD);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -98,63 +116,50 @@ public class CloseRedLLAutoTime extends LinearOpMode {
 
         LLResultTypes.FiducialResult fiducialResult = null;
         scoop.setPosition(0);
-        backDoor.setPosition(1);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
+       //localize();
+
 
 
 
         waitForStart();
 
         if (opModeIsActive()) {
-            xValue = pinpoint.getEncoderX();
-            moveBackward(power,1000);
-            sleep(500);
-            turnLeft(power, 500);
 
-            int count = 0;
-            processTrig = true;
-            while (count <= 1000 && processTrig) {
-                processLimeLightResults();
-                count++;
-                sleep(1);
-            }
+            launchMotif(0, launcherSpeed);
 
-            telemetry.addData("IDs size", IDs.size());
-            telemetry.addData("-",IDs);
-            telemetry.update();
-
-            sleep(500);
-            turnRight(power,500);
-
-            sleep(500);
-            localize();
-            if (IDs.size() == 1) {
-                Motif = IDs.get(0) - 21;
-            } else if (IDs.size() == 2) {
-                Motif = IDs.get(0) - 21;
-            } else {
-                Motif = 0;
-            }
-            launchMotif(Motif, launcherSpeed);
-            strafeLeft(.6, 1000);
-            scoop.setPosition(0);
-            backDoor.setPosition(0);
-            turnTableServo.setPosition(0.5);
-            goofyAhhhhFrontDoor.setPosition(0.5);
         }
     }
     private void launchMotif(int motiff, double launcherSpeedd) {
         launchMotorOn(launcherSpeedd);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(motifArray.get(motiff*3));
-        sleep(500);
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+1));
         sleep(500);
+        scoop.setPosition(0);
+                /*
+        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
+            sleep(250);
+        }
+                */
+
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+2));
         sleep(500);
+        scoop.setPosition(0);
+        /*
+        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
+            sleep(250);
+        }
+        */
+
+        sleep(500);
         launch(launcherSpeedd);
+        sleep(500);
+        scoop.setPosition(0);
         launchMotorOff();
 
 
@@ -162,13 +167,12 @@ public class CloseRedLLAutoTime extends LinearOpMode {
     }
     private void launch(double launcherSpeedd) {
         backDoor.setPosition(0);
-        sleep(500);
+        sleep(250);
         goofyAhhhhFrontDoor.setPosition(0);
-        sleep(1000);
+        sleep(1250);
+        backDoor.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
         scoop.setPosition(0.5);
-        sleep(1000);
-        scoop.setPosition(0);
     }
     private void launchMotorOn(double launcherSpeedd) {
         ((DcMotorEx) leftLauncher).setVelocity(launcherSpeedd);
@@ -224,47 +228,29 @@ public class CloseRedLLAutoTime extends LinearOpMode {
 
         return id;
     }
-    public void strafeLeft(double Speed, int time) {
-        backLeft.setPower(Speed);
-        frontLeft.setPower(-Speed);
-        backRight.setPower(-Speed);
-        frontRight.setPower(Speed);
-        sleep(time);
-        backLeft.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        frontRight.setPower(0);
-    }
-    public void strafeLeftTics(double Speed, int tic) {
+    public void strafeLeftTics(double Speed, double tic) {
         pinpoint.update();
-        int xvalue = pinpoint.getEncoderY();
-        while (xvalue - pinpoint.getEncoderY() <= tic) {
+        int yvalue = pinpoint.getEncoderY();
+        while (yvalue - pinpoint.getEncoderY() <= tic) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(-Speed);
             backRight.setPower(-Speed);
             frontRight.setPower(Speed);
+            telemetry.addData("yencoder", pinpoint.getEncoderY());
+            telemetry.addData("yvalue", yvalue);
+            telemetry.addData("y", pinpoint.getEncoderY()-yvalue);
+            telemetry.update();
         }
         backLeft.setPower(0);
         frontLeft.setPower(0);
         backRight.setPower(0);
         frontRight.setPower(0);
     }
-    public void strafeRight(double Speed, int time) {
-        backLeft.setPower(-Speed);
-        frontLeft.setPower(Speed);
-        backRight.setPower(Speed);
-        frontRight.setPower(-Speed);
-        sleep(time);
-        backLeft.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        frontRight.setPower(0);
-    }
-    public void strafeRightTics(double Speed, int tic) {
+    public void strafeRightTics(double Speed, double tic) {
         pinpoint.update();
-        int xvalue = pinpoint.getEncoderY();
-        while (xvalue - pinpoint.getEncoderY() <= tic) {
+        int yvalue = pinpoint.getEncoderY();
+        while (pinpoint.getEncoderY() - yvalue <= tic) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(Speed);
@@ -276,21 +262,10 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         backRight.setPower(0);
         frontRight.setPower(0);
     }
-    public void turnRight(double Speed, int time) {
-        backLeft.setPower(Speed);
-        frontLeft.setPower(Speed);
-        backRight.setPower(-Speed);
-        frontRight.setPower(-Speed);
-        sleep(time);
-        backLeft.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        frontRight.setPower(0);
-    }
-    public void turnRightTics(double Speed, int tic) {
+    public void turnRightTics(double Speed, double deg) {
         pinpoint.update();
-        int xvalue = pinpoint.getEncoderX();
-        while (xvalue - pinpoint.getEncoderX() <= tic) {
+        double degvalue = pinpoint.getHeading(AngleUnit.DEGREES);
+        while (degvalue - pinpoint.getHeading(AngleUnit.DEGREES) <= deg) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(Speed);
@@ -302,21 +277,10 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         backRight.setPower(0);
         frontRight.setPower(0);
     }
-    public void turnLeft(double Speed, int time) {
-        backLeft.setPower(-Speed);
-        frontLeft.setPower(-Speed);
-        backRight.setPower(Speed);
-        frontRight.setPower(Speed);
-        sleep(time);
-        backLeft.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        frontRight.setPower(0);
-    }
-    public void turnLeftTics(double Speed, int tic) {
+    public void turnLeftTics(double Speed, double deg) {
         pinpoint.update();
-        int xvalue = pinpoint.getEncoderX();
-        while (xvalue - pinpoint.getEncoderX() <= tic) {
+        double degvalue = pinpoint.getHeading(AngleUnit.DEGREES);
+        while (pinpoint.getHeading(AngleUnit.DEGREES) - degvalue <= deg) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(-Speed);
@@ -328,45 +292,25 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         backRight.setPower(0);
         frontRight.setPower(0);
     }
-
-    public void moveBackward(double Speed, int time) {
-        backLeft.setPower(Speed);
-        frontLeft.setPower(Speed);
-        backRight.setPower(Speed);
-        frontRight.setPower(Speed);
-        sleep(time);
-        backLeft.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        frontRight.setPower(0);
-    }
-    public void moveBackwardTics(double Speed, int tic) {
+    public void moveBackwardTics(double Speed, double tic) {
         pinpoint.update();
-        int xvalue = pinpoint.getEncoderX();
-        while (xvalue - pinpoint.getEncoderX() <= tic) {
+        int xvalue = pinpoint.getEncoderX(); // \/
+        while (pinpoint.getEncoderX() - xvalue <= tic) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(Speed);
             backRight.setPower(Speed);
             frontRight.setPower(Speed);
+            telemetry.addData("xencoder", pinpoint.getEncoderX());
+            telemetry.addData("xvalue", xvalue);
+            telemetry.update();
         }
         backLeft.setPower(0);
         frontLeft.setPower(0);
         backRight.setPower(0);
         frontRight.setPower(0);
     }
-    public void moveForward(double Speed, int time) {
-        backLeft.setPower(-Speed);
-        frontLeft.setPower(-Speed);
-        backRight.setPower(-Speed);
-        frontRight.setPower(-Speed);
-        sleep(time);
-        backLeft.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        frontRight.setPower(0);
-    }
-    public void moveForwardTics(double Speed, int tic) {
+    public void moveForwardTics(double Speed, double tic) {
         pinpoint.update();
         int xvalue = pinpoint.getEncoderX();
         while (xvalue - pinpoint.getEncoderX() <= tic) {
