@@ -31,7 +31,6 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
     //.5=green | 1=p | 0=p
     public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
     //public double[] motifArray = {.5, 0, 1, 1, .5, 0, 1, 0, .5};
-    boolean telem = false;
     public  DcMotor backLeft;
     public  DcMotor backRight;
     public  DcMotor frontLeft;
@@ -119,7 +118,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
             xValue = pinpoint.getEncoderX();
             moveBackwardTics(power, ticPerIn*55);
             sleep(500);
-            turnRightTics(power, 70);
+            turnRightTics(power, 60);
 
             int count = 0;
             processTrig = true;
@@ -134,7 +133,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
             telemetry.update();
 
             sleep(500);
-            turnLeftTics(power,70);
+            turnLeftTics(power,60);
 
             sleep(500);
             localize();
@@ -146,7 +145,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
                 Motif = 0;
             }
             launchMotif(Motif, launcherSpeed);
-            turnLeftTics(power,45);
+            turnLeftTics(power,27.5);
             moveForwardTics(power, ticPerIn*36);
             scoop.setPosition(0);
             backDoor.setPosition(0);
@@ -242,16 +241,16 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
     }
     public void strafeLeftTics(double Speed, double tic) {
         pinpoint.update();
-        int yvalue = pinpoint.getEncoderY();
-        while (yvalue - pinpoint.getEncoderY() <= tic) {
+        int yValue = pinpoint.getEncoderY();
+        while (yValue - pinpoint.getEncoderY() <= tic) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(-Speed);
             backRight.setPower(-Speed);
             frontRight.setPower(Speed);
-            telemetry.addData("yencoder", pinpoint.getEncoderY());
-            telemetry.addData("yvalue", yvalue);
-            telemetry.addData("y", pinpoint.getEncoderY()-yvalue);
+            telemetry.addData("yEncoder", pinpoint.getEncoderY());
+            telemetry.addData("yValue", yValue);
+            telemetry.addData("y", pinpoint.getEncoderY()-yValue);
             telemetry.update();
         }
         backLeft.setPower(0);
@@ -261,8 +260,8 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
     }
     public void strafeRightTics(double Speed, double tic) {
         pinpoint.update();
-        int yvalue = pinpoint.getEncoderY();
-        while (pinpoint.getEncoderY() - yvalue <= tic) {
+        int yValue = pinpoint.getEncoderY();
+        while (pinpoint.getEncoderY() - yValue <= tic) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(Speed);
@@ -345,7 +344,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
             double ty;
             double ta;
             if (result != null && result.isValid()) {
-                tx = result.getTx();
+                tx = result.getTx(); // How far left or right the target is (degrees)
                 ty = result.getTy(); // How far up or down the target is (degrees)
                 ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
@@ -353,8 +352,9 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
                 telemetry.addData("Target Y", ty);
                 telemetry.addData("Target Area", ta);
                 telemetry.update();
-
-                if (tx < txMin) {
+                if (!opModeIsActive()) {
+                    break;
+                } else if (tx < txMin) {
                     // turn right
                     backLeft.setPower(-localPower);
                     frontLeft.setPower(-localPower);

@@ -128,7 +128,7 @@ public class CloseRedLLAutoOdometry extends LinearOpMode {
             xValue = pinpoint.getEncoderX();
             moveBackwardTics(power, ticPerIn*55);
             sleep(500);
-            turnLeftTics(power, 70);
+            turnLeftTics(power, 60);
 
             int count = 0;
             processTrig = true;
@@ -143,7 +143,7 @@ public class CloseRedLLAutoOdometry extends LinearOpMode {
             telemetry.update();
 
             sleep(500);
-            turnRightTics(power,70);
+            turnRightTics(power,60);
 
             sleep(500);
             localize();
@@ -155,7 +155,7 @@ public class CloseRedLLAutoOdometry extends LinearOpMode {
                 Motif = 0;
             }
             launchMotif(Motif, launcherSpeed);
-            turnRightTics(power,45);
+            turnRightTics(power,27.5);
             moveForwardTics(power, ticPerIn*36);
             scoop.setPosition(0);
             backDoor.setPosition(0);

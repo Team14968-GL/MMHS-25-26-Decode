@@ -50,6 +50,7 @@ public class prematureTeleOp extends LinearOpMode {
     int triangleFuncRunning = 0;
     double turnTablePos2 = 0;
     int launcherSpeed = 0;
+    int LauncherON = 0;
     double speed = 0;
 
 
@@ -140,12 +141,6 @@ public class prematureTeleOp extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                /*
-                if (ledTrig == 0) {
-                    ledManager("Null");
-                }
-
-                 */
                 telemetry.update();
                 pinpoint.update();
                 telemetry.addData("x", pinpoint.getEncoderX());
@@ -211,14 +206,17 @@ public class prematureTeleOp extends LinearOpMode {
             launchLiftRight.setPower(0);
             launchLiftLeft.setPower(0);
         }
-        if (TopBump.isPressed()) {
+        if (TopBump.isPressed() & gamepad2.right_stick_y != 0) {
             ledManager("Blue");
+            ledTrig = 1;
             bumpTrig = 1;
-        } else if  (BottomBump.isPressed()) {
+        } else if  (BottomBump.isPressed() & gamepad2.right_stick_y != 0) {
             ledManager("Blue");
+            ledTrig = 1;
             bumpTrig = 1;
         }else if (bumpTrig == 1 && !(BottomBump.isPressed() || TopBump.isPressed())){
             ledManager("Null");
+            ledTrig = 0;
             bumpTrig = 0;
         }
     }
@@ -243,7 +241,7 @@ public class prematureTeleOp extends LinearOpMode {
 
     private void distanceSensorControl() {
         if (distance.getDistance(DistanceUnit.CM) <= 0) {
-            opModeIsActive(); //this is a useless function
+            opModeIsActive(); //this is a placeholder function
         }
         telemetry.addData("Distance", color_DistanceSensor.getDistance(DistanceUnit.CM));
     }
@@ -366,8 +364,6 @@ public class prematureTeleOp extends LinearOpMode {
     }
 
     private void controlLauncher() {
-        int LauncherON = 0;
-
         if (gamepad2.left_trigger == 1) {
             ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
             ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
