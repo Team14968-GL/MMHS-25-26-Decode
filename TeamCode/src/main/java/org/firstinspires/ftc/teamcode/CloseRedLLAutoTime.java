@@ -67,8 +67,8 @@ public class CloseRedLLAutoTime extends LinearOpMode {
     @Override
     public void runOpMode() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
-        limelight.start(); // This tells Limelight to start looking!
+        limelight.setPollRateHz(100);
+        limelight.start();
         backLeft = hardwareMap.get(DcMotor.class, "leftBack");
         backRight = hardwareMap.get(DcMotor.class, "rightBack");
         frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
@@ -186,12 +186,12 @@ public class CloseRedLLAutoTime extends LinearOpMode {
 
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {
-            // Get the list of ALL detected fiducials (AprilTags)
+            //gets the list of detected AprilTags
             List<LLResultTypes.FiducialResult> fiducialList = result.getFiducialResults();
 
-            tx = result.getTx();
-            ty = result.getTy(); // How far up or down the target is (degrees)
-            ta = result.getTa(); // How big the target looks (0%-100% of the image)
+            tx = result.getTx(); //degrees from y-axis
+            ty = result.getTy(); //degrees from x-axis
+            ta = result.getTa(); //% of image that the tag covers
 
             telemetry.addData("Target X", tx);
             telemetry.addData("Target Y", ty);
@@ -202,7 +202,7 @@ public class CloseRedLLAutoTime extends LinearOpMode {
                 telemetry.addData("Detections Found", fiducialList.size());
                 telemetry.update();
 
-                // Iterate through each detected tag
+                //iterates through each detected tag
                 for (LLResultTypes.FiducialResult fiducial : fiducialList) {
                     id = fiducial.getFiducialId();
                     IDs.add(id);
@@ -344,11 +344,11 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         pinpoint.update();
         int xvalue = pinpoint.getEncoderX();
         while (xvalue - pinpoint.getEncoderX() <= tic) {
-            pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(Speed);
             backRight.setPower(Speed);
             frontRight.setPower(Speed);
+            pinpoint.update();
         }
         backLeft.setPower(0);
         frontLeft.setPower(0);
@@ -370,11 +370,11 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         pinpoint.update();
         int xvalue = pinpoint.getEncoderX();
         while (xvalue - pinpoint.getEncoderX() <= tic) {
-            pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(-Speed);
             backRight.setPower(-Speed);
             frontRight.setPower(-Speed);
+            pinpoint.update();
         }
         backLeft.setPower(0);
         frontLeft.setPower(0);

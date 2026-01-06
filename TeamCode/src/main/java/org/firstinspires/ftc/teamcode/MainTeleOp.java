@@ -2,6 +2,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -19,10 +20,20 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name = "prematureTeleOp")
-public class prematureTeleOp extends LinearOpMode {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+@TeleOp(name = "Main TeleOp")
+public class MainTeleOp extends LinearOpMode {
 
     Limelight3A limelight;
+
+    public ArrayList<Integer> IDs = new ArrayList<>();
+    //.5=green | 1=p | 0=p
+    public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
+
+    public int id;
 
     private DcMotor intakeMotor;
     private Servo goofyAhhhhFrontDoor;
@@ -51,6 +62,7 @@ public class prematureTeleOp extends LinearOpMode {
     double turnTablePos2 = 0;
     int launcherSpeed = 0;
     int LauncherON = 0;
+    int motiff = 1;
     double speed = 0;
 
 
@@ -59,12 +71,19 @@ public class prematureTeleOp extends LinearOpMode {
     ElapsedTime triangleClock = new ElapsedTime();
     ElapsedTime ReKickClock = new ElapsedTime();
     ElapsedTime ScoopClock = new ElapsedTime();
+    ElapsedTime LaunchClock = new ElapsedTime();
+    ElapsedTime LaunchMotiffClock = new ElapsedTime();
+
+    int LaunchMotiffTrig = 0;
+    int LaunchTrig = 0;
     int RekickTrig = 0;
     int scoopTrig = 0;
     int triTrig = 0;
     int LocalTrig = 0;
     int ledTrig = 0;
     int bumpTrig = 0;
+    int motifTrig = 1;
+    boolean processTrig = true;
 
     double txMax = 14.700;
     double txMin = 14.400;
@@ -112,8 +131,8 @@ public class prematureTeleOp extends LinearOpMode {
         launchLiftLeft.setDirection(CRServo.Direction.FORWARD);
         leftLauncher.setPower(0);
         rightLauncher.setPower(0);
-        leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -162,8 +181,36 @@ public class prematureTeleOp extends LinearOpMode {
                 killSwitch();
                 localize(0.3, 10);
                 lift();
+                timelaunchMotif(motiff, launcherSpeed);
+
+
+                /*
+                if (motifTrig == 1) {
+                    processLimeLightResults();
+                    checkID();
+                }
+
+                 */
             }
         }
+    }
+    private void checkID() {
+        for (int idd : IDs) {
+            if (idd == 21){
+                motiff = 0;
+                gamepad1.rumbleBlips(2);
+                motifTrig = 0;
+            } else if (idd == 22) {
+                motiff = 1;
+                gamepad1.rumbleBlips(2);
+                motifTrig = 0;
+            } else if (idd == 23) {
+                motiff = 2;
+                gamepad1.rumbleBlips(2);
+                motifTrig = 0;
+            }
+        }
+
     }
 
 
@@ -610,5 +657,143 @@ public class prematureTeleOp extends LinearOpMode {
                 telemetry.addData("Led Manager Error", "Wrong or Invalid Input");
                 break;
         }
+    }
+
+    private void timelaunchMotif(int motiff, double launcherSpeedd) {
+
+        if (gamepad2.crossWasReleased()) {
+            LaunchMotiffClock.reset();
+            telemetry.addData("Elapsed Time", LaunchMotiffClock.seconds());
+            LaunchMotiffTrig = 1;
+            telemetry.update();
+        }
+        if (LaunchMotiffTrig == 1) {
+            if (LaunchMotiffClock.seconds() >= 0 && LaunchMotiffClock.seconds() <= 0.25) {
+                ledManager("Alert");
+                backDoor.setPosition(0.5);
+                turnTableServo.setPosition(motifArray.get(motiff*3));
+                telemetry.update();
+            }
+            if (LaunchMotiffClock.seconds() >= 0.25 && LaunchMotiffClock.seconds() <= 0.5) {
+                launchMotorOn(launcherSpeedd);
+                backDoor.setPosition(0);
+                telemetry.update();
+            }
+            if (LaunchMotiffClock.seconds() >= 0.5 && LaunchMotiffClock.seconds() <= 1.75) {
+                goofyAhhhhFrontDoor.setPosition(0);
+                telemetry.update();
+
+            }
+            if (LaunchMotiffClock.seconds() >= 1.75 && LaunchMotiffClock.seconds() <= 2.25) {
+                backDoor.setPosition(0.5);
+                goofyAhhhhFrontDoor.setPosition(0.5);
+                scoop.setPosition(0.5);
+
+                turnTableServo.setPosition(motifArray.get((motiff*3)+1));
+                telemetry.update();
+            }
+
+
+            if (LaunchMotiffClock.seconds() >= 2.25 && LaunchMotiffClock.seconds() <= 2.5) {
+                scoop.setPosition(0);
+                backDoor.setPosition(0);
+                telemetry.update();
+            }
+            if (LaunchMotiffClock.seconds() >= 2.5 && LaunchMotiffClock.seconds() <= 3.75) {
+                goofyAhhhhFrontDoor.setPosition(0);
+                telemetry.update();
+
+            }
+            if (LaunchMotiffClock.seconds() >= 3.75 && LaunchMotiffClock.seconds() <= 4.25) {
+                backDoor.setPosition(0.5);
+                goofyAhhhhFrontDoor.setPosition(0.5);
+                scoop.setPosition(0.5);
+
+                turnTableServo.setPosition(motifArray.get((motiff*3)+2));
+                telemetry.update();
+            }
+
+
+            if (LaunchMotiffClock.seconds() >= 4.25 && LaunchMotiffClock.seconds() <= 4.5) {
+                scoop.setPosition(0);
+                backDoor.setPosition(0);
+                telemetry.update();
+            }
+            if (LaunchMotiffClock.seconds() >= 4.5 && LaunchMotiffClock.seconds() <= 5.75) {
+                goofyAhhhhFrontDoor.setPosition(0);
+                telemetry.update();
+
+            }
+            if (LaunchMotiffClock.seconds() >= 5.75 && LaunchMotiffClock.seconds() <= 6.25) {
+                backDoor.setPosition(0.5);
+                goofyAhhhhFrontDoor.setPosition(0.5);
+                scoop.setPosition(0.5);
+
+                telemetry.update();
+            }
+            if (LaunchMotiffClock.seconds() >= 6.25 && LaunchMotiffClock.seconds() <= 6.75) {
+                scoop.setPosition(0);
+                launchMotorOff();
+                telemetry.update();
+                ledManager("Null");
+                LaunchMotiffTrig = 0;
+            }
+        }
+    }
+
+
+    private int processLimeLightResults() {
+        double tx;
+        double ty;
+        double ta;
+
+        LLResult result = limelight.getLatestResult();
+        if (result != null && result.isValid()) {
+            // Get the list of ALL detected fiducials (AprilTags)
+            List<LLResultTypes.FiducialResult> fiducialList = result.getFiducialResults();
+
+            tx = result.getTx();
+            ty = result.getTy(); // How far up or down the target is (degrees)
+            ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+            telemetry.addData("Target X", tx);
+            telemetry.addData("Target Y", ty);
+            telemetry.addData("Target Area", ta);
+            telemetry.update();
+
+            if (!fiducialList.isEmpty()) {
+                telemetry.addData("Detections Found", fiducialList.size());
+                telemetry.update();
+
+                // Iterate through each detected tag
+                for (LLResultTypes.FiducialResult fiducial : fiducialList) {
+                    id = fiducial.getFiducialId();
+                    IDs.add(id);
+                    telemetry.addData("Tag ID", id);
+                    telemetry.update();
+                }
+                processTrig = false;
+            } else {
+                telemetry.addData("Detections Found", "None");
+                telemetry.update();
+            }
+        } else {
+            telemetry.addData("Limelight Data", "Invalid or Stale");
+            assert result != null;
+            telemetry.addData("Staleness", result.getStaleness());
+            telemetry.update();
+        }
+        telemetry.update();
+
+        return id;
+    }
+
+    private void launchMotorOn(double launcherSpeedd) {
+        ((DcMotorEx) leftLauncher).setVelocity(launcherSpeedd);
+        ((DcMotorEx) rightLauncher).setVelocity(launcherSpeedd);
+    }
+    private void launchMotorOff() {
+        ((DcMotorEx) leftLauncher).setVelocity(0);
+        ((DcMotorEx) rightLauncher).setVelocity(0);
     }
 }
