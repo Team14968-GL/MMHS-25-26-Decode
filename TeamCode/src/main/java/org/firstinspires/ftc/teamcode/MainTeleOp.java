@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -52,7 +51,7 @@ public class MainTeleOp extends LinearOpMode {
     private TouchSensor TopBump;
     private TouchSensor BottomBump;
     private DistanceSensor distance;
-    private DistanceSensor color_DistanceSensor;
+    private ColorSensor color_DistanceSensor;
     private CRServo LED1;
     private GoBildaPinpointDriver pinpoint;
 
@@ -63,6 +62,7 @@ public class MainTeleOp extends LinearOpMode {
     int launcherSpeed = 0;
     int LauncherON = 0;
     int motiff = 1;
+    int manualMotif = 1;
     double speed = 0;
 
 
@@ -112,7 +112,7 @@ public class MainTeleOp extends LinearOpMode {
         TopBump = hardwareMap.get(TouchSensor.class, "TopBump");
         BottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
         distance = hardwareMap.get(DistanceSensor.class, "distance");
-        color_DistanceSensor = hardwareMap.get(DistanceSensor.class, "color");
+        color_DistanceSensor = hardwareMap.get(ColorSensor.class, "color");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         LED1 = hardwareMap.get(CRServo.class, "Led1");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -181,16 +181,25 @@ public class MainTeleOp extends LinearOpMode {
                 killSwitch();
                 localize(0.3, 10);
                 lift();
-                timelaunchMotif(motiff, launcherSpeed);
-
+                motifControl();
+                timeLaunchMotif(manualMotif, launcherSpeed);
 
                 /*
-                if (motifTrig == 1) {
+
+                if (manualMotif != 3) {
+                    timeLaunchMotif(manualMotif, launcherSpeed);
+                } else {
+                    timeLaunchMotif(motiff, launcherSpeed);
+                }
+
+                if (motifTrig == 1 && manualMotif == 3) {
                     processLimeLightResults();
                     checkID();
                 }
 
                  */
+
+
             }
         }
     }
@@ -284,13 +293,6 @@ public class MainTeleOp extends LinearOpMode {
             rightLauncher.setPower(0);
             intakeMotor.setPower(0);
         }
-    }
-
-    private void distanceSensorControl() {
-        if (distance.getDistance(DistanceUnit.CM) <= 0) {
-            opModeIsActive(); //this is a placeholder function
-        }
-        telemetry.addData("Distance", color_DistanceSensor.getDistance(DistanceUnit.CM));
     }
 
     private void turnTablePos() {
@@ -451,7 +453,7 @@ public class MainTeleOp extends LinearOpMode {
             double ty;
             double ta;
             if (result != null && result.isValid()) {
-                tx = result.getTx();
+                tx = result.getTx(); // How far left or right the target is (degrees)
                 ty = result.getTy(); // How far up or down the target is (degrees)
                 ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
@@ -462,54 +464,32 @@ public class MainTeleOp extends LinearOpMode {
 
                 if (tx < txMin) {
                     // turn right
-                    leftBack.setPower(-localizerMotorPower);
-                    leftFront.setPower(-localizerMotorPower);
-                    rightBack.setPower(-localizerMotorPower);
-                    rightFront.setPower(-localizerMotorPower);
-                    sleep(sleepTimeMilli);
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
+                    turnRight(localizerMotorPower, sleepTimeMilli);
                     ledManager("Clear");
                     LocalTrig = 1;
                 } else if (tx > txMax) {
                     //turn left
-                    leftBack.setPower(localizerMotorPower);
-                    leftFront.setPower(localizerMotorPower);
-                    rightBack.setPower(localizerMotorPower);
-                    rightFront.setPower(localizerMotorPower);
-                    sleep(sleepTimeMilli);
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
+                    turnLeft(localizerMotorPower, sleepTimeMilli);
+                    ledManager("Clear");
+                    LocalTrig = 1;
+                } else if (ty < tyMin) {
+                    //strafe in a direction (i think )
+                    strafeRight(localizerMotorPower, sleepTimeMilli);
+                    ledManager("Clear");
+                    LocalTrig = 1;
+                } else if (ty > tyMax) {
+                    //strafe in a direction (i think left)
+                    strafeLeft(localizerMotorPower, sleepTimeMilli);
                     ledManager("Clear");
                     LocalTrig = 1;
                 } else if (ta > taMax) {
                     //move backward
-                    leftBack.setPower(localizerMotorPower);
-                    leftFront.setPower(localizerMotorPower);
-                    rightBack.setPower(-localizerMotorPower);
-                    rightFront.setPower(-localizerMotorPower);
-                    sleep(sleepTimeMilli);
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
+                    moveBackward(localizerMotorPower, sleepTimeMilli);
                     ledManager("Clear");
                     LocalTrig = 1;
                 } else if (ta < taMin) {
                     //move Forward
-                    leftBack.setPower(-localizerMotorPower);
-                    leftFront.setPower(-localizerMotorPower);
-                    rightBack.setPower(localizerMotorPower);
-                    rightFront.setPower(localizerMotorPower);
-                    sleep(sleepTimeMilli);
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
+                    moveForward(localizerMotorPower, sleepTimeMilli);
                     ledManager("Clear");
                     LocalTrig = 1;
                 } else {
@@ -598,6 +578,7 @@ public class MainTeleOp extends LinearOpMode {
         rightBack.setPower(0);
         rightFront.setPower(0);
     }
+
     private void lift(){
         lift.setPower(gamepad2.left_stick_y);
         /*
@@ -659,7 +640,7 @@ public class MainTeleOp extends LinearOpMode {
         }
     }
 
-    private void timelaunchMotif(int motiff, double launcherSpeedd) {
+    private void timeLaunchMotif(int motiff, double launcherSpeedd) {
 
         if (gamepad2.crossWasReleased()) {
             LaunchMotiffClock.reset();
@@ -786,6 +767,20 @@ public class MainTeleOp extends LinearOpMode {
         telemetry.update();
 
         return id;
+    }
+    public void motifControl() {
+        if (gamepad2.optionsWasPressed()) {
+            manualMotif++;
+            if (manualMotif > 2) {
+                manualMotif = 0;
+            }
+            if (manualMotif == 3) {
+                motifTrig = 1;
+            }
+
+            gamepad2.rumbleBlips(manualMotif+1);
+
+        }
     }
 
     private void launchMotorOn(double launcherSpeedd) {
