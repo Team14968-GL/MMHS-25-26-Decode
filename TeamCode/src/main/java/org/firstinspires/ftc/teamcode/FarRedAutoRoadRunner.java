@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -103,11 +104,11 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         TrajectoryActionBuilder TurnToLaunch = drive.actionBuilder(beginPose)
-                .strafeTo(new Vector2d(startX*(1-.125), 12))
+                .splineToConstantHeading(new Vector2d(startX*(1-.125), 12), new Rotation2d(Math.toRadians(0),0))
                 .turn(Math.toRadians(-20));
 
         TrajectoryActionBuilder Leave = drive.actionBuilder(beginPose)
-                .strafeTo(new Vector2d(startX, 30));
+                .splineToConstantHeading(new Vector2d(startX*(1-.125), 36), new Rotation2d(Math.toRadians(0),0));
 
         waitForStart();
 
@@ -130,7 +131,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         } else {
             Motif = 0;
         }
-        launchMotif(Motif, launcherSpeed);
+        //launchMotif(Motif, launcherSpeed);
         sleep(250);
         Actions.runBlocking(
                 new SequentialAction(
