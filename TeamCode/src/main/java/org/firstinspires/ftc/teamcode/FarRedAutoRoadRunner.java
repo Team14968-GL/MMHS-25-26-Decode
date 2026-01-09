@@ -51,14 +51,14 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (1750 * 28) / 60;
+    double launcherSpeed = (2000 * 28) / 60;
 
     int sleepTime = 50;
     boolean processTrig = true;
 
     double xValue = 0;
     double ticPerIn = 254.7;
-
+    double startX = (24*3)-(17.25/2);
 
     int Motif;
 
@@ -88,27 +88,26 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        limelight.pipelineSwitch(0);
-        pinpoint.initialize();
-
-
-        LLResultTypes.FiducialResult fiducialResult = null;
         scoop.setPosition(0);
         backDoor.setPosition(1);
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
+        limelight.pipelineSwitch(0);
+        pinpoint.initialize();
 
-
+        LLResultTypes.FiducialResult fiducialResult = null;
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        Pose2d beginPose = new Pose2d(12, -60, Math.toRadians(0));
+        
+        Pose2d beginPose = new Pose2d(startX, 12, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         TrajectoryActionBuilder TurnToLaunch = drive.actionBuilder(beginPose)
-                .turn(Math.toRadians(-35));
+                .strafeTo(new Vector2d(startX*(1-.125), 12))
+                .turn(Math.toRadians(-20));
 
         TrajectoryActionBuilder Leave = drive.actionBuilder(beginPose)
-                .strafeTo(new Vector2d(36, -60));
+                .strafeTo(new Vector2d(startX, 30));
 
         waitForStart();
 

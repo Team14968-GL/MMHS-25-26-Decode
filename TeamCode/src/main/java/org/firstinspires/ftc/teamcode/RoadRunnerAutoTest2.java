@@ -18,20 +18,14 @@ public class RoadRunnerAutoTest2 extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
     public void runOpMode() {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        Pose2d beginPose = new Pose2d(52, 48, 0);
+        Pose2d beginPose = new Pose2d(0, 0, 0);
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         TrajectoryActionBuilder Move = drive.actionBuilder(beginPose)
-                .splineTo(new Vector2d(24, 24), Math.toRadians(225))
-                .splineTo(new Vector2d(1,1), pinpoint.getHeading(AngleUnit.RADIANS));
-
-                /*
-                .lineToX(10)
-                .lineToY(20)
-                .splineTo(new Vector2d(15, 15), 0)
-                .splineTo(new Vector2d(-15, -15), 0)
-                .splineTo(new Vector2d(0,0),Math.PI/4);
-                */
+                .strafeTo(new Vector2d(10,0))
+                .strafeTo(new Vector2d(10,10));
+                //.splineTo(new Vector2d(24, 24), Math.toRadians(225))
+                //.splineTo(new Vector2d(1,1), pinpoint.getHeading(AngleUnit.RADIANS));
 
         TrajectoryActionBuilder Move2 = drive.actionBuilder(beginPose);
 
