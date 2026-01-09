@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Autonomous
-public class CloseRedAutoRoadRunner extends LinearOpMode {
+public class FarRedAutoRoadRunner extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
 
     Limelight3A limelight;
@@ -36,12 +36,6 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
     public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
     //public double[] motifArray = {.5, 0, 1, 1, .5, 0, 1, 0, .5};
     boolean telem = false;
-
-    private DcMotor leftBack;
-    private DcMotor rightBack;
-    private DcMotor leftFront;
-    private DcMotor rightFront;
-    private DcMotor intakeMotor;
     private DcMotor leftLauncher;
     private DcMotor rightLauncher;
     private Servo backDoor;
@@ -57,7 +51,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (1750.0 * 28.0) / 60;
+    double launcherSpeed = (1750 * 28) / 60;
 
     int sleepTime = 50;
     boolean processTrig = true;
@@ -71,14 +65,8 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
     public void runOpMode() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
-        limelight.start(); //
+        limelight.start(); // This tells Limelight to start looking!
 
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
         rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
         backDoor = hardwareMap.get(Servo.class, "backDoor");
@@ -91,13 +79,6 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-
-
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
         launchLiftRight.setDirection(CRServo.Direction.REVERSE);
@@ -120,40 +101,16 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        Pose2d beginPose = new Pose2d(-52, 48, Math.toRadians(308));
-        Pose2d PickUp1Pose = new Pose2d(-12, 52, Math.toRadians(90));
+        Pose2d beginPose = new Pose2d(12, -60, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        TrajectoryActionBuilder MoveToScan = drive.actionBuilder(beginPose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(22.5));
+        TrajectoryActionBuilder TurnToLaunch = drive.actionBuilder(beginPose)
+                .turn(Math.toRadians(35));
 
-        TrajectoryActionBuilder MoveToScan2 = drive.actionBuilder(PickUp1Pose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(11.25));
-
-
-
-                /*
-                .lineToX(10)
-                .lineToY(20)
-                .splineTo(new Vector2d(15, 15), 0)
-                .splineTo(new Vector2d(-15, -15), 0)
-                .splineTo(new Vector2d(0,0),Math.PI/4);
-                */
-
-
-        TrajectoryActionBuilder Turn = drive.actionBuilder(beginPose)
-                .turn(Math.toRadians(-11.25));
-
-
-        TrajectoryActionBuilder PickUp1 = drive.actionBuilder(beginPose)
-                .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(-12, 40));
+        TrajectoryActionBuilder Leave = drive.actionBuilder(beginPose)
+                .strafeTo(new Vector2d(36, -60));
 
         waitForStart();
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        MoveToScan.build()));
 
         int count = 0;
         processTrig = true;
@@ -165,7 +122,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        Turn.build()));
+                        TurnToLaunch.build()));
 
         if (IDs.size() == 1) {
             Motif = IDs.get(0) - 21;
@@ -178,29 +135,8 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         sleep(250);
         Actions.runBlocking(
                 new SequentialAction(
-                        PickUp1.build()));
-
-        goofyAhhhhFrontDoor.setPosition(1);
-        intakeMotor.setPower(0.8);
-        moveBackward(.3, 3000);
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        MoveToScan2.build()));
-
+                        Leave.build()));
     }
-    public void moveBackward(double Speed, int time) {
-        leftBack.setPower(Speed);
-        leftFront.setPower(Speed);
-        rightBack.setPower(Speed);
-        rightFront.setPower(Speed);
-        sleep(time);
-        leftBack.setPower(0);
-        leftFront.setPower(0);
-        rightBack.setPower(0);
-        rightFront.setPower(0);
-    }
-
 
     private int processLimeLightResults() {
         double tx;

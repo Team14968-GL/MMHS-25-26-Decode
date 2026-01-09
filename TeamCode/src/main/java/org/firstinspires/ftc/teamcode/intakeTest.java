@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -33,3 +34,4 @@ public class intakeTest extends LinearOpMode{
         RobotLog.i("segment 3");
     }
 }
+*/
