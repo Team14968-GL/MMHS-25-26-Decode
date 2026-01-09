@@ -105,7 +105,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         TrajectoryActionBuilder TurnToLaunch = drive.actionBuilder(beginPose)
-                .turn(Math.toRadians(35));
+                .turn(Math.toRadians(-35));
 
         TrajectoryActionBuilder Leave = drive.actionBuilder(beginPose)
                 .strafeTo(new Vector2d(36, -60));
