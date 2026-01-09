@@ -106,30 +106,14 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        Pose2d beginPose = new Pose2d(-52, 48, Math.toRadians(308));
+        Pose2d beginPose = new Pose2d(12, -60, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        TrajectoryActionBuilder MoveToScan = drive.actionBuilder(beginPose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(22.5));
+        TrajectoryActionBuilder TurnToLaunch = drive.actionBuilder(beginPose)
+                .turn(Math.toRadians(35));
 
-
-
-                /*
-                .lineToX(10)
-                .lineToY(20)
-                .splineTo(new Vector2d(15, 15), 0)
-                .splineTo(new Vector2d(-15, -15), 0)
-                .splineTo(new Vector2d(0,0),Math.PI/4);
-                */
-
-
-        TrajectoryActionBuilder Turn = drive.actionBuilder(beginPose)
-                .turn(Math.toRadians(-11.25));
-
-
-        TrajectoryActionBuilder PickUp1 = drive.actionBuilder(beginPose)
-                .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(-12, 36));
+        TrajectoryActionBuilder Leave = drive.actionBuilder(beginPose)
+                .strafeTo(new Vector2d(36, -60));
 
         telemetry.addData("Norm", "%.3f", Color.getNormalizedColors());
         telemetry.update();
@@ -137,10 +121,6 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
         waitForStart();
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        MoveToScan.build()));
 
         int count = 0;
         processTrig = true;
@@ -152,7 +132,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        Turn.build()));
+                        TurnToLaunch.build()));
 
         if (IDs.size() == 1) {
             Motif = IDs.get(0) - 21;
@@ -165,7 +145,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         sleep(250);
         Actions.runBlocking(
                 new SequentialAction(
-                        PickUp1.build()));
+                        Leave.build()));
 
     }
 
