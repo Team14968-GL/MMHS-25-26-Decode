@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Autonomous
-public class CloseRedAutoRoadRunner extends LinearOpMode {
+public class CloseBlueAuto3BallRR extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
 
     Limelight3A limelight;
@@ -54,6 +54,12 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
     private TouchSensor BottomBump;
 
 
+    double txMax = 15;
+    double txMin = 9;
+    double tyMax = 13.5;
+    double tyMin = 12;
+    double taMax = 2.35;
+    double taMin = 2.07;
 
     double power = .7;
     double localPower = .3;
@@ -67,6 +73,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
     int Motif;
+
 
     public void runOpMode() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -120,15 +127,15 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        Pose2d beginPose = new Pose2d(-52, 48, Math.toRadians(308));
-        Pose2d PickUp1Pose = new Pose2d(-12, 52, Math.toRadians(90));
+        Pose2d beginPose = new Pose2d(-52, -48, Math.toRadians(52));
+        Pose2d PickUp1Pose = new Pose2d(-12, -52, Math.toRadians(270));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         TrajectoryActionBuilder MoveToScan = drive.actionBuilder(beginPose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(22.5));
+                .splineTo(new Vector2d(-24, -24), Math.toRadians(328));
 
         TrajectoryActionBuilder MoveToScan2 = drive.actionBuilder(PickUp1Pose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(308));
+                .splineTo(new Vector2d(-24, -24), Math.toRadians(11.25));
 
 
 
@@ -146,8 +153,8 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
         TrajectoryActionBuilder PickUp1 = drive.actionBuilder(beginPose)
-                .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(-12, 40));
+                .turnTo(Math.toRadians(270))
+                .strafeTo(new Vector2d(-34, -68));
 
         waitForStart();
 
@@ -166,6 +173,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         Turn.build()));
+        localize();
 
         if (IDs.size() == 1) {
             Motif = IDs.get(0) - 21;
@@ -174,27 +182,105 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         } else {
             Motif = 0;
         }
+
         launchMotif(Motif, launcherSpeed);
         sleep(250);
         Actions.runBlocking(
                 new SequentialAction(
                         PickUp1.build()));
+        moveBackwardTics(.3,ticPerIn*3);
 
-        goofyAhhhhFrontDoor.setPosition(1);
-        intakeMotor.setPower(0.8);
-        moveBackward(.3, 3000);
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        MoveToScan2.build()));
 
     }
-    public void moveBackward(double Speed, int time) {
-        leftBack.setPower(Speed);
-        leftFront.setPower(Speed);
-        rightBack.setPower(Speed);
-        rightFront.setPower(Speed);
-        sleep(time);
+    public void localize() {
+        //boolean localizing = true;
+        while (true) {
+            LLResult result = limelight.getLatestResult();
+            double tx;
+            double ty;
+            double ta;
+            if (result != null && result.isValid()) {
+                tx = result.getTx();
+                ty = result.getTy(); // How far up or down the target is (degrees)
+                ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+                telemetry.update();
+
+                if (tx < txMin) {
+                    // turn right
+                    leftBack.setPower(-localPower);
+                    leftFront.setPower(-localPower);
+                    rightBack.setPower(localPower);
+                    rightFront.setPower(localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                } else if (tx > txMax) {
+                    //turn left
+                    leftBack.setPower(localPower);
+                    leftFront.setPower(localPower);
+                    rightBack.setPower(-localPower);
+                    rightFront.setPower(-localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                } else if (ta > taMax) {
+                    //move backward
+                    leftBack.setPower(localPower);
+                    leftFront.setPower(localPower);
+                    rightBack.setPower(localPower);
+                    rightFront.setPower(localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                } else if (ta < taMin) {
+                    //move Forward
+                    leftBack.setPower(-localPower);
+                    leftFront.setPower(-localPower);
+                    rightBack.setPower(-localPower);
+                    rightFront.setPower(-localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                } else {
+                    break;
+                }
+
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+                telemetry.update();
+
+                leftBack.setPower(0);
+                leftFront.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
+            }
+        }
+    }
+    public void moveBackwardTics(double Speed, double tic) {
+        pinpoint.update();
+        int xvalue = pinpoint.getEncoderX(); // \/
+        while (pinpoint.getEncoderX() - xvalue <= tic) {
+            pinpoint.update();
+            leftBack.setPower(Speed);
+            leftFront.setPower(Speed);
+            rightBack.setPower(Speed);
+            rightFront.setPower(Speed);
+            telemetry.addData("xencoder", pinpoint.getEncoderX());
+            telemetry.addData("xvalue", xvalue);
+            telemetry.update();
+        }
         leftBack.setPower(0);
         leftFront.setPower(0);
         rightBack.setPower(0);

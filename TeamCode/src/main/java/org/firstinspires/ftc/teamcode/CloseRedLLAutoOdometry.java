@@ -166,6 +166,7 @@ public class CloseRedLLAutoOdometry extends LinearOpMode {
     private void launchMotif(int motiff, double launcherSpeedd) {
         launchMotorOn(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get(motiff*3));
+        sleep(250);
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+1));
         sleep(500);
