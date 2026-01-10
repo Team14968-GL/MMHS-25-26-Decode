@@ -170,7 +170,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         if (IDs.size() == 1) {
             Motif = IDs.get(0) - 21;
         } else if (IDs.size() == 2) {
-            Motif = IDs.get(0) - 21;
+            Motif = IDs.get(1) - 21;
         } else {
             Motif = 0;
         }
@@ -181,8 +181,15 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
                         PickUp1.build()));
 
         goofyAhhhhFrontDoor.setPosition(1);
+        backDoor.setPosition(1);
         intakeMotor.setPower(0.8);
-        moveBackward(.3, 3000);
+        turnTableServo.setPosition(0);
+        moveBackward(.3, 1500);
+        turnTableServo.setPosition(0.5);
+        moveBackward(.3, 1500);
+        goofyAhhhhFrontDoor.setPosition(.5);
+        intakeMotor.setPower(0);
+
 
         Actions.runBlocking(
                 new SequentialAction(

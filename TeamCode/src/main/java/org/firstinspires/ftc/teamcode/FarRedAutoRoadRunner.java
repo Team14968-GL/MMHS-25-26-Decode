@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -34,7 +36,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
     public int id;
     public ArrayList<Integer> IDs = new ArrayList<>();
     //.5=green | 1=p | 0=p
-    public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
+    public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5, 0.0));
     //public double[] motifArray = {.5, 0, 1, 1, .5, 0, 1, 0, .5};
     boolean telem = false;
     private DcMotor leftLauncher;
@@ -52,7 +54,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (2000 * 28) / 60;
+    double launcherSpeed = (2500 * 28) / 60;
 
     int sleepTime = 50;
     boolean processTrig = true;
@@ -62,6 +64,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
     double startX = (24*3)-(17.25/2);
 
     int Motif;
+    int failCount;
 
     public void runOpMode() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -108,7 +111,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
                 .turn(Math.toRadians(-20));
 
         TrajectoryActionBuilder Leave = drive.actionBuilder(beginPose)
-                .splineToConstantHeading(new Vector2d(startX*(1-.125), 36), new Rotation2d(Math.toRadians(0),0));
+                .strafeTo(new Vector2d(startX*(1-.125), 60));
 
         waitForStart();
 
@@ -119,10 +122,17 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
             count++;
             sleep(1);
         }
-
         Actions.runBlocking(
                 new SequentialAction(
                         TurnToLaunch.build()));
+        /*
+        while (!(IDs.size() == 1) & (failCount <= IDs.size()-1)) {
+            if (IDs.get(failCount) == (22 | 23 | 24)){
+                Motif = IDs.get(failCount) - 21;
+            }
+            failCount++;
+        }
+        */
 
         if (IDs.size() == 1) {
             Motif = IDs.get(0) - 21;
@@ -131,8 +141,9 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         } else {
             Motif = 0;
         }
-        //launchMotif(Motif, launcherSpeed);
+        launchMotif(0, launcherSpeed);
         sleep(250);
+
         Actions.runBlocking(
                 new SequentialAction(
                         Leave.build()));
@@ -186,9 +197,12 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
 
     private void launchMotif(int motiff, double launcherSpeedd) {
         launchMotorOn(launcherSpeedd);
-        turnTableServo.setPosition(motifArray.get(motiff*3));
+        turnTableServo.setPosition(.5);
+        sleep(250);
+
         launch(launcherSpeedd);
-        turnTableServo.setPosition(motifArray.get((motiff*3)+1));
+        turnTableServo.setPosition(0);
+
         sleep(500);
         scoop.setPosition(0);
                 /*
@@ -198,7 +212,8 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
                 */
 
         launch(launcherSpeedd);
-        turnTableServo.setPosition(motifArray.get((motiff*3)+2));
+        turnTableServo.setPosition(1);
+
         sleep(500);
         scoop.setPosition(0);
         /*

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous
+@Autonomous (preselectTeleOp = "MainTeleOp")
 public class CloseRedAuto3BallRR extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
 
@@ -173,6 +173,7 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         Turn.build()));
+
         localize();
 
         if (IDs.size() == 1) {
@@ -211,48 +212,48 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
 
                 if (tx < txMin) {
                     // turn right
-                   leftBack.setPower(-localPower);
-                   leftFront.setPower(-localPower);
-                   rightBack.setPower(localPower);
-                   rightFront.setPower(localPower);
+                    leftBack.setPower(-localPower);
+                    leftFront.setPower(-localPower);
+                    rightBack.setPower(localPower);
+                    rightFront.setPower(localPower);
                     sleep(sleepTime);
-                   leftBack.setPower(0);
-                   leftFront.setPower(0);
-                   rightBack.setPower(0);
-                   rightFront.setPower(0);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
                 } else if (tx > txMax) {
                     //turn left
-                   leftBack.setPower(localPower);
-                   leftFront.setPower(localPower);
-                   rightBack.setPower(-localPower);
-                   rightFront.setPower(-localPower);
+                    leftBack.setPower(localPower);
+                    leftFront.setPower(localPower);
+                    rightBack.setPower(-localPower);
+                    rightFront.setPower(-localPower);
                     sleep(sleepTime);
-                   leftBack.setPower(0);
-                   leftFront.setPower(0);
-                   rightBack.setPower(0);
-                   rightFront.setPower(0);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
                 } else if (ta > taMax) {
                     //move backward
-                   leftBack.setPower(localPower);
-                   leftFront.setPower(localPower);
-                   rightBack.setPower(localPower);
-                   rightFront.setPower(localPower);
+                    leftBack.setPower(localPower);
+                    leftFront.setPower(localPower);
+                    rightBack.setPower(localPower);
+                    rightFront.setPower(localPower);
                     sleep(sleepTime);
-                   leftBack.setPower(0);
-                   leftFront.setPower(0);
-                   rightBack.setPower(0);
-                   rightFront.setPower(0);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
                 } else if (ta < taMin) {
                     //move Forward
-                   leftBack.setPower(-localPower);
-                   leftFront.setPower(-localPower);
-                   rightBack.setPower(-localPower);
-                   rightFront.setPower(-localPower);
+                    leftBack.setPower(-localPower);
+                    leftFront.setPower(-localPower);
+                    rightBack.setPower(-localPower);
+                    rightFront.setPower(-localPower);
                     sleep(sleepTime);
-                   leftBack.setPower(0);
-                   leftFront.setPower(0);
-                   rightBack.setPower(0);
-                   rightFront.setPower(0);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
                 } else {
                     break;
                 }
@@ -261,10 +262,10 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
                 telemetry.addData("Limelight", "No Targets");
                 telemetry.update();
 
-               leftBack.setPower(0);
-               leftFront.setPower(0);
-               rightBack.setPower(0);
-               rightFront.setPower(0);
+                leftBack.setPower(0);
+                leftFront.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
             }
         }
     }

@@ -25,7 +25,6 @@ import java.util.List;
 
 @TeleOp(name = "Main TeleOp")
 public class MainTeleOp extends LinearOpMode {
-
     Limelight3A limelight;
 
     public ArrayList<Integer> IDs = new ArrayList<>();
@@ -91,6 +90,7 @@ public class MainTeleOp extends LinearOpMode {
     double tyMin = 12;
     double taMax = .88;
     double taMin = .91;
+
 
     @Override
     public void runOpMode() {
@@ -219,7 +219,6 @@ public class MainTeleOp extends LinearOpMode {
                 motifTrig = 0;
             }
         }
-
     }
 
 
@@ -649,23 +648,23 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.update();
         }
         if (LaunchMotiffTrig == 1) {
-            if (LaunchMotiffClock.seconds() >= 0 && LaunchMotiffClock.seconds() <= 0.25) {
+            if (LaunchMotiffClock.seconds() >= 0 && LaunchMotiffClock.seconds() <= 0.75) {
                 ledManager("Alert");
                 backDoor.setPosition(0.5);
                 turnTableServo.setPosition(motifArray.get(motiff*3));
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 0.25 && LaunchMotiffClock.seconds() <= 0.5) {
+            if (LaunchMotiffClock.seconds() >= 0.75 && LaunchMotiffClock.seconds() <= 1) {
                 launchMotorOn(launcherSpeedd);
                 backDoor.setPosition(0);
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 0.5 && LaunchMotiffClock.seconds() <= 1.75) {
+            if (LaunchMotiffClock.seconds() >= 1 && LaunchMotiffClock.seconds() <= 2.25) {
                 goofyAhhhhFrontDoor.setPosition(0);
                 telemetry.update();
 
             }
-            if (LaunchMotiffClock.seconds() >= 1.75 && LaunchMotiffClock.seconds() <= 2.25) {
+            if (LaunchMotiffClock.seconds() >= 2.25 && LaunchMotiffClock.seconds() <= 2.75) {
                 backDoor.setPosition(0.5);
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 scoop.setPosition(0.5);
@@ -675,17 +674,17 @@ public class MainTeleOp extends LinearOpMode {
             }
 
 
-            if (LaunchMotiffClock.seconds() >= 2.25 && LaunchMotiffClock.seconds() <= 2.5) {
+            if (LaunchMotiffClock.seconds() >= 2.75 && LaunchMotiffClock.seconds() <= 3) {
                 scoop.setPosition(0);
                 backDoor.setPosition(0);
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 2.5 && LaunchMotiffClock.seconds() <= 3.75) {
+            if (LaunchMotiffClock.seconds() >= 3 && LaunchMotiffClock.seconds() <= 4.25) {
                 goofyAhhhhFrontDoor.setPosition(0);
                 telemetry.update();
 
             }
-            if (LaunchMotiffClock.seconds() >= 3.75 && LaunchMotiffClock.seconds() <= 4.25) {
+            if (LaunchMotiffClock.seconds() >= 4.25 && LaunchMotiffClock.seconds() <= 4.75) {
                 backDoor.setPosition(0.5);
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 scoop.setPosition(0.5);
@@ -695,24 +694,24 @@ public class MainTeleOp extends LinearOpMode {
             }
 
 
-            if (LaunchMotiffClock.seconds() >= 4.25 && LaunchMotiffClock.seconds() <= 4.5) {
+            if (LaunchMotiffClock.seconds() >= 4.75 && LaunchMotiffClock.seconds() <= 5) {
                 scoop.setPosition(0);
                 backDoor.setPosition(0);
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 4.5 && LaunchMotiffClock.seconds() <= 5.75) {
+            if (LaunchMotiffClock.seconds() >= 5 && LaunchMotiffClock.seconds() <= 6.25) {
                 goofyAhhhhFrontDoor.setPosition(0);
                 telemetry.update();
 
             }
-            if (LaunchMotiffClock.seconds() >= 5.75 && LaunchMotiffClock.seconds() <= 6.25) {
+            if (LaunchMotiffClock.seconds() >= 6.25 && LaunchMotiffClock.seconds() <= 6.75) {
                 backDoor.setPosition(0.5);
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 scoop.setPosition(0.5);
 
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 6.25 && LaunchMotiffClock.seconds() <= 6.75) {
+            if (LaunchMotiffClock.seconds() >= 6.75 && LaunchMotiffClock.seconds() <= 7.25) {
                 scoop.setPosition(0);
                 launchMotorOff();
                 telemetry.update();

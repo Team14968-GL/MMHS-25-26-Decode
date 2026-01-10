@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous
+@Autonomous (preselectTeleOp = "MainTeleOp")
 public class CloseBlueAuto3BallRR extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
 
@@ -154,7 +154,7 @@ public class CloseBlueAuto3BallRR extends LinearOpMode {
 
         TrajectoryActionBuilder PickUp1 = drive.actionBuilder(beginPose)
                 .turnTo(Math.toRadians(270))
-                .strafeTo(new Vector2d(-34, -68));
+                .strafeTo(new Vector2d(-34, -60));
 
         waitForStart();
 
