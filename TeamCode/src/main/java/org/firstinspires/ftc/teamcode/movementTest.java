@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.List;
-
+@Disabled
 @Autonomous(name = "movementTest")
 public class movementTest extends LinearOpMode {
     public  DcMotor backLeft;

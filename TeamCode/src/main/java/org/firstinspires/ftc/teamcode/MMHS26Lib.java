@@ -577,8 +577,8 @@ public final class MMHS26Lib {
         }
     }
     public static class Utils {
-        public static void ledManager(String type, int deviceNumber){
-            if (deviceNumber == 1){
+        public static void ledManager(String type, int ledNumber){
+            if (ledNumber == 1){
                 CRServo LED1 = hardwareMap.get(CRServo.class, "Led1");
                 switch (type) {
                     case "Clear":
@@ -626,7 +626,7 @@ public final class MMHS26Lib {
                         break;
                 }
             } else {
-                CRServo LED = hardwareMap.get(CRServo.class, "Led"+deviceNumber);
+                CRServo LED = hardwareMap.get(CRServo.class, "Led"+ledNumber);
                 switch (type) {
                     case "Clear":
                         LED.setPower(.5); //White

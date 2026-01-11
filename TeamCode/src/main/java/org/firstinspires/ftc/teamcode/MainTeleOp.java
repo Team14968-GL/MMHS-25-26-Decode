@@ -18,7 +18,6 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,8 +49,6 @@ public class MainTeleOp extends LinearOpMode {
     private Servo turnTableServo;
     private TouchSensor TopBump;
     private TouchSensor BottomBump;
-    private DistanceSensor distance;
-    private ColorSensor color_DistanceSensor;
     private CRServo LED1;
     private GoBildaPinpointDriver pinpoint;
 
@@ -112,8 +109,8 @@ public class MainTeleOp extends LinearOpMode {
         turnTableServo = hardwareMap.get(Servo.class, "turnTableServo");
         TopBump = hardwareMap.get(TouchSensor.class, "TopBump");
         BottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
-        distance = hardwareMap.get(DistanceSensor.class, "distance");
-        color_DistanceSensor = hardwareMap.get(ColorSensor.class, "color");
+        DistanceSensor distance = hardwareMap.get(DistanceSensor.class, "distance");
+        ColorSensor color_DistanceSensor = hardwareMap.get(ColorSensor.class, "color");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         LED1 = hardwareMap.get(CRServo.class, "Led1");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -292,6 +289,8 @@ public class MainTeleOp extends LinearOpMode {
             leftLauncher.setPower(0);
             rightLauncher.setPower(0);
             intakeMotor.setPower(0);
+            MMHS26Lib.motion.halt();
+            MMHS26Lib.Utils.ledManager("Error", 1);
         }
     }
 
@@ -313,7 +312,8 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     private void drive() {
-        @SuppressWarnings("SuspiciousNameCombination") float ControlY = gamepad1.left_stick_x;
+        @SuppressWarnings("SuspiciousNameCombination")
+        float ControlY = gamepad1.left_stick_x;
         float ControlX = -gamepad1.right_stick_x;
         float ControlRX = -gamepad1.right_stick_y;
         leftFront.setPower(((ControlY - ControlX) + ControlRX) * speed);
@@ -330,8 +330,6 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     private void timeReKick() {
-
-
         if (gamepad2.touchpadWasReleased()) {
             ReKickClock.reset();
             telemetry.addData("Elapsed Time", ReKickClock.seconds());
@@ -392,7 +390,6 @@ public class MainTeleOp extends LinearOpMode {
         }
     }
     private void timeScoop() {
-
         if (gamepad2.dpad_up) {
             ScoopClock.reset();
             telemetry.addData("Elapsed Time", ScoopClock.seconds());

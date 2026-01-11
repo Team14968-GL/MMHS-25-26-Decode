@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -14,7 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+@Disabled
 @Autonomous(name = "limelightAprilTagTest")
 public class LimelightAprilTagTest extends LinearOpMode {
 
