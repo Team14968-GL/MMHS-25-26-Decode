@@ -18,6 +18,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -261,11 +262,11 @@ public class MainTeleOp extends LinearOpMode {
             launchLiftRight.setPower(0);
             launchLiftLeft.setPower(0);
         }
-        if (TopBump.isPressed() & gamepad2.right_stick_y != 0) {
+        if (TopBump.isPressed() && gamepad2.right_stick_y != 0) {
             ledManager("Blue");
             ledTrig = 1;
             bumpTrig = 1;
-        } else if  (BottomBump.isPressed() & gamepad2.right_stick_y != 0) {
+        } else if  (BottomBump.isPressed() && gamepad2.right_stick_y != 0) {
             ledManager("Blue");
             ledTrig = 1;
             bumpTrig = 1;
@@ -390,7 +391,6 @@ public class MainTeleOp extends LinearOpMode {
 
         }
     }
-
     private void timeScoop() {
 
         if (gamepad2.dpad_up) {
@@ -501,10 +501,7 @@ public class MainTeleOp extends LinearOpMode {
                 telemetry.addData("Limelight", "No Targets");
                 ledManager("Error");
                 LocalTrig = 1;
-                leftBack.setPower(0);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
+                halt();
             }
         } else if (LocalTrig == 1){
             ledManager("Null");
@@ -572,6 +569,12 @@ public class MainTeleOp extends LinearOpMode {
         rightBack.setPower(-Speed);
         rightFront.setPower(-Speed);
         sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+    public void halt() {
         leftBack.setPower(0);
         leftFront.setPower(0);
         rightBack.setPower(0);

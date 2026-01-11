@@ -126,7 +126,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
                 new SequentialAction(
                         TurnToLaunch.build()));
         /*
-        while (!(IDs.size() == 1) & (failCount <= IDs.size()-1)) {
+        while (!(IDs.size() == 1) && (failCount <= IDs.size()-1)) {
             if (IDs.get(failCount) == (22 | 23 | 24)){
                 Motif = IDs.get(failCount) - 21;
             }
