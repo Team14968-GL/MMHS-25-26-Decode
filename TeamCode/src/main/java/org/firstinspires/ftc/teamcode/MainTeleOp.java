@@ -289,8 +289,6 @@ public class MainTeleOp extends LinearOpMode {
             leftLauncher.setPower(0);
             rightLauncher.setPower(0);
             intakeMotor.setPower(0);
-            MMHS26Lib.motion.halt();
-            MMHS26Lib.Utils.ledManager("Error", 1);
         }
     }
 
