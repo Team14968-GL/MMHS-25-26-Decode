@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MMHS26Lib {
+public class MMHS26Lib {
     @Config
     public static class DebugFlag {
         public static boolean debugTelemetry = false;
