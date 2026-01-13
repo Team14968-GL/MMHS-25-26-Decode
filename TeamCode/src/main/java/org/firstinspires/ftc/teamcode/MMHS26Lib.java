@@ -24,8 +24,8 @@ import java.util.List;
 
 public class MMHS26Lib {
     @Config
-    public static class DebugFlag {
-        public static boolean debugTelemetry = false;
+    public static class debug {
+        public static boolean debugTelemetry = true;
     }
     private static void sleep(long milliseconds) {
         try {
@@ -35,7 +35,7 @@ public class MMHS26Lib {
         }
     }
     public static class motion {
-        public static void strafeLeft(double Speed, int time){
+        public static void strafeLeft(double Speed, long time){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -56,7 +56,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void strafeRight(double Speed, int time){
+        public static void strafeRight(double Speed, long time){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -77,7 +77,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void turnRight(double Speed, int time){
+        public static void turnRight(double Speed, long time){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -98,7 +98,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void turnLeft(double Speed, int time){
+        public static void turnLeft(double Speed, long time){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -119,7 +119,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void moveBackward(double Speed, int time){
+        public static void moveBackward(double Speed, long time){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -140,7 +140,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void moveForward(double Speed, int time) {
+        public static void moveForward(double Speed, long time) {
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -198,7 +198,7 @@ public class MMHS26Lib {
                     tx = result.getTx();
                     ty = result.getTy(); // How far up or down the target is (degrees)
                     ta = result.getTa(); // How big the target looks (0%-100% of the image)
-                    if(DebugFlag.debugTelemetry){
+                    if(debug.debugTelemetry){
                         telemetry.addData("Target X", tx);
                         telemetry.addData("Target Y", ty);
                         telemetry.addData("Target Area", ta);
@@ -222,7 +222,7 @@ public class MMHS26Lib {
                     }
 
                 } else {
-                    if(DebugFlag.debugTelemetry) {
+                    if(debug.debugTelemetry) {
                         telemetry.addData("Limelight", "No Targets");
                         telemetry.update();
                     }
@@ -246,7 +246,7 @@ public class MMHS26Lib {
                 ty = result.getTy(); // How far up or down the target is (degrees)
                 ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-                if(DebugFlag.debugTelemetry) {
+                if(debug.debugTelemetry) {
                     telemetry.addData("Target X", tx);
                     telemetry.addData("Target Y", ty);
                     telemetry.addData("Target Area", ta);
@@ -261,26 +261,26 @@ public class MMHS26Lib {
                     for (LLResultTypes.FiducialResult fiducial : fiducialList) {
                         id = fiducial.getFiducialId();
                         IDs.add(id);
-                        if(DebugFlag.debugTelemetry) {
+                        if(debug.debugTelemetry) {
                             telemetry.addData("Tag ID", id);
                             telemetry.update();
                         }
                     }
                 } else {
-                    if(DebugFlag.debugTelemetry) {
+                    if(debug.debugTelemetry) {
                         telemetry.addData("Detections Found", "None");
                         telemetry.update();
                     }
                 }
             } else {
-                if(DebugFlag.debugTelemetry) {
+                if(debug.debugTelemetry) {
                     telemetry.addData("Limelight Data", "Invalid or Stale");
                     assert result != null;
                     telemetry.addData("Staleness", result.getStaleness());
                     telemetry.update();
                 }
             }
-            if(DebugFlag.debugTelemetry) {
+            if(debug.debugTelemetry) {
                 telemetry.update();
             }
             return id;
@@ -684,7 +684,7 @@ public class MMHS26Lib {
             return(new Pose2d(startingPose.position.x, startingPose.position.y, Math.toRadians(angle)));
         }
     }
-    public static class Utils {
+    public static class utils {
         public static void ledManager(String type, int ledNumber){
             CRServo LED = hardwareMap.get(CRServo.class, "Led"+ledNumber);
             switch (type) {
@@ -729,7 +729,7 @@ public class MMHS26Lib {
 
                     break;
                 default:
-                    if(DebugFlag.debugTelemetry) {
+                    if(debug.debugTelemetry) {
                         telemetry.addData("Led Manager Error", "Wrong or Invalid Input");
                     }
                     break;
