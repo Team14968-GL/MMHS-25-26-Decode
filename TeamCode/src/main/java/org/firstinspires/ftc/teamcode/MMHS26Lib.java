@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -15,6 +14,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MMHS26Lib {
+
     @Config
     public static class debug {
         public static boolean debugTelemetry = true;
@@ -35,7 +36,7 @@ public class MMHS26Lib {
         }
     }
     public static class motion {
-        public static void strafeLeft(double Speed, long time){
+        public static void strafeLeft(double Speed, long time, HardwareMap hardwareMap){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -56,7 +57,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void strafeRight(double Speed, long time){
+        public static void strafeRight(double Speed, long time, HardwareMap hardwareMap){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -77,7 +78,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void turnRight(double Speed, long time){
+        public static void turnRight(double Speed, long time, HardwareMap hardwareMap){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -98,7 +99,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void turnLeft(double Speed, long time){
+        public static void turnLeft(double Speed, long time, HardwareMap hardwareMap){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -119,7 +120,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void moveBackward(double Speed, long time){
+        public static void moveBackward(double Speed, long time, HardwareMap hardwareMap){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -140,7 +141,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void moveForward(double Speed, long time) {
+        public static void moveForward(double Speed, long time, HardwareMap hardwareMap) {
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -161,7 +162,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void halt(){
+        public static void halt(HardwareMap hardwareMap){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
             final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -181,7 +182,7 @@ public class MMHS26Lib {
     public static class limelight {
         public static Limelight3A limelight;
 
-        public static void localizer(double localPower, int sleepTime){
+        public static void localizer(double localPower, int sleepTime, HardwareMap hardwareMap){
             //boolean localizing = true;
             while (true) {
                 LLResult result = limelight.getLatestResult();
@@ -207,16 +208,16 @@ public class MMHS26Lib {
 
                     if (tx < txMin) {
                         // turn right
-                        motion.turnRight(localPower, sleepTime);
+                        motion.turnRight(localPower, sleepTime, hardwareMap);
                     } else if (tx > txMax) {
                         //turn left
-                        motion.turnLeft(localPower, sleepTime);
+                        motion.turnLeft(localPower, sleepTime, hardwareMap);
                     } else if (ta > taMax) {
                         //move backward
-                        motion.moveBackward(localPower, sleepTime);
+                        motion.moveBackward(localPower, sleepTime, hardwareMap);
                     } else if (ta < taMin) {
                         //move Forward
-                        motion.moveForward(localPower, sleepTime);
+                        motion.moveForward(localPower, sleepTime, hardwareMap);
                     } else {
                         break;
                     }
@@ -226,7 +227,7 @@ public class MMHS26Lib {
                         telemetry.addData("Limelight", "No Targets");
                         telemetry.update();
                     }
-                    motion.halt();
+                    motion.halt(hardwareMap);
                 }
             }
         }
@@ -290,7 +291,7 @@ public class MMHS26Lib {
         public static class spline {
 
 
-            public static Pose2d splineTo(double x, double y, double tangent, Pose2d startingPose) {
+            public static Pose2d splineTo(double x, double y, double tangent, Pose2d startingPose, HardwareMap hardwareMap) {
 
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder splineTo = drive.actionBuilder(startingPose)
@@ -304,7 +305,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d splineToConstantHeading(double x, double y, double tangent, Pose2d startingPose) {
+            public static Pose2d splineToConstantHeading(double x, double y, double tangent, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder splineToConstantHeading = drive.actionBuilder(startingPose)
                         .splineToConstantHeading(new Vector2d(x, y), Math.toRadians(tangent));
@@ -317,7 +318,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d splineToLinearHeading(double x, double y, double angle, double tangent, Pose2d startingPose) {
+            public static Pose2d splineToLinearHeading(double x, double y, double angle, double tangent, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder splineToLinearHeading = drive.actionBuilder(startingPose)
                         .splineToLinearHeading(new Pose2d(new Vector2d(x, y), angle), tangent);
@@ -330,7 +331,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d splineToSplineHeading(double x, double y, double angle, double tangent, Pose2d startingPose) {
+            public static Pose2d splineToSplineHeading(double x, double y, double angle, double tangent, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder splineToSplineHeading = drive.actionBuilder(startingPose)
                         .splineToSplineHeading(new Pose2d(new Vector2d(x, y), angle), tangent);
@@ -345,7 +346,7 @@ public class MMHS26Lib {
             }
         }
         public static class strafe {
-            public static Pose2d strafeTo(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d strafeTo(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder strafeTo;
                 if (VelCon && AccCon) {
@@ -371,7 +372,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d strafeToConstantHeading(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d strafeToConstantHeading(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder strafeToConstantHeading;
                 if (VelCon && AccCon) {
@@ -397,7 +398,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d strafeToLinearHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d strafeToLinearHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder strafeToLinearHeading;
                 if (VelCon && AccCon) {
@@ -423,7 +424,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d strafeToSplineHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d strafeToSplineHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder strafeToSplineHeading;
                 if (VelCon && AccCon) {
@@ -452,7 +453,7 @@ public class MMHS26Lib {
         }
 
         public static class lineTo {
-            public static Pose2d lineToX(double X, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d lineToX(double X, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder lineToX;
                 if (VelCon && AccCon) {
@@ -478,7 +479,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(X, startingPose.position.y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d lineToXConstantHeading(double X, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d lineToXConstantHeading(double X, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder lineToXConstantHeading;
                 if (VelCon && AccCon) {
@@ -504,7 +505,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(X, startingPose.position.y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d lineToXLinearHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d lineToXLinearHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder lineToXLinearHeading;
                 if (VelCon && AccCon) {
@@ -530,7 +531,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(X, startingPose.position.y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d lineToXSplineHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d lineToXSplineHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder lineToXSplineHeading;
                 if (VelCon && AccCon) {
@@ -556,7 +557,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(X, startingPose.position.y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d lineToY(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d lineToY(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder lineToY;
                 if (VelCon && AccCon) {
@@ -582,7 +583,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(startingPose.position.x, Y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d lineToYConstantHeading(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d lineToYConstantHeading(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder lineToYConstantHeading;
                 if (VelCon && AccCon) {
@@ -608,7 +609,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(startingPose.position.x, Y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d lineToYLinearHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d lineToYLinearHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder lineToYLinearHeading;
                 if (VelCon && AccCon) {
@@ -634,7 +635,7 @@ public class MMHS26Lib {
                 pinpoint.initialize();
                 return(new Pose2d(startingPose.position.x, Y, pinpoint.getHeading(AngleUnit.RADIANS)));
             }
-            public static Pose2d lineToYSplineHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+            public static Pose2d lineToYSplineHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
                 MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
                 TrajectoryActionBuilder lineToYSplineHeading;
                 if (VelCon && AccCon) {
@@ -662,7 +663,7 @@ public class MMHS26Lib {
             }
         }
 
-        public static Pose2d turnTo(double angle, Pose2d startingPose) {
+        public static Pose2d turnTo(double angle, Pose2d startingPose, HardwareMap hardwareMap) {
             MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
             TrajectoryActionBuilder turnTo = drive.actionBuilder(startingPose)
                     .turnTo(angle);
@@ -673,7 +674,7 @@ public class MMHS26Lib {
             return(new Pose2d(startingPose.position.x, startingPose.position.y, Math.toRadians(angle)));
 
         }
-        public static Pose2d turn(double angle, Pose2d startingPose) {
+        public static Pose2d turn(double angle, Pose2d startingPose, HardwareMap hardwareMap) {
             MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
             TrajectoryActionBuilder turn = drive.actionBuilder(startingPose)
                     .turn(angle);
@@ -685,8 +686,8 @@ public class MMHS26Lib {
         }
     }
     public static class utils {
-        public static void ledManager(String type, int ledNumber){
-            CRServo LED = hardwareMap.get(CRServo.class, "Led"+ledNumber);
+        public static void ledManager(String type, int ledNumber, HardwareMap hardwareMap){
+            final CRServo LED = hardwareMap.get(CRServo.class, "Led"+ledNumber);
             switch (type) {
                 case "Clear":
                     LED.setPower(.5); //White
