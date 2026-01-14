@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.MMHS26Lib.roadRunner;
 public class _26LibTest extends LinearOpMode{
     int time = 500;
     double speed = 0.5;
+    Pose2d startingPose = new Pose2d(0,0,0);
 
     @Override
     public void runOpMode(){
@@ -33,6 +35,7 @@ public class _26LibTest extends LinearOpMode{
         utils.ledManager("Error", 1);
         motion.turnRight(speed, time);
         utils.ledManager("Match Alert", 1);
-        roadRunner.spline.splineToSplineHeading(24, 24 , Math.toRadians(0), Math.toRadians(0), MMHS26Lib.currentPose());
+        roadRunner.turnTo(Math.toRadians(-120),
+                roadRunner.spline.splineToSplineHeading(24, 24 , Math.toRadians(0), Math.toRadians(0), startingPose));
     }
 }

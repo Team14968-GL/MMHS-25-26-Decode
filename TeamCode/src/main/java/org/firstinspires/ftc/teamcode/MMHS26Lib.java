@@ -33,6 +33,7 @@ public class MMHS26Lib {
     private static GoBildaPinpointDriver pinpoint;
     private static CRServo LED1;
     private static ArrayList<CRServo> leds;
+    public static Limelight3A limelight;
 
 
     public MMHS26Lib(HardwareMap hardwareMap){
@@ -160,8 +161,6 @@ public class MMHS26Lib {
         }
     }
     public static class limelight {
-        public static Limelight3A limelight;
-
         public limelight(){
             super();
         }
@@ -239,9 +238,10 @@ public class MMHS26Lib {
                 }
 
                 if (!fiducialList.isEmpty()) {
-                    telemetry.addData("Detections Found", fiducialList.size());
-                    telemetry.update();
-
+                    if(debug.debugTelemetry) {
+                        telemetry.addData("Detections Found", fiducialList.size());
+                        telemetry.update();
+                    }
                     // Iterate through each detected tag
                     for (LLResultTypes.FiducialResult fiducial : fiducialList) {
                         id = fiducial.getFiducialId();
