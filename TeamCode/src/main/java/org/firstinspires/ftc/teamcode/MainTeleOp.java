@@ -307,6 +307,10 @@ public class MainTeleOp extends LinearOpMode {
             }
             turnTableServo.setPosition(turnTablePos2);
         }
+        if (gamepad2.psWasPressed() && 0 != goofyAhhhhFrontDoor.getPosition()) {
+            turnTablePos2 = 0;
+            turnTableServo.setPosition(turnTablePos2);
+        }
     }
 
     private void drive() {
@@ -703,7 +707,7 @@ public class MainTeleOp extends LinearOpMode {
 
             }
             if (LaunchMotiffClock.seconds() >= 6.25 && LaunchMotiffClock.seconds() <= 6.75) {
-                backDoor.setPosition(0.5);
+
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 scoop.setPosition(0.5);
 
@@ -711,6 +715,8 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (LaunchMotiffClock.seconds() >= 6.75 && LaunchMotiffClock.seconds() <= 7.25) {
                 scoop.setPosition(0);
+                backDoor.setPosition(1);
+                turnTableServo.setPosition(motifArray.get(motiff*3));
                 launchMotorOff();
                 telemetry.update();
                 ledManager("Null");
