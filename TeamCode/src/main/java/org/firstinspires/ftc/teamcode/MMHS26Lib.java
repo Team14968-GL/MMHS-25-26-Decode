@@ -14,15 +14,33 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MMHS26Lib {
+    /*
+    working to implement a constructor to remove the necessity to pull hardwareMap into functions and remove unnecessary setup
+    public MMHS26Lib(HardwareMap hardwareMap){
+        final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+
+        //final ArrayList<DcMotor> Motors = new ArrayList<>(Arrays.asList(leftBack, rightBack, leftFront, rightFront));
+    }
+     */
 
     @Config
     public static class debug {
@@ -36,6 +54,12 @@ public class MMHS26Lib {
         }
     }
     public static class motion {
+        /*
+        working to implement a constructor to remove the necessity to pull hardwareMap into functions and remove unnecessary setup
+        public motion() {
+            super();
+        }
+        */
         public static void strafeLeft(double Speed, long time, HardwareMap hardwareMap){
             final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
             final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
