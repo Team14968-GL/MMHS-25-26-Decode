@@ -14,37 +14,54 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MMHS26Lib {
-    /*
-    working to implement a constructor to remove the necessity to pull hardwareMap into functions and remove unnecessary setup
+    private static DcMotor leftBack;
+    private static DcMotor rightBack;
+    private static DcMotor leftFront;
+    private static DcMotor rightFront;
+    static HardwareMap hwMap;
+    private static GoBildaPinpointDriver pinpoint;
+    private static CRServo LED1;
+    private static ArrayList<CRServo> leds;
+
+
     public MMHS26Lib(HardwareMap hardwareMap){
-        final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
 
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.FORWARD);
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         rightFront.setDirection(DcMotor.Direction.FORWARD);
 
-        //final ArrayList<DcMotor> Motors = new ArrayList<>(Arrays.asList(leftBack, rightBack, leftFront, rightFront));
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpoint.initialize();
+
+        LED1 = hardwareMap.get(CRServo.class, "Led1");
+        leds = new ArrayList<>(Arrays.asList(null, LED1));
+
+        hwMap = hardwareMap;
     }
-     */
+
 
     @Config
     public static class debug {
-        public static boolean debugTelemetry = true;
+        private static boolean debugTelemetry = false;
+        public static void debugTelemetry(boolean enabled){
+            debugTelemetry = enabled;
+        }
     }
     private static void sleep(long milliseconds) {
         try {
@@ -53,19 +70,18 @@ public class MMHS26Lib {
             Thread.currentThread().interrupt();
         }
     }
+
+    public static Pose2d currentPose(){
+        return(new Pose2d( new Vector2d(pinpoint.getPosX(DistanceUnit.INCH), pinpoint.getPosY(DistanceUnit.INCH)), pinpoint.getHeading(AngleUnit.RADIANS)));
+    }
+
     public static class motion {
-        /*
-        working to implement a constructor to remove the necessity to pull hardwareMap into functions and remove unnecessary setup
+
         public motion() {
             super();
         }
-        */
-        public static void strafeLeft(double Speed, long time, HardwareMap hardwareMap){
-            final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-            final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-            final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-            final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
 
+        public static void strafeLeft(double Speed, long time){
             leftBack.setDirection(DcMotor.Direction.FORWARD);
             rightBack.setDirection(DcMotor.Direction.FORWARD);
             leftFront.setDirection(DcMotor.Direction.REVERSE);
@@ -81,17 +97,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void strafeRight(double Speed, long time, HardwareMap hardwareMap){
-            final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-            final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-            final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-            final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
-            leftBack.setDirection(DcMotor.Direction.FORWARD);
-            rightBack.setDirection(DcMotor.Direction.FORWARD);
-            leftFront.setDirection(DcMotor.Direction.REVERSE);
-            rightFront.setDirection(DcMotor.Direction.FORWARD);
-
+        public static void strafeRight(double Speed, long time){
             leftBack.setPower(-Speed);
             leftFront.setPower(Speed);
             rightBack.setPower(Speed);
@@ -102,17 +108,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void turnRight(double Speed, long time, HardwareMap hardwareMap){
-            final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-            final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-            final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-            final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
-            leftBack.setDirection(DcMotor.Direction.FORWARD);
-            rightBack.setDirection(DcMotor.Direction.FORWARD);
-            leftFront.setDirection(DcMotor.Direction.REVERSE);
-            rightFront.setDirection(DcMotor.Direction.FORWARD);
-
+        public static void turnRight(double Speed, long time){
             leftBack.setPower(Speed);
             leftFront.setPower(Speed);
             rightBack.setPower(-Speed);
@@ -123,17 +119,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void turnLeft(double Speed, long time, HardwareMap hardwareMap){
-            final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-            final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-            final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-            final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
-            leftBack.setDirection(DcMotor.Direction.FORWARD);
-            rightBack.setDirection(DcMotor.Direction.FORWARD);
-            leftFront.setDirection(DcMotor.Direction.REVERSE);
-            rightFront.setDirection(DcMotor.Direction.FORWARD);
-
+        public static void turnLeft(double Speed, long time){
             leftBack.setPower(-Speed);
             leftFront.setPower(-Speed);
             rightBack.setPower(Speed);
@@ -144,17 +130,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void moveBackward(double Speed, long time, HardwareMap hardwareMap){
-            final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-            final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-            final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-            final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
-            leftBack.setDirection(DcMotor.Direction.FORWARD);
-            rightBack.setDirection(DcMotor.Direction.FORWARD);
-            leftFront.setDirection(DcMotor.Direction.REVERSE);
-            rightFront.setDirection(DcMotor.Direction.FORWARD);
-
+        public static void moveBackward(double Speed, long time){
             leftBack.setPower(Speed);
             leftFront.setPower(Speed);
             rightBack.setPower(Speed);
@@ -165,17 +141,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void moveForward(double Speed, long time, HardwareMap hardwareMap) {
-            final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-            final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-            final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-            final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
-            leftBack.setDirection(DcMotor.Direction.FORWARD);
-            rightBack.setDirection(DcMotor.Direction.FORWARD);
-            leftFront.setDirection(DcMotor.Direction.REVERSE);
-            rightFront.setDirection(DcMotor.Direction.FORWARD);
-
+        public static void moveForward(double Speed, long time) {
             leftBack.setPower(-Speed);
             leftFront.setPower(-Speed);
             rightBack.setPower(-Speed);
@@ -186,17 +152,7 @@ public class MMHS26Lib {
             rightBack.setPower(0);
             rightFront.setPower(0);
         }
-        public static void halt(HardwareMap hardwareMap){
-            final DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-            final DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-            final DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-            final DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
-            leftBack.setDirection(DcMotor.Direction.FORWARD);
-            rightBack.setDirection(DcMotor.Direction.FORWARD);
-            leftFront.setDirection(DcMotor.Direction.REVERSE);
-            rightFront.setDirection(DcMotor.Direction.FORWARD);
-
+        public static void halt(){
             leftBack.setPower(0);
             leftFront.setPower(0);
             rightBack.setPower(0);
@@ -206,7 +162,11 @@ public class MMHS26Lib {
     public static class limelight {
         public static Limelight3A limelight;
 
-        public static void localizer(double localPower, int sleepTime, HardwareMap hardwareMap){
+        public limelight(){
+            super();
+        }
+
+        public static void localizer(double localPower, int sleepTime){
             //boolean localizing = true;
             while (true) {
                 LLResult result = limelight.getLatestResult();
@@ -232,16 +192,16 @@ public class MMHS26Lib {
 
                     if (tx < txMin) {
                         // turn right
-                        motion.turnRight(localPower, sleepTime, hardwareMap);
+                        motion.turnRight(localPower, sleepTime);
                     } else if (tx > txMax) {
                         //turn left
-                        motion.turnLeft(localPower, sleepTime, hardwareMap);
+                        motion.turnLeft(localPower, sleepTime);
                     } else if (ta > taMax) {
                         //move backward
-                        motion.moveBackward(localPower, sleepTime, hardwareMap);
+                        motion.moveBackward(localPower, sleepTime);
                     } else if (ta < taMin) {
                         //move Forward
-                        motion.moveForward(localPower, sleepTime, hardwareMap);
+                        motion.moveForward(localPower, sleepTime);
                     } else {
                         break;
                     }
@@ -251,7 +211,7 @@ public class MMHS26Lib {
                         telemetry.addData("Limelight", "No Targets");
                         telemetry.update();
                     }
-                    motion.halt(hardwareMap);
+                    motion.halt();
                 }
             }
         }
@@ -312,66 +272,64 @@ public class MMHS26Lib {
         }
     }
     public static class roadRunner  {
+        public roadRunner(){
+            super();
+        }
         public static class spline {
+            public spline(){
+                super();
+            }
 
+            public static Pose2d splineTo(double x, double y, double tangent, Pose2d startingPose) {
 
-            public static Pose2d splineTo(double x, double y, double tangent, Pose2d startingPose, HardwareMap hardwareMap) {
-
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder splineTo = drive.actionBuilder(startingPose)
                         .splineTo(new Vector2d(x, y), Math.toRadians(tangent));
                 Actions.runBlocking(
                         new SequentialAction(
                                 splineTo.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d splineToConstantHeading(double x, double y, double tangent, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d splineToConstantHeading(double x, double y, double tangent, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder splineToConstantHeading = drive.actionBuilder(startingPose)
                         .splineToConstantHeading(new Vector2d(x, y), Math.toRadians(tangent));
                 Actions.runBlocking(
                         new SequentialAction(
                                 splineToConstantHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
+
+                return(currentPose());
             }
-            public static Pose2d splineToLinearHeading(double x, double y, double angle, double tangent, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d splineToLinearHeading(double x, double y, double angle, double tangent, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder splineToLinearHeading = drive.actionBuilder(startingPose)
                         .splineToLinearHeading(new Pose2d(new Vector2d(x, y), angle), tangent);
                 Actions.runBlocking(
                         new SequentialAction(
                                 splineToLinearHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
+
+                return(currentPose());
             }
-            public static Pose2d splineToSplineHeading(double x, double y, double angle, double tangent, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d splineToSplineHeading(double x, double y, double angle, double tangent, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder splineToSplineHeading = drive.actionBuilder(startingPose)
                         .splineToSplineHeading(new Pose2d(new Vector2d(x, y), angle), tangent);
                 Actions.runBlocking(
                         new SequentialAction(
                                 splineToSplineHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
         }
         public static class strafe {
-            public static Pose2d strafeTo(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public strafe(){
+                super();
+            }
+            public static Pose2d strafeTo(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder strafeTo;
                 if (VelCon && AccCon) {
                     strafeTo = drive.actionBuilder(startingPose)
@@ -391,13 +349,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 strafeTo.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d strafeToConstantHeading(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d strafeToConstantHeading(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder strafeToConstantHeading;
                 if (VelCon && AccCon) {
                     strafeToConstantHeading = drive.actionBuilder(startingPose)
@@ -417,13 +372,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 strafeToConstantHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d strafeToLinearHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d strafeToLinearHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder strafeToLinearHeading;
                 if (VelCon && AccCon) {
                     strafeToLinearHeading = drive.actionBuilder(startingPose)
@@ -443,13 +395,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 strafeToLinearHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d strafeToSplineHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d strafeToSplineHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder strafeToSplineHeading;
                 if (VelCon && AccCon) {
                     strafeToSplineHeading = drive.actionBuilder(startingPose)
@@ -469,16 +418,16 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 strafeToSplineHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(x, y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
         }
 
         public static class lineTo {
-            public static Pose2d lineToX(double X, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public lineTo(){
+                super();
+            }
+            public static Pose2d lineToX(double X, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToX;
                 if (VelCon && AccCon) {
                     lineToX = drive.actionBuilder(startingPose)
@@ -498,13 +447,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 lineToX.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(X, startingPose.position.y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d lineToXConstantHeading(double X, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d lineToXConstantHeading(double X, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToXConstantHeading;
                 if (VelCon && AccCon) {
                     lineToXConstantHeading = drive.actionBuilder(startingPose)
@@ -524,13 +470,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 lineToXConstantHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(X, startingPose.position.y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d lineToXLinearHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d lineToXLinearHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToXLinearHeading;
                 if (VelCon && AccCon) {
                     lineToXLinearHeading = drive.actionBuilder(startingPose)
@@ -550,13 +493,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 lineToXLinearHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(X, startingPose.position.y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d lineToXSplineHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d lineToXSplineHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToXSplineHeading;
                 if (VelCon && AccCon) {
                     lineToXSplineHeading = drive.actionBuilder(startingPose)
@@ -576,13 +516,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 lineToXSplineHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(X, startingPose.position.y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d lineToY(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d lineToY(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToY;
                 if (VelCon && AccCon) {
                     lineToY = drive.actionBuilder(startingPose)
@@ -602,13 +539,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 lineToY.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(startingPose.position.x, Y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d lineToYConstantHeading(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d lineToYConstantHeading(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToYConstantHeading;
                 if (VelCon && AccCon) {
                     lineToYConstantHeading = drive.actionBuilder(startingPose)
@@ -628,13 +562,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 lineToYConstantHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(startingPose.position.x, Y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d lineToYLinearHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d lineToYLinearHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToYLinearHeading;
                 if (VelCon && AccCon) {
                     lineToYLinearHeading = drive.actionBuilder(startingPose)
@@ -654,13 +585,10 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 lineToYLinearHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(startingPose.position.x, Y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
-            public static Pose2d lineToYSplineHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose, HardwareMap hardwareMap) {
-                MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+            public static Pose2d lineToYSplineHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
+                MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToYSplineHeading;
                 if (VelCon && AccCon) {
                     lineToYSplineHeading = drive.actionBuilder(startingPose)
@@ -680,84 +608,86 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 lineToYSplineHeading.build()));
 
-                GoBildaPinpointDriver pinpoint;
-                pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-                pinpoint.initialize();
-                return(new Pose2d(startingPose.position.x, Y, pinpoint.getHeading(AngleUnit.RADIANS)));
+                return(currentPose());
             }
         }
 
-        public static Pose2d turnTo(double angle, Pose2d startingPose, HardwareMap hardwareMap) {
-            MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+        public static Pose2d turnTo(double angle, Pose2d startingPose) {
+            MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
             TrajectoryActionBuilder turnTo = drive.actionBuilder(startingPose)
                     .turnTo(angle);
             Actions.runBlocking(
                     new SequentialAction(
                             turnTo.build()));
 
-            return(new Pose2d(startingPose.position.x, startingPose.position.y, Math.toRadians(angle)));
+            return(currentPose());
 
         }
-        public static Pose2d turn(double angle, Pose2d startingPose, HardwareMap hardwareMap) {
-            MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
+        public static Pose2d turn(double angle, Pose2d startingPose) {
+            MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
             TrajectoryActionBuilder turn = drive.actionBuilder(startingPose)
                     .turn(angle);
             Actions.runBlocking(
                     new SequentialAction(
                             turn.build()));
 
-            return(new Pose2d(startingPose.position.x, startingPose.position.y, Math.toRadians(angle)));
+            return(currentPose());
         }
     }
     public static class utils {
-        public static void ledManager(String type, int ledNumber, HardwareMap hardwareMap){
-            final CRServo LED = hardwareMap.get(CRServo.class, "Led"+ledNumber);
-            switch (type) {
-                case "Clear":
-                    LED.setPower(.5); //White
+        public utils(){
+            super();
+        }
+        public static void ledManager(String type, int ledNumber){
+            CRServo led = leds.get(ledNumber);
+            if (led != null) {
+                switch (type) {
+                    case "Clear":
+                        led.setPower(.5); //White
 
-                    break;
-                case "Good":
-                    LED.setPower(0); //Green
+                        break;
+                    case "Good":
+                        led.setPower(0); //Green
 
-                    break;
-                case "Warn":
-                    LED.setPower(-.25); //Yellow
+                        break;
+                    case "Warn":
+                        led.setPower(-.25); //Yellow
 
-                    break;
-                case "Alert":
-                    LED.setPower(-.35); //Orange
+                        break;
+                    case "Alert":
+                        led.setPower(-.35); //Orange
 
-                    break;
-                case "Error":
-                    LED.setPower(-0.44); //red
+                        break;
+                    case "Error":
+                        led.setPower(-0.44); //red
 
-                    break;
-                case "Null":
-                    LED.setPower(-.6); //Blank
+                        break;
+                    case "Null":
+                        led.setPower(-.6); //Blank
 
-                    break;
-                case "Match Alert":
-                    LED.setPower(0); //Purple
+                        break;
+                    case "Match Alert":
+                        led.setPower(0); //Purple
 
-                    break;
-                case "Blue":
-                    LED.setPower(0.216); //Blue
+                        break;
+                    case "Blue":
+                        led.setPower(0.216); //Blue
 
-                    break;
-                case "Purple":
-                    LED.setPower(0.415); //Purple
+                        break;
+                    case "Purple":
+                        led.setPower(0.415); //Purple
 
-                    break;
-                case "Pink":
-                    LED.setPower(0.275); //Pink
+                        break;
+                    case "Pink":
+                        led.setPower(0.275); //Pink
 
-                    break;
-                default:
-                    if(debug.debugTelemetry) {
-                        telemetry.addData("Led Manager Error", "Wrong or Invalid Input");
-                    }
-                    break;
+                        break;
+                    default:
+                        if(debug.debugTelemetry) {
+                            telemetry.addData("Led Manager Error", "Wrong or Invalid Input");
+                        }
+                        break;
+                }
             }
         }
     }
