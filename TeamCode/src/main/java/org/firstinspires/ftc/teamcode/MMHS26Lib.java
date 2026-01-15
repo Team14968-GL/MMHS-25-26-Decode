@@ -14,7 +14,10 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -34,38 +37,90 @@ public class MMHS26Lib {
     private static CRServo LED1;
     private static ArrayList<CRServo> leds;
     private static Limelight3A limelight;
-
+    private static DcMotor intakeMotor;
+    private static Servo goofyAhhhhFrontDoor;
+    private static DcMotor leftLauncher;
+    private static DcMotor rightLauncher;
+    private static DcMotor lift;
+    private static CRServo launchLiftRight;
+    private static CRServo launchLiftLeft;
+    private static Servo backDoor;
+    private static Servo scoop;
+    private static Servo turnTableServo;
+    private static TouchSensor TopBump;
+    private static TouchSensor BottomBump;
 
     public MMHS26Lib(HardwareMap hardwareMap){
+        //Drive Definitions
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
+        //Intake Definitions
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        goofyAhhhhFrontDoor = hardwareMap.get(Servo.class, "goofyAhhhhFrontDoor");
+        //Launcher Definitions
+        leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
+        rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
+        launchLiftRight = hardwareMap.get(CRServo.class, "launchLiftRight");
+        launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
+        TopBump = hardwareMap.get(TouchSensor.class, "TopBump");
+        BottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
+        backDoor = hardwareMap.get(Servo.class, "backDoor");
+        scoop = hardwareMap.get(Servo.class, "scoop");
+        //Lift/Skis Definition
+        lift = hardwareMap.get(DcMotor.class, "lift");
+        //Turntable Definition
+        turnTableServo = hardwareMap.get(Servo.class, "turnTableServo");
+        //Drive Config
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.FORWARD);
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         rightFront.setDirection(DcMotor.Direction.FORWARD);
-
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        //Intake Config/Setup
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        //Launcher Config/Setup
+        leftLauncher.setDirection(DcMotor.Direction.REVERSE);
+        rightLauncher.setDirection(DcMotor.Direction.FORWARD);
+        leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftLauncher.setPower(0);
+        rightLauncher.setPower(0);
+        launchLiftRight.setDirection(CRServo.Direction.REVERSE);
+        launchLiftLeft.setDirection(CRServo.Direction.FORWARD);
+        backDoor.setPosition(1);
+        scoop.setPosition(0);
+        //Turntable Setup
+        turnTableServo.setPosition(0.5);
+        //Lift/Skis Config
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //Odometry Config
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.initialize();
-
+        //LED Config
         LED1 = hardwareMap.get(CRServo.class, "Led1");
         leds = new ArrayList<>(Arrays.asList(null, LED1));
-
+        //Limelight Config/Setup
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(0);
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start();
-
+        //Internal Hardware Map (DO NOT TOUCH)
         hwMap = hardwareMap;
     }
-
+    //Optional flag(s) to enable internal debugging tools
     @Config
     public static class debug {
         public static boolean debugTelemetry = false;
     }
-
+    //Sleep function taken from LinearOpMode (importing this from LinearOpMode doesn't work)
     private static void sleep(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -73,11 +128,11 @@ public class MMHS26Lib {
             Thread.currentThread().interrupt();
         }
     }
-
+    //Gets the robots current position on the field
     public static Pose2d currentPose(){
         return(new Pose2d( new Vector2d(pinpoint.getPosX(DistanceUnit.INCH), pinpoint.getPosY(DistanceUnit.INCH)), pinpoint.getHeading(AngleUnit.RADIANS)));
     }
-
+    //Class for managing basic functions relating to movement
     public static class motion {
         public motion() {super();}
 
@@ -159,9 +214,10 @@ public class MMHS26Lib {
             rightFront.setPower(0);
         }
     }
+    //Class for limelight functions
     public static class limelight {
         public limelight(){super();}
-
+        //moves to a predetermined point on the field
         public static void localizer(double localPower, int sleepTime){
             //boolean localizing = true;
             while (true) {
@@ -185,7 +241,6 @@ public class MMHS26Lib {
                         telemetry.addData("Target Area", ta);
                         telemetry.update();
                     }
-
                     if (tx < txMin) {
                         // turn right
                         motion.turnRight(localPower, sleepTime);
@@ -196,21 +251,22 @@ public class MMHS26Lib {
                         //move backward
                         motion.moveBackward(localPower, sleepTime);
                     } else if (ta < taMin) {
-                        //move Forward
+                        //move forward
                         motion.moveForward(localPower, sleepTime);
                     } else {
                         break;
                     }
-
                 } else {
                     if(debug.debugTelemetry) {
                         telemetry.addData("Limelight", "No Targets");
                         telemetry.update();
                     }
+                    //stop movement
                     motion.halt();
                 }
             }
         }
+        //Outputs a list of AprilTag IDs that the limelight can see
         static int processLimeLightResults() {
             int id = 0;
             ArrayList<Integer> IDs = new ArrayList<>();
@@ -268,10 +324,12 @@ public class MMHS26Lib {
             return id;
         }
     }
+    //Class for functions relating to the autonomous pathing tool RoadRunner
     public static class roadRunner  {
         public roadRunner(){
             super();
         }
+        //Creates a curved path for the robot to automatically follow
         public static class spline {
             public spline(){
                 super();
@@ -321,6 +379,7 @@ public class MMHS26Lib {
                 return(currentPose());
             }
         }
+        //Creates a horizontal path for the robot to move along
         public static class strafe {
             public strafe(){
                 super();
@@ -418,7 +477,7 @@ public class MMHS26Lib {
                 return(currentPose());
             }
         }
-
+        //takes a line to a point on a specified axis (x or y)
         public static class lineTo {
             public lineTo(){
                 super();
@@ -608,7 +667,7 @@ public class MMHS26Lib {
                 return(currentPose());
             }
         }
-
+        //turns to a specified angle
         public static Pose2d turnTo(double angle, Pose2d startingPose) {
             MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
             TrajectoryActionBuilder turnTo = drive.actionBuilder(startingPose)
@@ -620,6 +679,7 @@ public class MMHS26Lib {
             return(currentPose());
 
         }
+        //turns to a specified angle
         public static Pose2d turn(double angle, Pose2d startingPose) {
             MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
             TrajectoryActionBuilder turn = drive.actionBuilder(startingPose)
@@ -631,10 +691,12 @@ public class MMHS26Lib {
             return(currentPose());
         }
     }
+    //Class for non-critical utility systems
     public static class utils {
         public utils(){
             super();
         }
+        //Function to manage the color of LED(s) on the robot
         public static void ledManager(String type, int ledNumber){
             CRServo led = leds.get(ledNumber);
             if (led != null) {
