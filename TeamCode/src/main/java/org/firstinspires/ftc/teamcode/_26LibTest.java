@@ -19,7 +19,7 @@ public class _26LibTest extends LinearOpMode{
     public void runOpMode(){
         //setup
         new MMHS26Lib(hardwareMap);
-        debug.debugTelemetry(true);
+        debug.debugTelemetry = true;
 
         waitForStart();
         //26Lib test script

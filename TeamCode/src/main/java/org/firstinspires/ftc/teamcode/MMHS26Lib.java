@@ -63,10 +63,7 @@ public class MMHS26Lib {
 
     @Config
     public static class debug {
-        private static boolean debugTelemetry = false;
-        public static void debugTelemetry(boolean enabled){
-            debugTelemetry = enabled;
-        }
+        public static boolean debugTelemetry = false;
     }
 
     private static void sleep(long milliseconds) {
