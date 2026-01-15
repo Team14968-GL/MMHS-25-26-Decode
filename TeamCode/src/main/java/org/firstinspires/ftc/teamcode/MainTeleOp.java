@@ -27,30 +27,30 @@ import java.util.List;
 public class MainTeleOp extends LinearOpMode {
     Limelight3A limelight;
 
-    public ArrayList<Integer> IDs = new ArrayList<>();
+    ArrayList<Integer> IDs = new ArrayList<>();
     //.5=green | 1=p | 0=p
-    public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
+    ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
 
-    public int id;
+    int id;
 
-    private DcMotor intakeMotor;
-    private Servo goofyAhhhhFrontDoor;
-    private DcMotor leftBack;
-    private DcMotor rightBack;
-    private DcMotor leftFront;
-    private DcMotor rightFront;
-    private DcMotor leftLauncher;
-    private DcMotor rightLauncher;
-    private DcMotor lift;
-    private CRServo launchLiftRight;
-    private CRServo launchLiftLeft;
-    private Servo backDoor;
-    private Servo scoop;
-    private Servo turnTableServo;
-    private TouchSensor TopBump;
-    private TouchSensor BottomBump;
-    private CRServo LED1;
-    private GoBildaPinpointDriver pinpoint;
+    DcMotor intakeMotor;
+    Servo goofyAhhhhFrontDoor;
+    DcMotor leftBack;
+    DcMotor rightBack;
+    DcMotor leftFront;
+    DcMotor rightFront;
+    DcMotor leftLauncher;
+    DcMotor rightLauncher;
+    DcMotor lift;
+    CRServo launchLiftRight;
+    CRServo launchLiftLeft;
+    Servo backDoor;
+    Servo scoop;
+    Servo turnTableServo;
+    TouchSensor TopBump;
+    TouchSensor BottomBump;
+    CRServo LED1;
+    GoBildaPinpointDriver pinpoint;
 
     int highLauncherSpeed = 2165;
     int lowLauncherSpeed = 1700;

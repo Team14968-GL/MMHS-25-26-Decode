@@ -15,7 +15,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -29,11 +29,11 @@ public class MMHS26Lib {
     private static DcMotor rightBack;
     private static DcMotor leftFront;
     private static DcMotor rightFront;
-    static HardwareMap hwMap;
+    private static HardwareMap hwMap;
     private static GoBildaPinpointDriver pinpoint;
     private static CRServo LED1;
     private static ArrayList<CRServo> leds;
-    public static Limelight3A limelight;
+    private static Limelight3A limelight;
 
 
     public MMHS26Lib(HardwareMap hardwareMap){
@@ -53,9 +53,13 @@ public class MMHS26Lib {
         LED1 = hardwareMap.get(CRServo.class, "Led1");
         leds = new ArrayList<>(Arrays.asList(null, LED1));
 
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.pipelineSwitch(0);
+        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.start();
+
         hwMap = hardwareMap;
     }
-
 
     @Config
     public static class debug {
@@ -64,6 +68,7 @@ public class MMHS26Lib {
             debugTelemetry = enabled;
         }
     }
+
     private static void sleep(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -77,10 +82,7 @@ public class MMHS26Lib {
     }
 
     public static class motion {
-
-        public motion() {
-            super();
-        }
+        public motion() {super();}
 
         public static void strafeLeft(double Speed, long time){
             leftBack.setDirection(DcMotor.Direction.FORWARD);
@@ -161,9 +163,7 @@ public class MMHS26Lib {
         }
     }
     public static class limelight {
-        public limelight(){
-            super();
-        }
+        public limelight(){super();}
 
         public static void localizer(double localPower, int sleepTime){
             //boolean localizing = true;
@@ -685,6 +685,7 @@ public class MMHS26Lib {
                     default:
                         if(debug.debugTelemetry) {
                             telemetry.addData("Led Manager Error", "Wrong or Invalid Input");
+                            RobotLog.ii("Led Manager Error", "Wrong or Invalid Input");
                         }
                         break;
                 }
