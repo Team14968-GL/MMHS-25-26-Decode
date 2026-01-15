@@ -83,7 +83,7 @@ public class MMHS26Lib {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         //Intake Config/Setup
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        goofyAhhhhFrontDoor.setPosition(0.5);
+        goofyAhhhhFrontDoor.setPosition(0.5); //Sets kicker to be in door position
         //Launcher Config/Setup
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
@@ -95,23 +95,24 @@ public class MMHS26Lib {
         rightLauncher.setPower(0);
         launchLiftRight.setDirection(CRServo.Direction.REVERSE);
         launchLiftLeft.setDirection(CRServo.Direction.FORWARD);
-        backDoor.setPosition(1);
-        scoop.setPosition(0);
+        backDoor.setPosition(1); //sets door to be down
+        scoop.setPosition(0); //sets scoop to be down
         //Turntable Setup
-        turnTableServo.setPosition(0.5);
+        turnTableServo.setPosition(0.5); //Sets turntable to its center position
         //Lift/Skis Config
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //Odometry Config
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.initialize();
+        pinpoint.initialize(); //Initializes odometry for use in code
         //LED Config
         LED1 = hardwareMap.get(CRServo.class, "Led1");
-        leds = new ArrayList<>(Arrays.asList(null, LED1));
+        leds = new ArrayList<>(Arrays.asList(null, LED1)); //creates a list of LEDs for ledManager to use
         //Limelight Config/Setup
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
-        limelight.start();
+        limelight.pipelineSwitch(0); //Sets the config the limelight should use
+        limelight.setPollRateHz(100); //Limelight data polling rate
+        limelight.start(); //Initializes limelight for use in code
+
         //Internal Hardware Map (DO NOT TOUCH)
         hwMap = hardwareMap;
     }
