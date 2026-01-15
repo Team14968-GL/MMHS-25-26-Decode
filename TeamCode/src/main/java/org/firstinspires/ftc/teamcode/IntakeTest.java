@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.List;
-
+@Config
 @Autonomous(name = "IntakeTest")
 public class IntakeTest extends LinearOpMode {
 
@@ -37,11 +38,16 @@ public class IntakeTest extends LinearOpMode {
     public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
     //public double[] motifArray = {.5, 0, 1, 1, .5, 0, 1, 0, .5};
 
+    public int back1Time;
+    public int back2Time;
+    public int back3ime;
+
+
     private DcMotor intakeMotor;
-    public DcMotor backLeft;
-    public DcMotor backRight;
-    public DcMotor frontLeft;
-    public DcMotor frontRight;
+    private DcMotor leftBack;
+    private DcMotor rightBack;
+    private DcMotor leftFront;
+    private DcMotor rightFront;
     private DcMotor leftLauncher;
     private DcMotor rightLauncher;
     private Servo backDoor;
@@ -71,16 +77,17 @@ public class IntakeTest extends LinearOpMode {
 
     int Motif;
 
+
     @Override
     public void runOpMode() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        backLeft = hardwareMap.get(DcMotor.class, "leftBack");
-        backRight = hardwareMap.get(DcMotor.class, "rightBack");
-        frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
-        frontRight = hardwareMap.get(DcMotor.class, "rightFront");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
         rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
         backDoor = hardwareMap.get(Servo.class, "backDoor");
@@ -89,17 +96,12 @@ public class IntakeTest extends LinearOpMode {
         scoop = hardwareMap.get(Servo.class, "scoop");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-
-        backLeft.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.REVERSE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -118,8 +120,8 @@ public class IntakeTest extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-
-
+            intake2Balls();
+            motion.moveForward(.5, 3000);
         }
     }
 
@@ -129,21 +131,35 @@ public class IntakeTest extends LinearOpMode {
 
     public void intakeOff() {
         intakeMotor.setPower(0);
-    /*
-    public void backwardsTillBump(double Speed){
-        while () {
-            backLeft.setPower(-Speed);
-            frontLeft.setPower(-Speed);
-            backRight.setPower(-Speed);
-            frontRight.setPower(-Speed);
-        }
-        backLeft.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        frontRight.setPower(0);
 
     }
+    public void intake2Balls() {
+        goofyAhhhhFrontDoor.setPosition(1);
+        backDoor.setPosition(1);
+        intakeMotor.setPower(0.8);
+        turnTableServo.setPosition(0);
+        moveBackward(.25, 1750);
+        turnTableServo.setPosition(0.5);
+        moveBackward(.25, 2000);
+        turnTableServo.setPosition(1);
+        moveBackward(.25, 1750);
+        goofyAhhhhFrontDoor.setPosition(.5);
+        sleep(500);
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(500);
+        goofyAhhhhFrontDoor.setPosition(.5);
+        intakeMotor.setPower(0);
+    }
 
-     */
+    public void moveBackward(double Speed, int time) {
+        leftBack.setPower(Speed);
+        leftFront.setPower(Speed);
+        rightBack.setPower(Speed);
+        rightFront.setPower(Speed);
+        sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
     }
 }

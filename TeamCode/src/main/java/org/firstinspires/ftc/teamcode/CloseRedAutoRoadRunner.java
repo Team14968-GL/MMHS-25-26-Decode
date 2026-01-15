@@ -147,7 +147,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
         TrajectoryActionBuilder PickUp1 = drive.actionBuilder(beginPose)
                 .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(-12, 40));
+                .strafeTo(new Vector2d(-6, 35));
 
         waitForStart();
 
@@ -180,21 +180,30 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
                 new SequentialAction(
                         PickUp1.build()));
 
-        goofyAhhhhFrontDoor.setPosition(1);
-        backDoor.setPosition(1);
-        intakeMotor.setPower(0.8);
-        turnTableServo.setPosition(0);
-        moveBackward(.3, 1500);
-        turnTableServo.setPosition(0.5);
-        moveBackward(.3, 1500);
-        goofyAhhhhFrontDoor.setPosition(.5);
-        intakeMotor.setPower(0);
+        intake2Balls();
 
 
         Actions.runBlocking(
                 new SequentialAction(
                         MoveToScan2.build()));
 
+    }
+    public void intake2Balls() {
+        goofyAhhhhFrontDoor.setPosition(1);
+        backDoor.setPosition(1);
+        intakeMotor.setPower(0.8);
+        turnTableServo.setPosition(0);
+        moveBackward(.25, 1750);
+        turnTableServo.setPosition(0.5);
+        moveBackward(.25, 2000);
+        turnTableServo.setPosition(1);
+        moveBackward(.25, 1750);
+        goofyAhhhhFrontDoor.setPosition(.5);
+        sleep(500);
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(500);
+        goofyAhhhhFrontDoor.setPosition(.5);
+        intakeMotor.setPower(0);
     }
     public void moveBackward(double Speed, int time) {
         leftBack.setPower(Speed);
