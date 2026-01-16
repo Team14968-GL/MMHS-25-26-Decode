@@ -52,6 +52,8 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
     private CRServo launchLiftLeft;
     private TouchSensor TopBump;
     private TouchSensor BottomBump;
+    private TouchSensor intakeBump1;
+    private TouchSensor intakeBump2;
 
 
 
@@ -90,6 +92,8 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         launchLiftRight = hardwareMap.get(CRServo.class, "launchLiftRight");
         launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        intakeBump1 = hardwareMap.get(TouchSensor.class, "intakeBump1");
+        intakeBump2 = hardwareMap.get(TouchSensor.class, "intakeBump2");
 
 
 
@@ -272,21 +276,19 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         turnTableServo.setPosition(motifArray.get((motiff*3)+1));
         sleep(500);
         scoop.setPosition(0);
-                /*
+
         if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
             sleep(250);
         }
-                */
 
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+2));
         sleep(500);
         scoop.setPosition(0);
-        /*
+
         if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
             sleep(250);
         }
-        */
 
         sleep(500);
         launch(launcherSpeedd);

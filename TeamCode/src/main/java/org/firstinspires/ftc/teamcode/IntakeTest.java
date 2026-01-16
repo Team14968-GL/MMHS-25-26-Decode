@@ -14,6 +14,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.MMHS26Lib.debug;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.motion;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.List;
-@Config
+
 @Autonomous(name = "IntakeTest")
 public class IntakeTest extends LinearOpMode {
 
@@ -38,9 +39,7 @@ public class IntakeTest extends LinearOpMode {
     public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
     //public double[] motifArray = {.5, 0, 1, 1, .5, 0, 1, 0, .5};
 
-    public int back1Time;
-    public int back2Time;
-    public int back3ime;
+
 
 
     private DcMotor intakeMotor;
@@ -55,6 +54,8 @@ public class IntakeTest extends LinearOpMode {
     private Servo goofyAhhhhFrontDoor;
     private Servo turnTableServo;
     private GoBildaPinpointDriver pinpoint;
+    private TouchSensor intakeBump1;
+    private TouchSensor intakeBump2;
 
 
     double txMax = 15;
@@ -95,11 +96,14 @@ public class IntakeTest extends LinearOpMode {
         goofyAhhhhFrontDoor = hardwareMap.get(Servo.class, "goofyAhhhhFrontDoor");
         scoop = hardwareMap.get(Servo.class, "scoop");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        intakeBump1 = hardwareMap.get(TouchSensor.class, "intakeBump1");
+        intakeBump2 = hardwareMap.get(TouchSensor.class, "intakeBump2");
 
         leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
         leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -114,16 +118,45 @@ public class IntakeTest extends LinearOpMode {
         LLResultTypes.FiducialResult fiducialResult = null;
         scoop.setPosition(0);
         backDoor.setPosition(1);
-        turnTableServo.setPosition(0.5);
-        goofyAhhhhFrontDoor.setPosition(0.5);
+        turnTableServo.setPosition(0);
+        goofyAhhhhFrontDoor.setPosition(1);
+
+       // new MMHS26Lib(hardwareMap);
+
+
 
         waitForStart();
 
         if (opModeIsActive()) {
-            intake2Balls();
-            motion.moveForward(.5, 3000);
+            intake3Balls(.3, .5, 1);
+
+
+            //intake2Balls();
+           // motion.moveForward(.5, 3000);
         }
     }
+    public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance) {
+        intakeOn();
+        BackwardsTillBump(searchSpeed,0);
+        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
+        halfKick();
+        //sleep(250);
+        turnTableServo.setPosition(0.5);
+        goofyAhhhhFrontDoor.setPosition(1);
+
+        BackwardsTillBump(searchSpeed,0);
+        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
+        halfKick();
+        //sleep(250);
+        turnTableServo.setPosition(1);
+        goofyAhhhhFrontDoor.setPosition(1);
+
+        BackwardsTillBump(searchSpeed,0);
+        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
+        halfKick();
+        intakeOff();
+    }
+
 
     public void intakeOn() {
         intakeMotor.setPower(0.8);
@@ -133,16 +166,40 @@ public class IntakeTest extends LinearOpMode {
         intakeMotor.setPower(0);
 
     }
+    public void BackwardsTillBump(double Speed, int delay) {
+        int count = 0;
+        while (count <= 2000 && !(!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+            leftBack.setPower(Speed);
+            leftFront.setPower(Speed);
+            rightBack.setPower(Speed);
+            rightFront.setPower(Speed);
+            sleep(1);
+            count++;
+        }
+        if (count <= 2000) {
+            sleep(delay);
+        }
+
+
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+
+
+
+    }
+
     public void intake2Balls() {
         goofyAhhhhFrontDoor.setPosition(1);
         backDoor.setPosition(1);
         intakeMotor.setPower(0.8);
         turnTableServo.setPosition(0);
-        moveBackward(.25, 1750);
+        moveBackward(.3, 1750);
         turnTableServo.setPosition(0.5);
-        moveBackward(.25, 2000);
+        moveBackward(.3, 2000);
         turnTableServo.setPosition(1);
-        moveBackward(.25, 1750);
+        moveBackward(.3, 1750);
         goofyAhhhhFrontDoor.setPosition(.5);
         sleep(500);
         goofyAhhhhFrontDoor.setPosition(0);
@@ -161,5 +218,25 @@ public class IntakeTest extends LinearOpMode {
         leftFront.setPower(0);
         rightBack.setPower(0);
         rightFront.setPower(0);
+    }
+    public void moveForwardTics(double Speed, double tic) {
+        pinpoint.update();
+        double xvalue = pinpoint.getEncoderX();
+        while (xvalue - pinpoint.getEncoderX() <= tic) {
+            pinpoint.update();
+            leftBack.setPower(-Speed);
+            leftFront.setPower(-Speed);
+            rightBack.setPower(-Speed);
+            rightFront.setPower(-Speed);
+        }
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+    public void halfKick() {
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(750);
+        goofyAhhhhFrontDoor.setPosition(.5);
     }
 }
