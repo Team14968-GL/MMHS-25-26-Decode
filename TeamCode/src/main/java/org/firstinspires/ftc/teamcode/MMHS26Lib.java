@@ -139,9 +139,9 @@ public class MMHS26Lib {
 
         public static void strafeLeft(double Speed, long time){
             leftBack.setPower(Speed);
-            leftFront.setPower(Speed);
+            leftFront.setPower(-Speed);
             rightBack.setPower(-Speed);
-            rightFront.setPower(-Speed);
+            rightFront.setPower(Speed);
             sleep(time);
             leftBack.setPower(0);
             leftFront.setPower(0);
@@ -150,9 +150,9 @@ public class MMHS26Lib {
         }
         public static void strafeRight(double Speed, long time){
             leftBack.setPower(-Speed);
-            leftFront.setPower(-Speed);
+            leftFront.setPower(Speed);
             rightBack.setPower(Speed);
-            rightFront.setPower(Speed);
+            rightFront.setPower(-Speed);
             sleep(time);
             leftBack.setPower(0);
             leftFront.setPower(0);
@@ -161,9 +161,9 @@ public class MMHS26Lib {
         }
         public static void turnRight(double Speed, long time){
             leftBack.setPower(Speed);
-            leftFront.setPower(-Speed);
+            leftFront.setPower(Speed);
             rightBack.setPower(-Speed);
-            rightFront.setPower(Speed);
+            rightFront.setPower(-Speed);
             sleep(time);
             leftBack.setPower(0);
             leftFront.setPower(0);
@@ -172,9 +172,9 @@ public class MMHS26Lib {
         }
         public static void turnLeft(double Speed, long time){
             leftBack.setPower(-Speed);
-            leftFront.setPower(Speed);
+            leftFront.setPower(-Speed);
             rightBack.setPower(Speed);
-            rightFront.setPower(-Speed);
+            rightFront.setPower(Speed);
             sleep(time);
             leftBack.setPower(0);
             leftFront.setPower(0);
@@ -183,9 +183,9 @@ public class MMHS26Lib {
         }
         public static void moveBackward(double Speed, long time){
             leftBack.setPower(Speed);
-            leftFront.setPower(-Speed);
+            leftFront.setPower(Speed);
             rightBack.setPower(Speed);
-            rightFront.setPower(-Speed);
+            rightFront.setPower(Speed);
             sleep(time);
             leftBack.setPower(0);
             leftFront.setPower(0);
@@ -194,9 +194,9 @@ public class MMHS26Lib {
         }
         public static void moveForward(double Speed, long time) {
             leftBack.setPower(-Speed);
-            leftFront.setPower(Speed);
+            leftFront.setPower(-Speed);
             rightBack.setPower(-Speed);
-            rightFront.setPower(Speed);
+            rightFront.setPower(-Speed);
             sleep(time);
             leftBack.setPower(0);
             leftFront.setPower(0);
