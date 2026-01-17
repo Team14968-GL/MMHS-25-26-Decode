@@ -798,6 +798,8 @@ public class MMHS26Lib {
             }
 
             public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance) {
+                goofyAhhhhFrontDoor.setPosition(1);
+                sleep(50);
                 intakeMotor.setPower(0.8);
                 BackwardsTillBump(searchSpeed, 0);
                 moveForwardTics(returnSpeed, returnDistance * ticPerIn);

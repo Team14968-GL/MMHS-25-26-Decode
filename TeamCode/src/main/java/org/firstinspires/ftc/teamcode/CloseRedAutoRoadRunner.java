@@ -55,7 +55,12 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
     private TouchSensor intakeBump1;
     private TouchSensor intakeBump2;
 
-
+    double txMax = 15;
+    double txMin = 9;
+    double tyMax = 13.5;
+    double tyMin = 12;
+    double taMax = 2.35;
+    double taMin = 2.07;
 
     double power = .7;
     double localPower = .3;
@@ -126,12 +131,13 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         Pose2d beginPose = new Pose2d(-52, 48, Math.toRadians(308));
         Pose2d PickUp1Pose = new Pose2d(-12, 52, Math.toRadians(90));
+        Pose2d launchPose = new Pose2d(-24, 24,  Math.toRadians(308));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         TrajectoryActionBuilder MoveToScan = drive.actionBuilder(beginPose)
                 .splineTo(new Vector2d(-24, 24), Math.toRadians(22.5));
 
-        TrajectoryActionBuilder MoveToScan2 = drive.actionBuilder(PickUp1Pose)
+        TrajectoryActionBuilder MoveToLaunch = drive.actionBuilder(PickUp1Pose)
                 .splineTo(new Vector2d(-24, 24), Math.toRadians(308));
 
 
@@ -149,9 +155,9 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
                 .turn(Math.toRadians(-11.25));
 
 
-        TrajectoryActionBuilder PickUp1 = drive.actionBuilder(beginPose)
+        TrajectoryActionBuilder PickUp1 = drive.actionBuilder(launchPose)
                 .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(-6, 35));
+                .strafeTo(new Vector2d(-8, 35));
 
         waitForStart();
 
@@ -180,16 +186,22 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         }
         launchMotif(Motif, launcherSpeed);
         sleep(250);
+        goofyAhhhhFrontDoor.setPosition(1);
+        backDoor.setPosition(1);
+        turnTableServo.setPosition(0.5);
         Actions.runBlocking(
                 new SequentialAction(
                         PickUp1.build()));
-
-        intake2Balls();
+        intake3Balls(.3, .5, 1);
 
 
         Actions.runBlocking(
                 new SequentialAction(
-                        MoveToScan2.build()));
+                        MoveToLaunch.build()));
+        sleep(250);
+        //localize();
+        
+        launchMotif(Motif, launcherSpeed);
 
     }
     public void intake2Balls() {
@@ -219,6 +231,163 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         leftFront.setPower(0);
         rightBack.setPower(0);
         rightFront.setPower(0);
+    }
+    public void localize() {
+        //boolean localizing = true;
+        while (true) {
+            LLResult result = limelight.getLatestResult();
+            double tx;
+            double ty;
+            double ta;
+            if (result != null && result.isValid()) {
+                tx = result.getTx(); // How far left or right the target is (degrees)
+                ty = result.getTy(); // How far up or down the target is (degrees)
+                ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+                telemetry.update();
+                if (!opModeIsActive()) {
+                    break;
+                } else if (tx < txMin) {
+                    // turn right
+                    leftBack.setPower(-localPower);
+                    leftFront.setPower(-localPower);
+                    rightBack.setPower(localPower);
+                    rightFront.setPower(localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                } else if (tx > txMax) {
+                    //turn left
+                    leftBack.setPower(localPower);
+                    leftFront.setPower(localPower);
+                    rightBack.setPower(-localPower);
+                    rightFront.setPower(-localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                } else if (ta > taMax) {
+                    //move backward
+                    leftBack.setPower(localPower);
+                    leftFront.setPower(localPower);
+                    rightBack.setPower(localPower);
+                    rightFront.setPower(localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                } else if (ta < taMin) {
+                    //move Forward
+                    leftBack.setPower(-localPower);
+                    leftFront.setPower(-localPower);
+                    rightBack.setPower(-localPower);
+                    rightFront.setPower(-localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                } else {
+                    break;
+                }
+
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+                telemetry.update();
+
+                leftBack.setPower(0);
+                leftFront.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
+            }
+        }
+        int count = 0;
+        while (count <= 5000) {
+            LLResult result = limelight.getLatestResult();
+            double tx ;
+            double ty;
+            double ta;
+            if (result != null && result.isValid()) {
+                tx = result.getTx();
+                ty = result.getTy(); // How far up or down the target is (degrees)
+                ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+                telemetry.update();
+
+                if (tx < txMin) {
+                    // turn right
+                    leftBack.setPower(-localPower);
+                    leftFront.setPower(-localPower);
+                    rightBack.setPower(localPower);
+                    rightFront.setPower(localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    count = count + sleepTime;
+                } else if (tx > txMax) {
+                    //turn left
+                    leftBack.setPower(localPower);
+                    leftFront.setPower(localPower);
+                    rightBack.setPower(-localPower);
+                    rightFront.setPower(-localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    count = count + sleepTime;
+                } else if (ta > taMax) {
+                    //move backward
+                    leftBack.setPower(localPower);
+                    leftFront.setPower(localPower);
+                    rightBack.setPower(localPower);
+                    rightFront.setPower(localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    count = count + sleepTime;
+                } else if (ta < taMin) {
+                    //move Forward
+                    leftBack.setPower(-localPower);
+                    leftFront.setPower(-localPower);
+                    rightBack.setPower(-localPower);
+                    rightFront.setPower(-localPower);
+                    sleep(sleepTime);
+                    leftBack.setPower(0);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                    rightFront.setPower(0);
+                    count = count + sleepTime;
+                } else {
+                    count++;
+                }
+
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+                telemetry.update();
+
+                leftBack.setPower(0);
+                leftFront.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
+            }
+        }
+        telemetry.addData("done", 0);
+        telemetry.update();
     }
 
 
@@ -313,8 +482,83 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         ((DcMotorEx) leftLauncher).setVelocity(0);
         ((DcMotorEx) rightLauncher).setVelocity(0);
     }
+    public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance) {
+        goofyAhhhhFrontDoor.setPosition(1);
+        intakeOn();
+        BackwardsTillBump(searchSpeed,0);
+        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
+        halfKick();
+        sleep(250);
+        turnTableServo.setPosition(0);
+        goofyAhhhhFrontDoor.setPosition(1);
+
+        BackwardsTillBump(searchSpeed,0);
+        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
+        halfKick();
+        sleep(100);
+        turnTableServo.setPosition(1);
+        goofyAhhhhFrontDoor.setPosition(1);
+
+        BackwardsTillBump(searchSpeed,0);
+        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
+        halfKick();
+        intakeOff();
+    }
+
+
+    public void intakeOn() {
+        intakeMotor.setPower(0.8);
+    }
+
+    public void intakeOff() {
+        intakeMotor.setPower(0);
+
+    }
+    public void BackwardsTillBump(double Speed, int delay) {
+        int count = 0;
+        while (count <= 2000 && !(!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+            leftBack.setPower(Speed);
+            leftFront.setPower(Speed);
+            rightBack.setPower(Speed);
+            rightFront.setPower(Speed);
+            sleep(1);
+            count++;
+        }
+        if (count <= 2000) {
+            sleep(delay);
+        }
+
+
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
 
 
 
-
+    }
+   
+    public void moveForwardTics(double Speed, double tic) {
+        pinpoint.update();
+        double xvalue = pinpoint.getEncoderX();
+        while (xvalue - pinpoint.getEncoderX() <= tic) {
+            pinpoint.update();
+            leftBack.setPower(-Speed);
+            leftFront.setPower(-Speed);
+            rightBack.setPower(-Speed);
+            rightFront.setPower(-Speed);
+        }
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+    public void halfKick() {
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(750);
+        goofyAhhhhFrontDoor.setPosition(.5);
+    }
 }
+
+
+
