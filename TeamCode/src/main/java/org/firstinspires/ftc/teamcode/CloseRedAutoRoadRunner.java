@@ -207,7 +207,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
                         PickUp1.build()));
 
 
-        intake3Balls(.75, .5, 0, 400);
+        intake3Balls(.6, .5, .5, 400);
 
 
 
@@ -589,7 +589,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         if (!intakeBump1.isPressed() || intakeBump2.isPressed()) {
             returnSave = 1;
         }
-        
+
         if (BackwardsTillBumpClock.seconds() >= 2) {
             returnSave = 0;
         } else {

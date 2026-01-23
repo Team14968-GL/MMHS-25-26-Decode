@@ -20,6 +20,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.teamcode.MMHS26Lib;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.lang.Math;
@@ -39,6 +41,10 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
     public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5, 0.0));
     //public double[] motifArray = {.5, 0, 1, 1, .5, 0, 1, 0, .5};
     boolean telem = false;
+    public  DcMotor backLeft;
+    public  DcMotor backRight;
+    public  DcMotor frontLeft;
+    public DcMotor frontRight;
     private DcMotor leftLauncher;
     private DcMotor rightLauncher;
     private Servo backDoor;
@@ -66,10 +72,27 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
     int Motif;
     int failCount;
 
+
+    double txMax = 14.700;
+    double txMin = 14.400;
+    double tyMax = 13.5;
+    double tyMin = 12;
+    double taMax = .88;
+    double taMin = .91;
+
     public void runOpMode() {
+        new MMHS26Lib(hardwareMap);
+
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
+
+
+
+        backLeft = hardwareMap.get(DcMotor.class, "leftBack");
+        backRight = hardwareMap.get(DcMotor.class, "rightBack");
+        frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
+        frontRight = hardwareMap.get(DcMotor.class, "rightFront");
 
         leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
         rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
@@ -82,6 +105,11 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         launchLiftRight = hardwareMap.get(CRServo.class, "launchLiftRight");
         launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
 
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
@@ -106,12 +134,8 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         Pose2d beginPose = new Pose2d(startX, 12, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        TrajectoryActionBuilder TurnToLaunch = drive.actionBuilder(beginPose)
-                .splineToConstantHeading(new Vector2d(startX*(1-.125), 12), new Rotation2d(Math.toRadians(0),0))
-                .turn(Math.toRadians(-20));
 
-        TrajectoryActionBuilder Leave = drive.actionBuilder(beginPose)
-                .strafeTo(new Vector2d(startX*(1-.125), 60));
+
 
         waitForStart();
 
@@ -122,17 +146,11 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
             count++;
             sleep(1);
         }
-        Actions.runBlocking(
-                new SequentialAction(
-                        TurnToLaunch.build()));
-        /*
-        while (!(IDs.size() == 1) && (failCount <= IDs.size()-1)) {
-            if (IDs.get(failCount) == (22 | 23 | 24)){
-                Motif = IDs.get(failCount) - 21;
-            }
-            failCount++;
-        }
-        */
+        MMHS26Lib.roadRunner.turn(Math.toRadians(-20),
+                MMHS26Lib.roadRunner.spline.splineToConstantHeading(startX*(1-.125), 12, Math.toRadians(0), beginPose));
+
+        localize();
+
 
         if (IDs.size() == 1) {
             Motif = IDs.get(0) - 21;
@@ -144,9 +162,8 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         launchMotif(0, launcherSpeed);
         sleep(250);
 
-        Actions.runBlocking(
-                new SequentialAction(
-                        Leave.build()));
+        MMHS26Lib.roadRunner.strafe.strafeTo(startX*(1-.125), 60, false, false, MMHS26Lib.currentPose());
+
     }
 
     private int processLimeLightResults() {
@@ -244,6 +261,89 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
     private void launchMotorOff() {
         ((DcMotorEx) leftLauncher).setVelocity(0);
         ((DcMotorEx) rightLauncher).setVelocity(0);
+    }
+    public void localize() {
+        //boolean localizing = true;
+        int count = 0;
+        while (count <= 5000) {
+            LLResult result = limelight.getLatestResult();
+            double tx ;
+            double ty;
+            double ta;
+            if (result != null && result.isValid()) {
+                tx = result.getTx();
+                ty = result.getTy(); // How far up or down the target is (degrees)
+                ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+                telemetry.update();
+
+                if (tx < txMin) {
+                    // turn right
+                    backLeft.setPower(-localPower);
+                    frontLeft.setPower(-localPower);
+                    backRight.setPower(localPower);
+                    frontRight.setPower(localPower);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (tx > txMax) {
+                    //turn left
+                    backLeft.setPower(localPower);
+                    frontLeft.setPower(localPower);
+                    backRight.setPower(-localPower);
+                    frontRight.setPower(-localPower);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (ta > taMax) {
+                    //move backward
+                    backLeft.setPower(localPower);
+                    frontLeft.setPower(localPower);
+                    backRight.setPower(localPower);
+                    frontRight.setPower(localPower);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (ta < taMin) {
+                    //move Forward
+                    backLeft.setPower(-localPower);
+                    frontLeft.setPower(-localPower);
+                    backRight.setPower(-localPower);
+                    frontRight.setPower(-localPower);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else {
+                    count++;
+                }
+
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+                telemetry.update();
+
+                backLeft.setPower(0);
+                frontLeft.setPower(0);
+                backRight.setPower(0);
+                frontRight.setPower(0);
+            }
+        }
+        telemetry.addData("done", 0);
+        telemetry.update();
     }
 
 

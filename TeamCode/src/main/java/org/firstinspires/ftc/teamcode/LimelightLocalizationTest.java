@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -19,30 +20,35 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
+@Config
+
 @Autonomous(name = "LimelightLocalizationTest")
 public class LimelightLocalizationTest extends LinearOpMode {
+    public double xAxis = 18;
+    public double yAxis = -18;
 
     Limelight3A limelight;
     private GoBildaPinpointDriver pinpoint;
-    public DcMotor backLeft;
-    public DcMotor backRight;
-    public DcMotor frontLeft;
-    public DcMotor frontRight;
+    private DcMotor backLeft;
+    private DcMotor backRight;
+    private DcMotor frontLeft;
+    private DcMotor frontRight;
 
-    int sleepTime = 30;
-    double power = .35;
+    private int sleepTime = 30;
+    private double power = .35;
 
-    double txMax = 15;
-    double txMin = 9;
-    double tyMax = 13.5;
-    double tyMin = 12;
-    double taMax = 2.35;
-    double taMin = 2.07;
+    private double txMax = 15;
+    private double txMin = 9;
+    private double tyMax = 13.5;
+    private double tyMin = 12;
+    private double taMax = 2.35;
+    private double taMin = 2.07;
 
 
 
     @Override
     public void runOpMode() {
+
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
@@ -78,7 +84,7 @@ public class LimelightLocalizationTest extends LinearOpMode {
 
         double[] positon = localize();
 
-        Pose2d localizePose = new Pose2d((positon[0] * 39.37), (positon[1] * 39.37), Math.toRadians(positon[2]));
+        Pose2d localizePose = new Pose2d((positon[0] * 39.37), (positon[1] * 39.37), Math.toRadians(180-positon[2]));
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, localizePose);
 
@@ -86,9 +92,18 @@ public class LimelightLocalizationTest extends LinearOpMode {
 
 
         TrajectoryActionBuilder launch = drive.actionBuilder(localizePose)
+<<<<<<< Updated upstream
                 .turnTo(Math.toRadians(308))
                 .strafeToConstantHeading(new Vector2d(-18, 18));
                 //.splineToLinearHeading(new Pose2d(new Vector2d(-18, 18), Math.toRadians(308)), 1);
+=======
+              //  .turnTo(Math.toRadians(308))
+                .strafeTo(new Vector2d(18, -18));
+               // .splineToLinearHeading(new Pose2d(new Vector2d(-18, 18), Math.toRadians(308)), 1);
+
+
+
+>>>>>>> Stashed changes
 
         waitForStart();
 
@@ -108,7 +123,12 @@ public class LimelightLocalizationTest extends LinearOpMode {
 
 
     }
+<<<<<<< Updated upstream
     public double[] localize() {
+=======
+    private double[] localize() {
+        //boolean localizeing = true;
+>>>>>>> Stashed changes
 
         LLResult result = limelight.getLatestResult();
         double x = 0;
