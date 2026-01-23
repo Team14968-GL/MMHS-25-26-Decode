@@ -16,6 +16,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 @Autonomous(name = "LimelightLocalizationTest")
@@ -87,16 +88,11 @@ public class LimelightLocalizationTest extends LinearOpMode {
         TrajectoryActionBuilder launch = drive.actionBuilder(localizePose)
                 .turnTo(Math.toRadians(308))
                 .strafeToConstantHeading(new Vector2d(-18, 18));
-               // .splineToLinearHeading(new Pose2d(new Vector2d(-18, 18), Math.toRadians(308)), 1);
-
-
-
+                //.splineToLinearHeading(new Pose2d(new Vector2d(-18, 18), Math.toRadians(308)), 1);
 
         waitForStart();
 
-
         if (opModeIsActive()) {
-
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -106,14 +102,13 @@ public class LimelightLocalizationTest extends LinearOpMode {
             telemetry.addData("Rotation",positon[2]);
             telemetry.addData("POSTION:", localizePose);
             telemetry.update();
-            while (opModeIsActive());
+            while(opModeIsActive());
 
         }
 
 
     }
     public double[] localize() {
-        //boolean localizeing = true;
 
         LLResult result = limelight.getLatestResult();
         double x = 0;
@@ -121,7 +116,6 @@ public class LimelightLocalizationTest extends LinearOpMode {
         double yaw = 0;
 
         Pose3D txx;
-
 
         if (result != null && result.isValid()) {
 

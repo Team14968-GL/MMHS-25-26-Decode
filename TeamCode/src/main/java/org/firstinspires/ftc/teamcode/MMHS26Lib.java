@@ -22,6 +22,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,24 +87,17 @@ public class MMHS26Lib {
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        //Intake Config/Setup
+        //Intake Config
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        goofyAhhhhFrontDoor.setPosition(0.5); //Sets kicker to be in door position
-        //Launcher Config/Setup
+        //Launcher Config
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
         leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftLauncher.setPower(0);
-        rightLauncher.setPower(0);
         launchLiftRight.setDirection(CRServo.Direction.REVERSE);
         launchLiftLeft.setDirection(CRServo.Direction.FORWARD);
-        backDoor.setPosition(1); //sets door to be down
-        scoop.setPosition(0); //sets scoop to be down
-        //Turntable Setup
-        turnTableServo.setPosition(0.5); //Sets turntable to its center position
         //Lift/Skis Config
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //Odometry Config
@@ -340,6 +334,32 @@ public class MMHS26Lib {
                 telemetry.update();
             }
             return id;
+        }
+        public double[] poseLimelight() {
+
+            LLResult result = limelight.getLatestResult();
+            double x = 0;
+            double y = 0;
+            double yaw = 0;
+
+            Pose3D pose;
+
+            if (result != null && result.isValid()) {
+
+                pose = result.getBotpose();
+                x = pose.getPosition().x;
+                y = pose.getPosition().y;
+                yaw = pose.getOrientation().getYaw();
+
+                telemetry.addData("X", (pose.getPosition().x * 39.37));
+                telemetry.addData("Y",  (pose.getPosition().y * 39.37));
+                telemetry.addData("Rotation",  pose.getOrientation().getYaw());
+                telemetry.update();
+
+            } else {
+                telemetry.addData("Limelight", "Failed to localize, defaulting to X:0 Y:0 Z:0");
+            }
+            return new double[] {x,y,yaw};
         }
     }
 
