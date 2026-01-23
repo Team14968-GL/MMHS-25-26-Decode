@@ -92,18 +92,10 @@ public class LimelightLocalizationTest extends LinearOpMode {
 
 
         TrajectoryActionBuilder launch = drive.actionBuilder(localizePose)
-<<<<<<< Updated upstream
-                .turnTo(Math.toRadians(308))
-                .strafeToConstantHeading(new Vector2d(-18, 18));
-                //.splineToLinearHeading(new Pose2d(new Vector2d(-18, 18), Math.toRadians(308)), 1);
-=======
+
               //  .turnTo(Math.toRadians(308))
                 .strafeTo(new Vector2d(18, -18));
                // .splineToLinearHeading(new Pose2d(new Vector2d(-18, 18), Math.toRadians(308)), 1);
-
-
-
->>>>>>> Stashed changes
 
         waitForStart();
 
@@ -120,15 +112,9 @@ public class LimelightLocalizationTest extends LinearOpMode {
             while(opModeIsActive());
 
         }
-
-
     }
-<<<<<<< Updated upstream
+
     public double[] localize() {
-=======
-    private double[] localize() {
-        //boolean localizeing = true;
->>>>>>> Stashed changes
 
         LLResult result = limelight.getLatestResult();
         double x = 0;
