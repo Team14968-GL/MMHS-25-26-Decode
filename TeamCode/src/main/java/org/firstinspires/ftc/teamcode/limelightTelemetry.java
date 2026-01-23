@@ -10,8 +10,10 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
 import java.util.List;
-@Disabled
+
 @Autonomous(name = "limelight Telemetry")
 public class limelightTelemetry extends LinearOpMode {
 
@@ -49,10 +51,12 @@ public class limelightTelemetry extends LinearOpMode {
 
     }
 
+
     private void processLimeLightResults() {
         double tx;
         double ty;
         double ta;
+        Pose3D txx;
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {
             // Get the list of ALL detected fiducials (AprilTags)
@@ -61,10 +65,15 @@ public class limelightTelemetry extends LinearOpMode {
             tx = result.getTx();
             ty = result.getTy(); // How far up or down the target is (degrees)
             ta = result.getTa(); // How big the target looks (0%-100% of the image)
-
+            txx = result.getBotpose();
 
             telemetry.addData("Target X", tx);
             telemetry.addData("Target Y", ty);
+            telemetry.addData("Robot Pose x", txx.getPosition().x);
+            telemetry.addData("Robot Pose y", txx.getPosition().y);
+            telemetry.addData("Robot Pose x", txx.getPosition().x);
+            telemetry.addData("Robot Pose Yaw", txx.getOrientation().getYaw());
+
             telemetry.addData("Target Area", ta);
 
             if (!fiducialList.isEmpty()) {

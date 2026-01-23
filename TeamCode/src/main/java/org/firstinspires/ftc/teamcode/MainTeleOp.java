@@ -52,7 +52,7 @@ public class MainTeleOp extends LinearOpMode {
     CRServo LED1;
     GoBildaPinpointDriver pinpoint;
 
-    int highLauncherSpeed = 2165;
+    int highLauncherSpeed = 2400;
     int lowLauncherSpeed = 1700;
     int triangleFuncRunning = 0;
     double turnTablePos2 = 0;
@@ -61,6 +61,7 @@ public class MainTeleOp extends LinearOpMode {
     int motiff = 1;
     int manualMotif = 1;
     double speed = 0;
+
 
 
 

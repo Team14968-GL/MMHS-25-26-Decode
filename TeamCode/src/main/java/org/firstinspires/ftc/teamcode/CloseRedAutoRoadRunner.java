@@ -14,8 +14,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -75,6 +77,8 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
     int Motif;
 
+    ElapsedTime BackwardsTillBumpClock = new ElapsedTime();
+
     public void runOpMode() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
@@ -117,7 +121,9 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         limelight.pipelineSwitch(0);
+        limelight.setPollRateHz(100);
         pinpoint.initialize();
+
 
 
         LLResultTypes.FiducialResult fiducialResult = null;
@@ -142,6 +148,9 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
 
+
+
+
                 /*
                 .lineToX(10)
                 .lineToY(20)
@@ -156,8 +165,12 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
         TrajectoryActionBuilder PickUp1 = drive.actionBuilder(launchPose)
+                .splineTo(new Vector2d(-16, 33), Math.toRadians(90));
+        /*
                 .turnTo(Math.toRadians(90))
                 .strafeTo(new Vector2d(-8, 35));
+
+         */
 
         waitForStart();
 
@@ -188,39 +201,63 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         sleep(250);
         goofyAhhhhFrontDoor.setPosition(1);
         backDoor.setPosition(1);
-        turnTableServo.setPosition(0.5);
+        turnTableServo.setPosition(0);
         Actions.runBlocking(
                 new SequentialAction(
                         PickUp1.build()));
-        intake3Balls(.3, .5, 1);
+
+
+        intake3Balls(.75, .5, 0, 400);
+
 
 
         Actions.runBlocking(
                 new SequentialAction(
                         MoveToLaunch.build()));
-        sleep(250);
+        
         //localize();
         
         launchMotif(Motif, launcherSpeed);
 
+        strafeLeftTics(1,ticPerIn*64);
+
+
+
+
+
+
     }
-    public void intake2Balls() {
-        goofyAhhhhFrontDoor.setPosition(1);
-        backDoor.setPosition(1);
-        intakeMotor.setPower(0.8);
-        turnTableServo.setPosition(0);
-        moveBackward(.25, 1750);
-        turnTableServo.setPosition(0.5);
-        moveBackward(.25, 2000);
-        turnTableServo.setPosition(1);
-        moveBackward(.25, 1750);
-        goofyAhhhhFrontDoor.setPosition(.5);
-        sleep(500);
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(500);
-        goofyAhhhhFrontDoor.setPosition(.5);
-        intakeMotor.setPower(0);
+    public void strafeLeftTics(double Speed, double tic) {
+        pinpoint.update();
+        int yvalue = pinpoint.getEncoderY();
+        while (yvalue - pinpoint.getEncoderY() <= tic) {
+            pinpoint.update();
+            leftBack.setPower(Speed);
+            leftFront.setPower(-Speed);
+            rightBack.setPower(-Speed);
+            rightFront.setPower(Speed);
+            telemetry.addData("yencoder", pinpoint.getEncoderY());
+            telemetry.addData("yvalue", yvalue);
+            telemetry.addData("y", pinpoint.getEncoderY()-yvalue);
+            telemetry.update();
+        }
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
     }
+    public void strafeLeft(double Speed, int time) {
+        leftBack.setPower(Speed);
+        leftFront.setPower(-Speed);
+        rightBack.setPower(-Speed);
+        rightFront.setPower(Speed);
+        sleep(time);
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
+
     public void moveBackward(double Speed, int time) {
         leftBack.setPower(Speed);
         leftFront.setPower(Speed);
@@ -482,27 +519,49 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         ((DcMotorEx) leftLauncher).setVelocity(0);
         ((DcMotorEx) rightLauncher).setVelocity(0);
     }
-    public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance) {
-        goofyAhhhhFrontDoor.setPosition(1);
-        intakeOn();
-        BackwardsTillBump(searchSpeed,0);
-        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
-        halfKick();
-        sleep(250);
+    public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance, int kickTime) {
+        int safeTrig;
         turnTableServo.setPosition(0);
         goofyAhhhhFrontDoor.setPosition(1);
+        intakeOn();
+        safeTrig = BackwardsTillBump(searchSpeed,0);
+        if (safeTrig == 1) {
+            moveForwardTics(returnSpeed, returnDistance*ticPerIn);
+            halfKick(kickTime);
+            sleep(250);
+            turnTableServo.setPosition(0.5);
+            goofyAhhhhFrontDoor.setPosition(1);
 
-        BackwardsTillBump(searchSpeed,0);
-        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
-        halfKick();
-        sleep(100);
-        turnTableServo.setPosition(1);
-        goofyAhhhhFrontDoor.setPosition(1);
+            safeTrig = BackwardsTillBump(searchSpeed,0);
+            if (safeTrig == 1) {
+                moveForwardTics(returnSpeed, returnDistance*ticPerIn);
+                halfKick(kickTime);
+                sleep(250);
+                turnTableServo.setPosition(1);
+                goofyAhhhhFrontDoor.setPosition(1);
+                safeTrig = BackwardsTillBump(searchSpeed,0);
+                if (safeTrig == 1) {
+                    halfKick(kickTime);
+                    intakeOff();
 
-        BackwardsTillBump(searchSpeed,0);
-        moveForwardTics(returnSpeed, returnDistance*ticPerIn);
-        halfKick();
-        intakeOff();
+                } else {
+
+                    goofyAhhhhFrontDoor.setPosition(.5);
+                    intakeOff();
+                }
+
+            } else {
+
+                goofyAhhhhFrontDoor.setPosition(.5);
+                intakeOff();
+            }
+        } else {
+
+            goofyAhhhhFrontDoor.setPosition(.5);
+            intakeOff();
+        }
+
+
     }
 
 
@@ -514,9 +573,12 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         intakeMotor.setPower(0);
 
     }
-    public void BackwardsTillBump(double Speed, int delay) {
+
+    public int BackwardsTillBump(double Speed, int delay) {
         int count = 0;
-        while (count <= 2000 && !(!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+        int returnSave = 2;
+        BackwardsTillBumpClock.reset();
+        while (BackwardsTillBumpClock.seconds() <= 2 && !(!intakeBump1.isPressed() || intakeBump2.isPressed())) {
             leftBack.setPower(Speed);
             leftFront.setPower(Speed);
             rightBack.setPower(Speed);
@@ -524,8 +586,14 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
             sleep(1);
             count++;
         }
-        if (count <= 2000) {
-            sleep(delay);
+        if (!intakeBump1.isPressed() || intakeBump2.isPressed()) {
+            returnSave = 1;
+        }
+        
+        if (BackwardsTillBumpClock.seconds() >= 2) {
+            returnSave = 0;
+        } else {
+            returnSave = 1;
         }
 
 
@@ -533,9 +601,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         leftFront.setPower(0);
         rightBack.setPower(0);
         rightFront.setPower(0);
-
-
-
+        return returnSave;
     }
    
     public void moveForwardTics(double Speed, double tic) {
@@ -553,9 +619,9 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         rightBack.setPower(0);
         rightFront.setPower(0);
     }
-    public void halfKick() {
+    public void halfKick(int time) {
         goofyAhhhhFrontDoor.setPosition(0);
-        sleep(750);
+        sleep(time);
         goofyAhhhhFrontDoor.setPosition(.5);
     }
 }
