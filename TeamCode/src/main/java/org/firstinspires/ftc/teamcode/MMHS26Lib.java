@@ -335,31 +335,26 @@ public class MMHS26Lib {
             }
             return id;
         }
-        public double[] poseLimelight() {
+        public Pose2d poseLimelight() {
 
             LLResult result = limelight.getLatestResult();
             double x = 0;
             double y = 0;
             double yaw = 0;
 
-            Pose3D pose;
-
             if (result != null && result.isValid()) {
-
-                pose = result.getBotpose();
-                x = pose.getPosition().x;
-                y = pose.getPosition().y;
-                yaw = pose.getOrientation().getYaw();
+                Pose3D pose = result.getBotpose();
 
                 telemetry.addData("X", (pose.getPosition().x * 39.37));
                 telemetry.addData("Y",  (pose.getPosition().y * 39.37));
                 telemetry.addData("Rotation",  pose.getOrientation().getYaw());
                 telemetry.update();
 
+                return new Pose2d(pose.getPosition().x, pose.getPosition().y, (pose.getOrientation().getYaw() - 180));
             } else {
-                telemetry.addData("Limelight", "Failed to localize, defaulting to X:0 Y:0 Z:0");
+                telemetry.addData("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
+                return new Pose2d(0, 0, 0);
             }
-            return new double[] {x,y,yaw};
         }
     }
 
@@ -756,7 +751,29 @@ public class MMHS26Lib {
         public utils() {
             super();
         }
-
+        //Class for managing telemetry systems
+        public static class telemetrySys {
+            public static class motor {
+                public static void leftBack() {
+                    telemetry.addData("Left Back", leftBack);
+                    telemetry.addData("Left Back", leftBack.getConnectionInfo());
+                    telemetry.addData("Left Back", leftBack.getDeviceName());
+                    telemetry.addData("Left Back", leftBack.getDirection());
+                    telemetry.addData("Left Back", leftBack.getManufacturer());
+                    telemetry.addData("Left Back", leftBack.getVersion());
+                    telemetry.addData("Left Back", leftBack.getClass());
+                    telemetry.addData("Left Back", leftBack.isBusy());
+                    telemetry.addData("Left Back", leftBack.getController());
+                    telemetry.addData("Left Back", leftBack.getMotorType());
+                    telemetry.addData("Left Back", leftBack.getCurrentPosition());
+                    telemetry.addData("Left Back", leftBack.getMode());
+                    telemetry.addData("Left Back", leftBack.getPortNumber());
+                    telemetry.addData("Left Back", leftBack.getPowerFloat());
+                    telemetry.addData("Left Back", leftBack.getTargetPosition());
+                    telemetry.addData("Left Back", leftBack.getZeroPowerBehavior());
+                }
+            }
+        }
         //Function to manage the color of LED(s) on the robot
         public static void ledManager(String type, int ledNumber) {
             CRServo led = leds.get(ledNumber);
