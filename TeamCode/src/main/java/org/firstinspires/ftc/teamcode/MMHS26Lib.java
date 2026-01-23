@@ -138,9 +138,7 @@ public class MMHS26Lib {
 
     //Class for managing basic functions relating to movement
     public static class motion {
-        public motion() {
-            super();
-        }
+        public motion() {super();}
         //DO NOT USE STRAFE UNLESS NEEDED
         public static void strafeLeft(double Speed, long time) {
             leftBack.setPower(Speed);
@@ -224,9 +222,7 @@ public class MMHS26Lib {
 
     //Class for limelight functions
     public static class limelight {
-        public limelight() {
-            super();
-        }
+        public limelight() {super();}
 
         //moves to a predetermined point on the field
         public static void localizer(double localPower, int sleepTime) {
@@ -360,15 +356,11 @@ public class MMHS26Lib {
 
     //Class for functions relating to the autonomous pathing tool RoadRunner
     public static class roadRunner {
-        public roadRunner() {
-            super();
-        }
+        public roadRunner() {super();}
 
         //Creates a curved path for the robot to automatically follow
         public static class spline {
-            public spline() {
-                super();
-            }
+            public spline() {super();}
 
             public static Pose2d splineTo(double x, double y, double tangent, Pose2d startingPose) {
 
@@ -420,9 +412,7 @@ public class MMHS26Lib {
 
         //Creates a horizontal path for the robot to move along
         public static class strafe {
-            public strafe() {
-                super();
-            }
+            public strafe() {super();}
 
             public static Pose2d strafeTo(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
@@ -523,9 +513,7 @@ public class MMHS26Lib {
 
         //takes a line to a point on a specified axis (x or y)
         public static class lineTo {
-            public lineTo() {
-                super();
-            }
+            public lineTo() {super();}
 
             public static Pose2d lineToX(double X, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
@@ -748,13 +736,16 @@ public class MMHS26Lib {
 
     //Class for non-critical utility systems
     public static class utils {
-        public utils() {
-            super();
-        }
+        public utils() {super();}
         //Class for managing telemetry systems
         public static class telemetrySys {
+            telemetrySys() {
+                super();
+            }
+
             public static class motor {
-                public static void leftBack() {
+                motor() {super();}
+                public static void leftBackMotor() {
                     telemetry.addData("Left Back", leftBack);
                     telemetry.addData("Left Back", leftBack.getConnectionInfo());
                     telemetry.addData("Left Back", leftBack.getDeviceName());
@@ -771,6 +762,208 @@ public class MMHS26Lib {
                     telemetry.addData("Left Back", leftBack.getPowerFloat());
                     telemetry.addData("Left Back", leftBack.getTargetPosition());
                     telemetry.addData("Left Back", leftBack.getZeroPowerBehavior());
+                }
+                public static void rightBackMotor() {
+                    telemetry.addData("Right Back", rightBack);
+                    telemetry.addData("Right Back", rightBack.getConnectionInfo());
+                    telemetry.addData("Right Back", rightBack.getDeviceName());
+                    telemetry.addData("Right Back", rightBack.getDirection());
+                    telemetry.addData("Right Back", rightBack.getManufacturer());
+                    telemetry.addData("Right Back", rightBack.getVersion());
+                    telemetry.addData("Right Back", rightBack.getClass());
+                    telemetry.addData("Right Back", rightBack.isBusy());
+                    telemetry.addData("Right Back", rightBack.getController());
+                    telemetry.addData("Right Back", rightBack.getMotorType());
+                    telemetry.addData("Right Back", rightBack.getCurrentPosition());
+                    telemetry.addData("Right Back", rightBack.getMode());
+                    telemetry.addData("Right Back", rightBack.getPortNumber());
+                    telemetry.addData("Right Back", rightBack.getPowerFloat());
+                    telemetry.addData("Right Back", rightBack.getTargetPosition());
+                    telemetry.addData("Right Back", rightBack.getZeroPowerBehavior());
+                }
+                public static void rightFrontMotor() {
+                    telemetry.addData("Right Front", rightFront);
+                    telemetry.addData("Right Front", rightFront.getConnectionInfo());
+                    telemetry.addData("Right Front", rightFront.getDeviceName());
+                    telemetry.addData("Right Front", rightFront.getDirection());
+                    telemetry.addData("Right Front", rightFront.getManufacturer());
+                    telemetry.addData("Right Front", rightFront.getVersion());
+                    telemetry.addData("Right Front", rightFront.getClass());
+                    telemetry.addData("Right Front", rightFront.isBusy());
+                    telemetry.addData("Right Front", rightFront.getController());
+                    telemetry.addData("Right Front", rightFront.getMotorType());
+                    telemetry.addData("Right Front", rightFront.getCurrentPosition());
+                    telemetry.addData("Right Front", rightFront.getMode());
+                    telemetry.addData("Right Front", rightFront.getPortNumber());
+                    telemetry.addData("Right Front", rightFront.getPowerFloat());
+                    telemetry.addData("Right Front", rightFront.getTargetPosition());
+                    telemetry.addData("Right Front", rightFront.getZeroPowerBehavior());
+                }
+                public static void leftFrontMotor() {
+                    telemetry.addData("Left Front", leftFront);
+                    telemetry.addData("Left Front", leftFront.getConnectionInfo());
+                    telemetry.addData("Left Front", leftFront.getDeviceName());
+                    telemetry.addData("Left Front", leftFront.getDirection());
+                    telemetry.addData("Left Front", leftFront.getManufacturer());
+                    telemetry.addData("Left Front", leftFront.getVersion());
+                    telemetry.addData("Left Front", leftFront.getClass());
+                    telemetry.addData("Left Front", leftFront.isBusy());
+                    telemetry.addData("Left Front", leftFront.getController());
+                    telemetry.addData("Left Front", leftFront.getMotorType());
+                    telemetry.addData("Left Front", leftFront.getCurrentPosition());
+                    telemetry.addData("Left Front", leftFront.getMode());
+                    telemetry.addData("Left Front", leftFront.getPortNumber());
+                    telemetry.addData("Left Front", leftFront.getPowerFloat());
+                    telemetry.addData("Left Front", leftFront.getTargetPosition());
+                    telemetry.addData("Left Front", leftFront.getZeroPowerBehavior());
+                }
+                public static void leftLauncherMotor() {
+                    telemetry.addData("Left Launcher", leftLauncher);
+                    telemetry.addData("Left Launcher", leftLauncher.getConnectionInfo());
+                    telemetry.addData("Left Launcher", leftLauncher.getDeviceName());
+                    telemetry.addData("Left Launcher", leftLauncher.getDirection());
+                    telemetry.addData("Left Launcher", leftLauncher.getManufacturer());
+                    telemetry.addData("Left Launcher", leftLauncher.getVersion());
+                    telemetry.addData("Left Launcher", leftLauncher.getClass());
+                    telemetry.addData("Left Launcher", leftLauncher.isBusy());
+                    telemetry.addData("Left Launcher", leftLauncher.getController());
+                    telemetry.addData("Left Launcher", leftLauncher.getMotorType());
+                    telemetry.addData("Left Launcher", leftLauncher.getCurrentPosition());
+                    telemetry.addData("Left Launcher", leftLauncher.getMode());
+                    telemetry.addData("Left Launcher", leftLauncher.getPortNumber());
+                    telemetry.addData("Left Launcher", leftLauncher.getPowerFloat());
+                    telemetry.addData("Left Launcher", leftLauncher.getTargetPosition());
+                    telemetry.addData("Left Launcher", leftLauncher.getZeroPowerBehavior());
+                }
+                public static void rightLauncherMotor() {
+                    telemetry.addData("Right Launcher", rightLauncher);
+                    telemetry.addData("Right Launcher", rightLauncher.getConnectionInfo());
+                    telemetry.addData("Right Launcher", rightLauncher.getDeviceName());
+                    telemetry.addData("Right Launcher", rightLauncher.getDirection());
+                    telemetry.addData("Right Launcher", rightLauncher.getManufacturer());
+                    telemetry.addData("Right Launcher", rightLauncher.getVersion());
+                    telemetry.addData("Right Launcher", rightLauncher.getClass());
+                    telemetry.addData("Right Launcher", rightLauncher.isBusy());
+                    telemetry.addData("Right Launcher", rightLauncher.getController());
+                    telemetry.addData("Right Launcher", rightLauncher.getMotorType());
+                    telemetry.addData("Right Launcher", rightLauncher.getCurrentPosition());
+                    telemetry.addData("Right Launcher", rightLauncher.getMode());
+                    telemetry.addData("Right Launcher", rightLauncher.getPortNumber());
+                    telemetry.addData("Right Launcher", rightLauncher.getPowerFloat());
+                    telemetry.addData("Right Launcher", rightLauncher.getTargetPosition());
+                    telemetry.addData("Right Launcher", rightLauncher.getZeroPowerBehavior());
+                }
+                public static void liftMotor() {
+                    telemetry.addData("Lift", lift);
+                    telemetry.addData("Lift", lift.getConnectionInfo());
+                    telemetry.addData("Lift", lift.getDeviceName());
+                    telemetry.addData("Lift", lift.getDirection());
+                    telemetry.addData("Lift", lift.getManufacturer());
+                    telemetry.addData("Lift", lift.getVersion());
+                    telemetry.addData("Lift", lift.getClass());
+                    telemetry.addData("Lift", lift.isBusy());
+                    telemetry.addData("Lift", lift.getController());
+                    telemetry.addData("Lift", lift.getMotorType());
+                    telemetry.addData("Lift", lift.getCurrentPosition());
+                    telemetry.addData("Lift", lift.getMode());
+                    telemetry.addData("Lift", lift.getPortNumber());
+                    telemetry.addData("Lift", lift.getPowerFloat());
+                    telemetry.addData("Lift", lift.getTargetPosition());
+                    telemetry.addData("Lift", lift.getZeroPowerBehavior());
+                }
+                public static void intakeMotor() {
+                    telemetry.addData("Intake", intakeMotor);
+                    telemetry.addData("Intake", intakeMotor.getConnectionInfo());
+                    telemetry.addData("Intake", intakeMotor.getDeviceName());
+                    telemetry.addData("Intake", intakeMotor.getDirection());
+                    telemetry.addData("Intake", intakeMotor.getManufacturer());
+                    telemetry.addData("Intake", intakeMotor.getVersion());
+                    telemetry.addData("Intake", intakeMotor.getClass());
+                    telemetry.addData("Intake", intakeMotor.isBusy());
+                    telemetry.addData("Intake", intakeMotor.getController());
+                    telemetry.addData("Intake", intakeMotor.getMotorType());
+                    telemetry.addData("Intake", intakeMotor.getCurrentPosition());
+                    telemetry.addData("Intake", intakeMotor.getMode());
+                    telemetry.addData("Intake", intakeMotor.getPortNumber());
+                    telemetry.addData("Intake", intakeMotor.getPowerFloat());
+                    telemetry.addData("Intake", intakeMotor.getTargetPosition());
+                    telemetry.addData("Intake", intakeMotor.getZeroPowerBehavior());
+                }
+            }
+            public static class servos {
+                servos() {super();}
+                public static void turnTable() {
+                    telemetry.addData("Turn Table", turnTableServo);
+                    telemetry.addData("Turn Table", turnTableServo.getController());
+                    telemetry.addData("Turn Table", turnTableServo.getDirection());
+                    telemetry.addData("Turn Table", turnTableServo.getPortNumber());
+                    telemetry.addData("Turn Table", turnTableServo.getPosition());
+                    telemetry.addData("Turn Table", turnTableServo.getConnectionInfo());
+                    telemetry.addData("Turn Table", turnTableServo.getDeviceName());
+                    telemetry.addData("Turn Table", turnTableServo.getManufacturer());
+                    telemetry.addData("Turn Table", turnTableServo.getVersion());
+                    telemetry.addData("Turn Table", turnTableServo.getClass());
+                }
+
+                public static void frontDoor() {
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor);
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getController());
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getDirection());
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getPortNumber());
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getPosition());
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getConnectionInfo());
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getDeviceName());
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getManufacturer());
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getVersion());
+                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getClass());
+                }
+                public static void launchDoor() {
+                    telemetry.addData("Back Door", backDoor);
+                    telemetry.addData("Back Door", backDoor.getController());
+                    telemetry.addData("Back Door", backDoor.getDirection());
+                    telemetry.addData("Back Door", backDoor.getPortNumber());
+                    telemetry.addData("Back Door", backDoor.getPosition());
+                    telemetry.addData("Back Door", backDoor.getConnectionInfo());
+                    telemetry.addData("Back Door", backDoor.getDeviceName());
+                    telemetry.addData("Back Door", backDoor.getManufacturer());
+                    telemetry.addData("Back Door", backDoor.getVersion());
+                    telemetry.addData("Back Door", backDoor.getClass());
+                }
+                public static void launchScoop() {
+                    telemetry.addData("Scoop", scoop);
+                    telemetry.addData("Scoop", scoop.getController());
+                    telemetry.addData("Scoop", scoop.getDirection());
+                    telemetry.addData("Scoop", scoop.getPortNumber());
+                    telemetry.addData("Scoop", scoop.getPosition());
+                    telemetry.addData("Scoop", scoop.getConnectionInfo());
+                    telemetry.addData("Scoop", scoop.getDeviceName());
+                    telemetry.addData("Scoop", scoop.getManufacturer());
+                    telemetry.addData("Scoop", scoop.getVersion());
+                    telemetry.addData("Scoop", scoop.getClass());
+                }
+                public static void leftLaunchLift() {
+                    telemetry.addData("Left Launch Lift", launchLiftLeft);
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getController());
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getDirection());
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getPortNumber());
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getPower());
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getConnectionInfo());
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getDeviceName());
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getManufacturer());
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getVersion());
+                    telemetry.addData("Left Launch Lift", launchLiftLeft.getClass());
+                }
+                public static void rightLaunchLift() {
+                    telemetry.addData("Right Launch Lift", launchLiftRight);
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getController());
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getDirection());
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getPortNumber());
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getPower());
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getConnectionInfo());
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getDeviceName());
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getManufacturer());
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getVersion());
+                    telemetry.addData("Right Launch Lift", launchLiftRight.getClass());
                 }
             }
         }
