@@ -52,7 +52,7 @@ public class MainTeleOp extends LinearOpMode {
     CRServo LED1;
     GoBildaPinpointDriver pinpoint;
 
-    int highLauncherSpeed = 2400;
+    int highLauncherSpeed = 2350;//2400;
     int lowLauncherSpeed = 1700;
     int triangleFuncRunning = 0;
     double turnTablePos2 = 0;
@@ -149,13 +149,15 @@ public class MainTeleOp extends LinearOpMode {
         speed = 0.75;
         backDoor.setPosition(1);
         goofyAhhhhFrontDoor.setPosition(0.5);
-        scoop.setPosition(0);
+        scoop.setPosition(1);
         turnTableServo.setPosition(0.5);
         turnTablePos2 = 0;
         launcherSpeed = (1700 * 28) / 60;
         triangleFuncRunning = 1;
 
         pinpoint.initialize();
+
+        new MMHS26Lib(hardwareMap);
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -182,6 +184,7 @@ public class MainTeleOp extends LinearOpMode {
                 lift();
                 motifControl();
                 timeLaunchMotif(manualMotif, launcherSpeed);
+                //toClose();
 
                 /*
 
@@ -382,7 +385,7 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (triangleClock.seconds() >= 2.5 && triangleClock.seconds() <= 3) {
                 launchMotorOnTriangle();
-                scoop.setPosition(0);
+                scoop.setPosition(1);
                 telemetry.update();
                 triangleFuncRunning = 0;
                 triTrig = 0;
@@ -404,7 +407,7 @@ public class MainTeleOp extends LinearOpMode {
                 telemetry.update();
             }
             if (ScoopClock.seconds() >= 0.5 && ScoopClock.seconds() <= 1) {
-                scoop.setPosition(0);
+                scoop.setPosition(1);
                 telemetry.update();
                 scoopTrig = 0;
             }
@@ -678,7 +681,7 @@ public class MainTeleOp extends LinearOpMode {
 
 
             if (LaunchMotiffClock.seconds() >= 2.75 && LaunchMotiffClock.seconds() <= 3) {
-                scoop.setPosition(0);
+                scoop.setPosition(1);
                 backDoor.setPosition(0);
                 telemetry.update();
             }
@@ -698,7 +701,7 @@ public class MainTeleOp extends LinearOpMode {
 
 
             if (LaunchMotiffClock.seconds() >= 4.75 && LaunchMotiffClock.seconds() <= 5) {
-                scoop.setPosition(0);
+                scoop.setPosition(1);
                 backDoor.setPosition(0);
                 telemetry.update();
             }
@@ -715,7 +718,7 @@ public class MainTeleOp extends LinearOpMode {
                 telemetry.update();
             }
             if (LaunchMotiffClock.seconds() >= 6.75 && LaunchMotiffClock.seconds() <= 7.25) {
-                scoop.setPosition(0);
+                scoop.setPosition(1);
                 backDoor.setPosition(1);
                 turnTableServo.setPosition(motifArray.get(motiff*3));
                 launchMotorOff();
@@ -794,5 +797,10 @@ public class MainTeleOp extends LinearOpMode {
     private void launchMotorOff() {
         ((DcMotorEx) leftLauncher).setVelocity(0);
         ((DcMotorEx) rightLauncher).setVelocity(0);
+    }
+    private void toClose() {
+        if (gamepad1.options){
+            MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24, 22.5, 0, MMHS26Lib.Limelight.poseLimelight());
+        }
     }
 }

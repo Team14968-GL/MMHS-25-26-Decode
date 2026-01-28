@@ -60,7 +60,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (2500 * 28) / 60;
+    double launcherSpeed = (2350 * 28) / 60;
 
     int sleepTime = 50;
     boolean processTrig = true;
@@ -132,6 +132,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         
         Pose2d beginPose = new Pose2d(startX, 12, Math.toRadians(0));
+        Pose2d leavePose = new Pose2d(49, 12, Math.toRadians(-20));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
 
@@ -149,7 +150,7 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         MMHS26Lib.roadRunner.turn(Math.toRadians(-20),
                 MMHS26Lib.roadRunner.spline.splineToConstantHeading(startX*(1-.125), 12, Math.toRadians(0), beginPose));
 
-        localize();
+        localize(.5, 15);
 
 
         if (IDs.size() == 1) {
@@ -162,8 +163,81 @@ public class FarRedAutoRoadRunner extends LinearOpMode {
         launchMotif(0, launcherSpeed);
         sleep(250);
 
-        MMHS26Lib.roadRunner.strafe.strafeTo(startX*(1-.125), 60, false, false, MMHS26Lib.currentPose());
+        MMHS26Lib.roadRunner.strafe.strafeTo(56, 48, false, false, leavePose);
 
+    }
+    public void localize(double localizerMotorPower, int sleepTimeMilli) {
+        int count = 0;
+        while (count <= 10000) {
+            //boolean localizing = true;
+
+
+            LLResult result = limelight.getLatestResult();
+            double tx;
+            double ty;
+            double ta;
+            if (result != null && result.isValid()) {
+                tx = result.getTx(); // How far left or right the target is (degrees)
+                ty = result.getTy(); // How far up or down the target is (degrees)
+                ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+                telemetry.update();
+
+                if (tx < txMin) {
+                    // turn right
+                    telemetry.addData("Left", 0);
+                    turnLeft(localizerMotorPower, sleepTimeMilli);
+                    count = count + sleepTimeMilli;
+
+
+                } else if (tx > txMax) {
+                    //turn left
+                    telemetry.addData("Right", 0);
+                    turnRight(localizerMotorPower, sleepTimeMilli);
+
+                    count = count + sleepTimeMilli;
+
+
+                } else {
+                    telemetry.addData("done", 0);
+                    //count = count + sleepTimeMilli;
+
+
+                }
+
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+               // count = count + sleepTimeMilli;
+
+            }
+
+        }
+        }
+
+    public void turnRight(double Speed, int time) {
+        backLeft.setPower(Speed);
+        frontLeft.setPower(Speed);
+        backRight.setPower(-Speed);
+        frontRight.setPower(-Speed);
+        sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+    public void turnLeft(double Speed, int time) {
+        backLeft.setPower(-Speed);
+        frontLeft.setPower(-Speed);
+        backRight.setPower(Speed);
+        frontRight.setPower(Speed);
+        sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
     }
 
     private int processLimeLightResults() {

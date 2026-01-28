@@ -221,8 +221,8 @@ public class MMHS26Lib {
     }
 
     //Class for limelight functions
-    public static class limelight {
-        public limelight() {super();}
+    public static class Limelight {
+        public Limelight() {super();}
 
         //moves to a predetermined point on the field
         public static void localizer(double localPower, int sleepTime) {
@@ -331,7 +331,7 @@ public class MMHS26Lib {
             }
             return id;
         }
-        public Pose2d poseLimelight() {
+        public static Pose2d poseLimelight() {
 
             LLResult result = limelight.getLatestResult();
             double x = 0;

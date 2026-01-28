@@ -17,8 +17,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +33,6 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
     //.5=green | 1=p | 0=p
     public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
     //public double[] motifArray = {.5, 0, 1, 1, .5, 0, 1, 0, .5};
-    boolean telem = false;
 
     private DcMotor leftBack;
     private DcMotor rightBack;
@@ -190,11 +187,9 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
                 new SequentialAction(
                         PickUp1.build()));
         moveBackwardTics(.3,ticPerIn*3);
-
-
     }
+
     public void localize() {
-        //boolean localizing = true;
         while (true) {
             LLResult result = limelight.getLatestResult();
             double tx;
@@ -271,15 +266,15 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
     }
     public void moveBackwardTics(double Speed, double tic) {
         pinpoint.update();
-        int xvalue = pinpoint.getEncoderX(); // \/
-        while (pinpoint.getEncoderX() - xvalue <= tic) {
+        int xValue = pinpoint.getEncoderX(); // \/
+        while (pinpoint.getEncoderX() - xValue <= tic) {
             pinpoint.update();
             leftBack.setPower(Speed);
             leftFront.setPower(Speed);
             rightBack.setPower(Speed);
             rightFront.setPower(Speed);
-            telemetry.addData("xencoder", pinpoint.getEncoderX());
-            telemetry.addData("xvalue", xvalue);
+            telemetry.addData("xEncoder", pinpoint.getEncoderX());
+            telemetry.addData("xValue", xValue);
             telemetry.update();
         }
         leftBack.setPower(0);
@@ -382,8 +377,4 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
         ((DcMotorEx) leftLauncher).setVelocity(0);
         ((DcMotorEx) rightLauncher).setVelocity(0);
     }
-
-
-
-
 }

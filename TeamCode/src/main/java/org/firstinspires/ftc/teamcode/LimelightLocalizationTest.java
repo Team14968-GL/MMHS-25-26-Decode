@@ -21,11 +21,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 @Config
+class config {
+    public double xAxis = 18;
+    public double yAxis = -18;
+}
 
 @Autonomous(name = "LimelightLocalizationTest")
 public class LimelightLocalizationTest extends LinearOpMode {
-    public double xAxis = 18;
-    public double yAxis = -18;
 
     Limelight3A limelight;
     private GoBildaPinpointDriver pinpoint;
