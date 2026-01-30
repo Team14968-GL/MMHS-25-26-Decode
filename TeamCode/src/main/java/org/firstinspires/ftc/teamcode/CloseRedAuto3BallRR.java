@@ -329,7 +329,7 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
 
         return id;
     }
-    private void timeLaunchMotif(int motiff, double launcherSpeedd) { // old launch funtioojn
+    private void timeLaunchMotif(int motiff, double launcherSpeedd) { // old launch function
 
 
         launchMotorOn(launcherSpeedd);

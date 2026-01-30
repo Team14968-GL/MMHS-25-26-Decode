@@ -63,7 +63,7 @@ public class limelightTest extends LinearOpMode {
         }
     }
     public void localize() {
-        //boolean localizeing = true;
+        //boolean localizing = true;
 
             LLResult result = limelight.getLatestResult();
             double tx = 0;
