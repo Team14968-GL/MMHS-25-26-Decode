@@ -60,6 +60,9 @@ public class MMHS26Lib {
     //Internal variables
     private static HardwareMap hwMap;
 
+    //External Variables
+    public static int count = 0;
+
     public MMHS26Lib(HardwareMap hardwareMap) {
         //Drive Definitions
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
@@ -281,7 +284,7 @@ public class MMHS26Lib {
         }
 
         //Outputs a list of AprilTag IDs that the limelight can see
-        static int processLimeLightResults() {
+        public static int processLimeLightResults() {
             int id = 0;
             ArrayList<Integer> IDs = new ArrayList<>();
             double tx;
