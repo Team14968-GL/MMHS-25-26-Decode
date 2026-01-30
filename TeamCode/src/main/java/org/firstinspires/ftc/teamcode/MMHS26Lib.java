@@ -284,61 +284,88 @@ public class MMHS26Lib {
         }
 
         //Outputs a list of AprilTag IDs that the limelight can see
-        public static int processLimeLightResults() {
+        public static int processLimeLightMotif() {
+            int Motif;
+
+            boolean processTrig = true;
+
             int id = 0;
+
             ArrayList<Integer> IDs = new ArrayList<>();
+
             double tx;
             double ty;
             double ta;
 
-            LLResult result = limelight.getLatestResult();
-            if (result != null && result.isValid()) {
-                // Get the list of ALL detected fiducials (AprilTags)
-                List<LLResultTypes.FiducialResult> fiducialList = result.getFiducialResults();
+            while (count <= 1000 && processTrig) {
 
-                tx = result.getTx();
-                ty = result.getTy(); // How far up or down the target is (degrees)
-                ta = result.getTa(); // How big the target looks (0%-100% of the image)
+                LLResult result = limelight.getLatestResult();
+                if (result != null && result.isValid()) {
+                    // Get the list of ALL detected fiducials (AprilTags)
+                    List<LLResultTypes.FiducialResult> fiducialList = result.getFiducialResults();
 
-                if (debug.debugTelemetry) {
-                    telemetry.addData("Target X", tx);
-                    telemetry.addData("Target Y", ty);
-                    telemetry.addData("Target Area", ta);
-                    telemetry.update();
-                }
+                    tx = result.getTx();
+                    ty = result.getTy(); // How far up or down the target is (degrees)
+                    ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-                if (!fiducialList.isEmpty()) {
                     if (debug.debugTelemetry) {
-                        telemetry.addData("Detections Found", fiducialList.size());
+                        telemetry.addData("Target X", tx);
+                        telemetry.addData("Target Y", ty);
+                        telemetry.addData("Target Area", ta);
                         telemetry.update();
                     }
-                    // Iterate through each detected tag
-                    for (LLResultTypes.FiducialResult fiducial : fiducialList) {
-                        id = fiducial.getFiducialId();
-                        IDs.add(id);
+
+                    if (!fiducialList.isEmpty()) {
                         if (debug.debugTelemetry) {
-                            telemetry.addData("Tag ID", id);
+                            telemetry.addData("Detections Found", fiducialList.size());
+                            telemetry.update();
+                        }
+                        // Iterate through each detected tag
+                        for (LLResultTypes.FiducialResult fiducial : fiducialList) {
+                            id = fiducial.getFiducialId();
+                            IDs.add(id);
+                            if (debug.debugTelemetry) {
+                                telemetry.addData("Tag ID", id);
+                                telemetry.update();
+                            }
+                            processTrig = false;
+                        }
+                    } else {
+                        if (debug.debugTelemetry) {
+                            telemetry.addData("Detections Found", "None");
                             telemetry.update();
                         }
                     }
                 } else {
                     if (debug.debugTelemetry) {
-                        telemetry.addData("Detections Found", "None");
+                        telemetry.addData("Limelight Data", "Invalid or Stale");
+                        assert result != null;
+                        telemetry.addData("Staleness", result.getStaleness());
                         telemetry.update();
                     }
                 }
-            } else {
                 if (debug.debugTelemetry) {
-                    telemetry.addData("Limelight Data", "Invalid or Stale");
-                    assert result != null;
-                    telemetry.addData("Staleness", result.getStaleness());
                     telemetry.update();
                 }
+                count++;
+                sleep(1);
             }
-            if (debug.debugTelemetry) {
-                telemetry.update();
+            if (IDs.contains(21)) {
+                Motif = 1;
+                telemetry.addData("Motif", "GPP " + Motif);
+            } else if (IDs.contains(22)) {
+                Motif = 2;
+                telemetry.addData("Motif", "PGP " + Motif);
+            } else if (IDs.contains(23)) {
+                Motif = 3;
+                telemetry.addData("Motif", "PPG " + Motif);
+            } else {
+                Motif = 0;
+                telemetry.addData("Motif", "Check failed " + Motif);
             }
-            return id;
+            telemetry.update();
+
+            return Motif;
         }
         public static Pose2d poseLimelight() {
 
