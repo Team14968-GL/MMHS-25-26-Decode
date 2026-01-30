@@ -162,11 +162,14 @@ public class FarRedAutoRR extends LinearOpMode {
             telemetry.update();
 
             launchMotif(Motif, launcherSpeed);
-            sleep(250);
+            goofyAhhhhFrontDoor.setPosition(1);
+            sleep(300);
 
-            MMHS26Lib.roadRunner.spline.splineToLinearHeading(29, 18, Math.toRadians(90), Math.toRadians(0),  afterLaunchPose);
+            MMHS26Lib.roadRunner.spline.splineToLinearHeading(28, 22, Math.toRadians(90), Math.toRadians(0),  afterLaunchPose);
 
-            intake3Balls(.3, 0, 0, 400);
+            sleep(1000);
+            intake3Balls(.6, .5, .5, 400);
+
 
            //MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, 48, Math.toRadians(0), Math.toRadians(0),  leavePose);
        // }
