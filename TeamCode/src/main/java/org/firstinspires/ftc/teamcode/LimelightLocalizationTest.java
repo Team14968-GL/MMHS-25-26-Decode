@@ -109,7 +109,7 @@ public class LimelightLocalizationTest extends LinearOpMode {
             telemetry.addData("X",(positon[0] * 39.37));
             telemetry.addData("Y",(positon[1] * 39.37));
             telemetry.addData("Rotation",positon[2]);
-            telemetry.addData("POSTION:", localizePose);
+            telemetry.addData("Position:", localizePose);
             telemetry.update();
             while(opModeIsActive());
 
