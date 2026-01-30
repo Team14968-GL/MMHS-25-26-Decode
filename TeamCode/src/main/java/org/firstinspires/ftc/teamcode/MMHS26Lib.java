@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -1033,34 +1034,45 @@ public class MMHS26Lib {
                 super();
             }
 
-            public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance) {
+            public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance, int kickTime) {
+                int safeTrig;
+                turnTableServo.setPosition(0);
                 goofyAhhhhFrontDoor.setPosition(1);
-                sleep(50);
                 intakeMotor.setPower(0.8);
-                BackwardsTillBump(searchSpeed, 0);
-                moveForwardTics(returnSpeed, returnDistance * ticPerIn);
-                goofyAhhhhFrontDoor.setPosition(0);
-                sleep(750);
-                goofyAhhhhFrontDoor.setPosition(.5);
-                //sleep(250);
-                turnTableServo.setPosition(0.5);
-                goofyAhhhhFrontDoor.setPosition(1);
+                safeTrig = BackwardsTillBump(searchSpeed, 0);
+                if (safeTrig == 1) {
+                    moveForwardTics(returnSpeed, returnDistance * ticPerIn);
+                    halfKick(kickTime);
+                    sleep(250);
+                    turnTableServo.setPosition(0.5);
+                    goofyAhhhhFrontDoor.setPosition(1);
 
-                BackwardsTillBump(searchSpeed, 0);
-                moveForwardTics(returnSpeed, returnDistance * ticPerIn);
-                goofyAhhhhFrontDoor.setPosition(0);
-                sleep(750);
-                goofyAhhhhFrontDoor.setPosition(.5);
-                //sleep(250);
-                turnTableServo.setPosition(1);
-                goofyAhhhhFrontDoor.setPosition(1);
+                    safeTrig = BackwardsTillBump(searchSpeed, 0);
+                    if (safeTrig == 1) {
+                        moveForwardTics(returnSpeed, returnDistance * ticPerIn);
+                        halfKick(kickTime);
+                        sleep(250);
+                        turnTableServo.setPosition(1);
+                        goofyAhhhhFrontDoor.setPosition(1);
+                        safeTrig = BackwardsTillBump(searchSpeed, 0);
+                        if (safeTrig == 1) {
+                            halfKick(kickTime);
+                            intakeMotor.setPower(0);
 
-                BackwardsTillBump(searchSpeed, 0);
-                moveForwardTics(returnSpeed, returnDistance * ticPerIn);
-                goofyAhhhhFrontDoor.setPosition(0);
-                sleep(750);
-                goofyAhhhhFrontDoor.setPosition(.5);
-                intakeMotor.setPower(0.0);
+                        } else {
+
+                            goofyAhhhhFrontDoor.setPosition(.5);
+                            intakeMotor.setPower(0);
+                        }
+
+                    } else {
+                        goofyAhhhhFrontDoor.setPosition(.5);
+                        intakeMotor.setPower(0);
+                    }
+                } else {
+                    goofyAhhhhFrontDoor.setPosition(.5);
+                    intakeMotor.setPower(0);
+                }
             }
 
             private void moveForwardTics(double Speed, double tic) {
@@ -1079,9 +1091,14 @@ public class MMHS26Lib {
                 rightFront.setPower(0);
             }
 
-            private void BackwardsTillBump(double Speed, int delay) {
+            public int BackwardsTillBump(double Speed, int delay) {
                 int count = 0;
-                while (count <= 2000 && !(!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+                int returnSave = 2;
+
+                ElapsedTime BackwardsTillBumpClock = new ElapsedTime();
+
+                BackwardsTillBumpClock.reset();
+                while (BackwardsTillBumpClock.seconds() <= 2 && !(!intakeBump1.isPressed() || intakeBump2.isPressed())) {
                     leftBack.setPower(Speed);
                     leftFront.setPower(Speed);
                     rightBack.setPower(Speed);
@@ -1089,13 +1106,27 @@ public class MMHS26Lib {
                     sleep(1);
                     count++;
                 }
-                if (count <= 2000) {
-                    sleep(delay);
+                if (!intakeBump1.isPressed() || intakeBump2.isPressed()) {
+                    returnSave = 1;
                 }
+
+                if (BackwardsTillBumpClock.seconds() >= 2) {
+                    returnSave = 0;
+                } else {
+                    returnSave = 1;
+                }
+
+
                 leftBack.setPower(0);
                 leftFront.setPower(0);
                 rightBack.setPower(0);
                 rightFront.setPower(0);
+                return returnSave;
+            }
+            public void halfKick(int time) {
+                goofyAhhhhFrontDoor.setPosition(0);
+                sleep(time);
+                goofyAhhhhFrontDoor.setPosition(.5);
             }
         }
     }
