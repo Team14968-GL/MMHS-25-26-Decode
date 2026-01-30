@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -132,6 +131,7 @@ public class FarRedAutoRR extends LinearOpMode {
 
         Pose2d beginPose = new Pose2d(startX, 12, Math.toRadians(0));
         Pose2d afterLaunchPose = new Pose2d(startX * (1 - .125), 12, Math.toRadians(-28));
+        Pose2d PickUp1Pose = new Pose2d(35, 60, Math.toRadians(90));
         Pose2d leavePose = new Pose2d(49, 12, Math.toRadians(-20));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
@@ -163,13 +163,16 @@ public class FarRedAutoRR extends LinearOpMode {
 
             launchMotif(Motif, launcherSpeed);
             goofyAhhhhFrontDoor.setPosition(1);
+            turnTableServo.setPosition(0);
             sleep(300);
 
-            MMHS26Lib.roadRunner.spline.splineToLinearHeading(28, 22, Math.toRadians(90), Math.toRadians(0),  afterLaunchPose);
+            MMHS26Lib.roadRunner.spline.splineToLinearHeading(30, 19, Math.toRadians(90), Math.toRadians(0),  afterLaunchPose);
 
             sleep(1000);
             intake3Balls(.6, .5, .5, 400);
-
+            moveBackward(.3,1000);
+        //MMHS26Lib.roadRunner.turnTo(Math.toRadians(-28),
+         //       MMHS26Lib.roadRunner.spline.splineToConstantHeading(startX * (1 - .125), 12, Math.toRadians(0), PickUp1Pose));
 
            //MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, 48, Math.toRadians(0), Math.toRadians(0),  leavePose);
        // }
@@ -301,6 +304,56 @@ public class FarRedAutoRR extends LinearOpMode {
 
     private void launchMotif(int motiff, double launcherSpeedd) {
         ArrayList<String> launchOrder = new ArrayList<String>(Collections.emptyList());
+        backDoor.setPosition(0);
+        turnTableServo.setPosition(motifArray.get(motiff*3)); //motifArray.get(motiff*3)
+        sleep(1000);
+        launchMotorOn(launcherSpeedd);
+        sleep(250);
+
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(750);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        sleep(10);
+
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        scoop.setPosition(0.5);
+
+        turnTableServo.setPosition(motifArray.get((motiff*3)+1)); //motifArray.get((motiff*3)+1)
+        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1) {
+            sleep(250);
+        }
+        sleep(500);
+        scoop.setPosition(1);
+        backDoor.setPosition(0);
+        sleep(250);
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(750);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        sleep(10);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        scoop.setPosition(0.5);
+
+        turnTableServo.setPosition(motifArray.get((motiff*3)+2));
+        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
+            sleep(250);
+        }
+        sleep(500);
+        scoop.setPosition(1);
+        backDoor.setPosition(0);
+        sleep(250);
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(750);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        sleep(200);
+
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        scoop.setPosition(0.5);
+        sleep(500);
+        scoop.setPosition(1);
+        backDoor.setPosition(.5);
+        turnTableServo.setPosition(0);
+        launchMotorOff();
+        /*
         if (motiff == 1) {
             launchMotorOn(launcherSpeedd);
             turnTableServo.setPosition(0);
@@ -312,11 +365,7 @@ public class FarRedAutoRR extends LinearOpMode {
 
             sleep(500);
             scoop.setPosition(1);
-                /*
-        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
-            sleep(250);
-        }
-                */
+
 
             launch(launcherSpeedd);
             turnTableServo.setPosition(1);
@@ -324,11 +373,7 @@ public class FarRedAutoRR extends LinearOpMode {
 
             sleep(500);
             scoop.setPosition(1);
-        /*
-        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
-            sleep(250);
-        }
-        */
+
 
             sleep(500);
             launch(launcherSpeedd);
@@ -348,11 +393,7 @@ public class FarRedAutoRR extends LinearOpMode {
 
             sleep(500);
             scoop.setPosition(1);
-                /*
-        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
-            sleep(250);
-        }
-                */
+
 
             launch(launcherSpeedd);
             turnTableServo.setPosition(0.5);
@@ -360,11 +401,7 @@ public class FarRedAutoRR extends LinearOpMode {
 
             sleep(500);
             scoop.setPosition(1);
-        /*
-        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
-            sleep(250);
-        }
-        */
+
 
             sleep(500);
             launch(launcherSpeedd);
@@ -383,11 +420,7 @@ public class FarRedAutoRR extends LinearOpMode {
 
             sleep(500);
             scoop.setPosition(1);
-                /*
-        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
-            sleep(250);
-        }
-                */
+
 
             launch(launcherSpeedd);
             turnTableServo.setPosition(1);
@@ -395,11 +428,7 @@ public class FarRedAutoRR extends LinearOpMode {
 
             sleep(500);
             scoop.setPosition(1);
-        /*
-        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
-            sleep(250);
-        }
-        */
+
 
             sleep(500);
             launch(launcherSpeedd);
@@ -407,6 +436,7 @@ public class FarRedAutoRR extends LinearOpMode {
             scoop.setPosition(1);
             launchMotorOff();
         }
+    */
 
     }
     private void launch(double launcherSpeedd) {
@@ -593,7 +623,17 @@ public class FarRedAutoRR extends LinearOpMode {
         frontRight.setPower(0);
         return returnSave;
     }
-    
+    public void moveBackward(double Speed, int time) {
+        backLeft.setPower(Speed);
+        frontLeft.setPower(Speed);
+        backRight.setPower(Speed);
+        frontRight.setPower(Speed);
+        sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
     public void moveForwardTics(double Speed, double tic) {
         pinpoint.update();
         double xvalue = pinpoint.getEncoderX();
