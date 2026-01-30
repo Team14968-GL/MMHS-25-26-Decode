@@ -18,13 +18,14 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.MMHS26Lib;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@TeleOp(name = "Main TeleOp")
-public class MainTeleOp extends LinearOpMode {
+@TeleOp(name = "ShowOffTelop")
+public class ShowOffTelop extends LinearOpMode {
     Limelight3A limelight;
 
     ArrayList<Integer> IDs = new ArrayList<>();
@@ -91,6 +92,8 @@ public class MainTeleOp extends LinearOpMode {
     double taMax = .88;
     double taMin = .91;
 
+    double lowLauncherPower = .3;
+
 
     @Override
     public void runOpMode() {
@@ -131,8 +134,6 @@ public class MainTeleOp extends LinearOpMode {
         launchLiftLeft.setDirection(CRServo.Direction.FORWARD);
         leftLauncher.setPower(0);
         rightLauncher.setPower(0);
-        leftLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightLauncher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -148,7 +149,7 @@ public class MainTeleOp extends LinearOpMode {
 
         waitForStart();
         speed = 0.75;
-        backDoor.setPosition(.5);
+        backDoor.setPosition(1);
         goofyAhhhhFrontDoor.setPosition(0.5);
         scoop.setPosition(1);
         turnTableServo.setPosition(0.5);
@@ -185,7 +186,7 @@ public class MainTeleOp extends LinearOpMode {
                 lift();
                 motifControl();
                 timeLaunchMotif(manualMotif, launcherSpeed);
-                toClose();
+                //toClose();
 
                 /*
 
@@ -224,7 +225,6 @@ public class MainTeleOp extends LinearOpMode {
         }
     }
 
-
     private void intakeControl() {
         if (gamepad1.left_trigger == 1) {
             intakeMotor.setPower(0.8);
@@ -236,7 +236,7 @@ public class MainTeleOp extends LinearOpMode {
 
     private void backDoorControl() {
         if (gamepad2.squareWasPressed()) {
-            backDoor.setPosition(.5);
+            backDoor.setPosition(1);
         }
         if (gamepad2.circleWasPressed()) {
             backDoor.setPosition(0);
@@ -418,38 +418,54 @@ public class MainTeleOp extends LinearOpMode {
     private void controlLauncher() {
         if (gamepad2.left_trigger == 1) {
 
-            ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
-            ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
+            if (launcherSpeed == (highLauncherSpeed * 28) / 60){
+                leftLauncher.setPower(1);
+                rightLauncher.setPower(1);
+            } else {
+                leftLauncher.setPower(lowLauncherPower);
+                rightLauncher.setPower(lowLauncherPower);
+            }
 
             LauncherON = 1;
         } else if (gamepad2.right_trigger == 1) {
-            ((DcMotorEx) leftLauncher).setVelocity(0);
-            ((DcMotorEx) rightLauncher).setVelocity(0);
+            leftLauncher.setPower(0);
+            rightLauncher.setPower(0);
+
+            //((DcMotorEx) leftLauncher).setVelocity(0);
+            //((DcMotorEx) rightLauncher).setVelocity(0);
             LauncherON = 0;
         }
         if (gamepad2.dpadLeftWasPressed()) {
             launcherSpeed = (lowLauncherSpeed * 28) / 60;
             gamepad2.rumbleBlips(1);
             if (1 == LauncherON) {
-
-                ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
-                ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
+                leftLauncher.setPower(lowLauncherPower);
+                rightLauncher.setPower(3);
+                //  ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
+                // ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
             }
         } else if (gamepad2.dpadRightWasReleased()) {
             launcherSpeed = (highLauncherSpeed * 28) / 60;
             gamepad2.rumbleBlips(2);
             if (1 == LauncherON) {
-
-               ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
-               ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
+                leftLauncher.setPower(1);
+                rightLauncher.setPower(1);
+                //((DcMotorEx) leftLauncher).setVelocity(launcherSpeed);
+                //((DcMotorEx) rightLauncher).setVelocity(launcherSpeed);
             }
         }
     }
 
     private void launchMotorOnTriangle() {
-       ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
-       ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
-
+        // ((DcMotorEx) leftLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
+        // ((DcMotorEx) rightLauncher).setVelocity(launcherSpeed * Math.abs(triangleFuncRunning - 1));
+        if (launcherSpeed == (highLauncherSpeed * 28) / 60){
+            leftLauncher.setPower(1);
+            rightLauncher.setPower(1);
+        } else {
+            leftLauncher.setPower(lowLauncherPower);
+            rightLauncher.setPower(lowLauncherPower);
+        }
     }
     public void localize(double localizerMotorPower, int sleepTimeMilli) {
         if (gamepad1.ps) {
@@ -662,86 +678,71 @@ public class MainTeleOp extends LinearOpMode {
         if (LaunchMotiffTrig == 1) {
             if (LaunchMotiffClock.seconds() >= 0 && LaunchMotiffClock.seconds() <= 0.75) {
                 ledManager("Alert");
-                backDoor.setPosition(0);
-                turnTableServo.setPosition(0); //motifArray.get(motiff*3)
+                backDoor.setPosition(0.5);
+                turnTableServo.setPosition(motifArray.get(motiff*3));
                 telemetry.update();
             }
             if (LaunchMotiffClock.seconds() >= 0.75 && LaunchMotiffClock.seconds() <= 1) {
                 launchMotorOn(launcherSpeedd);
-                //backDoor.setPosition(0);
+                backDoor.setPosition(0);
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 1 && LaunchMotiffClock.seconds() <= 1.75) {
+            if (LaunchMotiffClock.seconds() >= 1 && LaunchMotiffClock.seconds() <= 2.25) {
                 goofyAhhhhFrontDoor.setPosition(0);
                 telemetry.update();
 
             }
-            if (LaunchMotiffClock.seconds() >= 1.75 && LaunchMotiffClock.seconds() <= 1.85) {
-                goofyAhhhhFrontDoor.setPosition(0.5);
-                telemetry.update();
-
-            }
-            if (LaunchMotiffClock.seconds() >= 1.85 && LaunchMotiffClock.seconds() <= 2.35) {
-                //backDoor.setPosition(0.5);
+            if (LaunchMotiffClock.seconds() >= 2.25 && LaunchMotiffClock.seconds() <= 2.75) {
+                backDoor.setPosition(0.5);
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 scoop.setPosition(0.5);
 
-                turnTableServo.setPosition(.5); //motifArray.get((motiff*3)+1)
+                turnTableServo.setPosition(motifArray.get((motiff*3)+1));
                 telemetry.update();
             }
 
 
-            if (LaunchMotiffClock.seconds() >= 2.35 && LaunchMotiffClock.seconds() <= 2.6) {
+            if (LaunchMotiffClock.seconds() >= 2.75 && LaunchMotiffClock.seconds() <= 3) {
                 scoop.setPosition(1);
                 backDoor.setPosition(0);
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 2.6 && LaunchMotiffClock.seconds() <= 3.35) {
+            if (LaunchMotiffClock.seconds() >= 3 && LaunchMotiffClock.seconds() <= 4.25) {
                 goofyAhhhhFrontDoor.setPosition(0);
                 telemetry.update();
 
             }
-            if (LaunchMotiffClock.seconds() >= 3.35 && LaunchMotiffClock.seconds() <= 3.45) {
-                goofyAhhhhFrontDoor.setPosition(0.5);
-                telemetry.update();
-
-            }
-            if (LaunchMotiffClock.seconds() >= 3.45 && LaunchMotiffClock.seconds() <= 3.95) {
-                //backDoor.setPosition(0.5);
+            if (LaunchMotiffClock.seconds() >= 4.25 && LaunchMotiffClock.seconds() <= 4.75) {
+                backDoor.setPosition(0.5);
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 scoop.setPosition(0.5);
 
-                turnTableServo.setPosition(1); //motifArray.get((motiff*3)+2
+                turnTableServo.setPosition(motifArray.get((motiff*3)+2));
                 telemetry.update();
             }
 
 
-            if (LaunchMotiffClock.seconds() >= 3.95 && LaunchMotiffClock.seconds() <= 4.2) {
+            if (LaunchMotiffClock.seconds() >= 4.75 && LaunchMotiffClock.seconds() <= 5) {
                 scoop.setPosition(1);
                 backDoor.setPosition(0);
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 4.2 && LaunchMotiffClock.seconds() <= 4.95) {
+            if (LaunchMotiffClock.seconds() >= 5 && LaunchMotiffClock.seconds() <= 6.25) {
                 goofyAhhhhFrontDoor.setPosition(0);
                 telemetry.update();
 
             }
-            if (LaunchMotiffClock.seconds() >= 4.95 && LaunchMotiffClock.seconds() <= 5.05) {
-                goofyAhhhhFrontDoor.setPosition(0.5);
-                telemetry.update();
-
-            }
-            if (LaunchMotiffClock.seconds() >= 5.05 && LaunchMotiffClock.seconds() <= 5.55) {
+            if (LaunchMotiffClock.seconds() >= 6.25 && LaunchMotiffClock.seconds() <= 6.75) {
 
                 goofyAhhhhFrontDoor.setPosition(0.5);
                 scoop.setPosition(0.5);
 
                 telemetry.update();
             }
-            if (LaunchMotiffClock.seconds() >= 5.55 && LaunchMotiffClock.seconds() <= 6.05) {
+            if (LaunchMotiffClock.seconds() >= 6.75 && LaunchMotiffClock.seconds() <= 7.25) {
                 scoop.setPosition(1);
-                backDoor.setPosition(.5);
-                turnTableServo.setPosition(0);
+                backDoor.setPosition(1);
+                turnTableServo.setPosition(motifArray.get(motiff*3));
                 launchMotorOff();
                 telemetry.update();
                 ledManager("Null");
@@ -812,9 +813,15 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     private void launchMotorOn(double launcherSpeedd) {
-        ((DcMotorEx) leftLauncher).setVelocity(launcherSpeedd);
-        ((DcMotorEx) rightLauncher).setVelocity(launcherSpeedd);
-
+        //((DcMotorEx) leftLauncher).setVelocity(launcherSpeedd);
+        //((DcMotorEx) rightLauncher).setVelocity(launcherSpeedd);
+        if (launcherSpeed == (highLauncherSpeed * 28) / 60){
+            leftLauncher.setPower(1);
+            rightLauncher.setPower(1);
+        } else {
+            leftLauncher.setPower(lowLauncherPower);
+            rightLauncher.setPower(lowLauncherPower);
+        }
     }
     private void launchMotorOff() {
         ((DcMotorEx) leftLauncher).setVelocity(0);

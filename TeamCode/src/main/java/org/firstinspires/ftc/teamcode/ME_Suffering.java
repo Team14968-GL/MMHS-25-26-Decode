@@ -8,11 +8,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class ME_Suffering extends LinearOpMode {
     int time = 650;
     double speed = 1;
+
     Pose2d startingPose = new Pose2d(0, 0, 0);
 
     @Override
     public void runOpMode() {
         //setup
+        //noinspection InstantiationOfUtilityClass
         new MMHS26Lib(hardwareMap);
         debug.debugTelemetry = true;
 

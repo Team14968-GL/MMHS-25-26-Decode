@@ -116,8 +116,8 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
 
 
         LLResultTypes.FiducialResult fiducialResult = null;
-        scoop.setPosition(0);
-        backDoor.setPosition(1);
+         scoop.setPosition(1);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
 
@@ -329,15 +329,16 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
 
         return id;
     }
+    private void timeLaunchMotif(int motiff, double launcherSpeedd) { // old launch funtioojn
 
-    private void launchMotif(int motiff, double launcherSpeedd) {
+
         launchMotorOn(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get(motiff*3));
         sleep(250);
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+1));
         sleep(500);
-        scoop.setPosition(0);
+        scoop.setPosition(1);
                 /*
         if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
             sleep(250);
@@ -347,7 +348,7 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+2));
         sleep(500);
-        scoop.setPosition(0);
+        scoop.setPosition(1);
         /*
         if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
             sleep(250);
@@ -357,8 +358,63 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
         sleep(500);
         launch(launcherSpeedd);
         sleep(500);
-        scoop.setPosition(0);
+        scoop.setPosition(1);
         launchMotorOff();
+
+
+    }
+
+    private void launchMotif(int motiff, double launcherSpeedd) {
+        backDoor.setPosition(0);
+        turnTableServo.setPosition(motifArray.get(motiff*3)); //motifArray.get(motiff*3)
+        sleep(1000);
+        launchMotorOn(launcherSpeedd);
+        sleep(250);
+
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(750);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        sleep(10);
+
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        scoop.setPosition(0.5);
+
+        turnTableServo.setPosition(motifArray.get((motiff*3)+1)); //motifArray.get((motiff*3)+1)
+        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1) {
+            sleep(250);
+        }
+        sleep(500);
+        scoop.setPosition(1);
+        backDoor.setPosition(0);
+        sleep(250);
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(750);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        sleep(10);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        scoop.setPosition(0.5);
+
+        turnTableServo.setPosition(motifArray.get((motiff*3)+2));
+        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
+            sleep(250);
+        }
+        sleep(500);
+        scoop.setPosition(1);
+        backDoor.setPosition(0);
+        sleep(250);
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(750);
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        sleep(200);
+
+        goofyAhhhhFrontDoor.setPosition(0.5);
+        scoop.setPosition(0.5);
+        sleep(500);
+        scoop.setPosition(1);
+        backDoor.setPosition(.5);
+        turnTableServo.setPosition(0);
+        launchMotorOff();
+
     }
     private void launch(double launcherSpeedd) {
         backDoor.setPosition(0);

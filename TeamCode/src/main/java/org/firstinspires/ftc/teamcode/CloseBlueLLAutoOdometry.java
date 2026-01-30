@@ -103,8 +103,8 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
         pinpoint.initialize();
 
         LLResultTypes.FiducialResult fiducialResult = null;
-        scoop.setPosition(0);
-        backDoor.setPosition(1);
+        scoop.setPosition(1);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
 
@@ -147,7 +147,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
             launchMotif(Motif, launcherSpeed);
             turnLeftTics(power,27.5);
             moveForwardTics(power, ticPerIn*36);
-            scoop.setPosition(0);
+            scoop.setPosition(1);
             backDoor.setPosition(0);
             turnTableServo.setPosition(0.5);
             goofyAhhhhFrontDoor.setPosition(0.5);
@@ -160,7 +160,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+1));
         sleep(500);
-        scoop.setPosition(0);
+        scoop.setPosition(1);
                 /*
         if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
             sleep(250);
@@ -170,7 +170,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+2));
         sleep(500);
-        scoop.setPosition(0);
+        scoop.setPosition(1);
         /*
         if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
             sleep(250);
@@ -180,7 +180,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
         sleep(500);
         launch(launcherSpeedd);
         sleep(500);
-        scoop.setPosition(0);
+        scoop.setPosition(1);
         launchMotorOff();
 
     }

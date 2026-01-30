@@ -115,8 +115,8 @@ public class CloseRedAutoRRLib extends LinearOpMode {
         pinpoint.initialize();
 
         LLResultTypes.FiducialResult fiducialResult = null;
-        scoop.setPosition(0);
-        backDoor.setPosition(1);
+        scoop.setPosition(1);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(0);
         goofyAhhhhFrontDoor.setPosition(1);
 

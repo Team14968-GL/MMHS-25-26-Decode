@@ -29,12 +29,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MMHS26Lib {
-    private static double ticPerIn = 254.7;
+    //Hardware variables
     private static DcMotor leftBack;
     private static DcMotor rightBack;
     private static DcMotor leftFront;
     private static DcMotor rightFront;
-    private static HardwareMap hwMap;
     private static GoBildaPinpointDriver pinpoint;
     private static CRServo LED1;
     private static ArrayList<CRServo> leds;
@@ -53,6 +52,12 @@ public class MMHS26Lib {
     private static TouchSensor BottomBump;
     private static TouchSensor intakeBump1;
     private static TouchSensor intakeBump2;
+
+    //Constants
+    private static final double ticPerIn = 254.7;
+
+    //Internal variables
+    private static HardwareMap hwMap;
 
     public MMHS26Lib(HardwareMap hardwareMap) {
         //Drive Definitions
@@ -334,19 +339,20 @@ public class MMHS26Lib {
         public static Pose2d poseLimelight() {
 
             LLResult result = limelight.getLatestResult();
+            Pose3D pose;
             double x = 0;
             double y = 0;
             double yaw = 0;
 
             if (result != null && result.isValid()) {
-                Pose3D pose = result.getBotpose();
+                pose = result.getBotpose();
 
                 telemetry.addData("X", (pose.getPosition().x * 39.37));
                 telemetry.addData("Y",  (pose.getPosition().y * 39.37));
                 telemetry.addData("Rotation",  pose.getOrientation().getYaw());
                 telemetry.update();
 
-                return new Pose2d(pose.getPosition().x, pose.getPosition().y, (pose.getOrientation().getYaw() - 180));
+                return new Pose2d((pose.getPosition().x * 39.37), (pose.getPosition().y * 39.37), (pose.getOrientation().getYaw() - 180));
             } else {
                 telemetry.addData("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
                 return new Pose2d(0, 0, 0);

@@ -97,8 +97,8 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         pinpoint.initialize();
 
         LLResultTypes.FiducialResult fiducialResult = null;
-        scoop.setPosition(0);
-        backDoor.setPosition(1);
+        scoop.setPosition(1);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
 
@@ -138,7 +138,7 @@ public class CloseRedLLAutoTime extends LinearOpMode {
             }
             launchMotif(Motif, launcherSpeed);
             strafeLeft(.6, 1000);
-            scoop.setPosition(0);
+            scoop.setPosition(1);
             backDoor.setPosition(0);
             turnTableServo.setPosition(0.5);
             goofyAhhhhFrontDoor.setPosition(0.5);
@@ -168,7 +168,7 @@ public class CloseRedLLAutoTime extends LinearOpMode {
         goofyAhhhhFrontDoor.setPosition(0.5);
         scoop.setPosition(0.5);
         sleep(1000);
-        scoop.setPosition(0);
+        scoop.setPosition(1);
     }
     private void launchMotorOn(double launcherSpeedd) {
         ((DcMotorEx) leftLauncher).setVelocity(launcherSpeedd);

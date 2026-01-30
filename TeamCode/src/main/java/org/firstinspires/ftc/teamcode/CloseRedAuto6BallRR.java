@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Autonomous
-public class CloseRedAutoRoadRunner extends LinearOpMode {
+public class CloseRedAuto6BallRR extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
 
     Limelight3A limelight;
@@ -127,8 +127,8 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
 
 
         LLResultTypes.FiducialResult fiducialResult = null;
-        scoop.setPosition(0);
-        backDoor.setPosition(1);
+         scoop.setPosition(1);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
 
@@ -200,7 +200,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         launchMotif(Motif, launcherSpeed);
         sleep(250);
         goofyAhhhhFrontDoor.setPosition(1);
-        backDoor.setPosition(1);
+        backDoor.setPosition(.5);
         turnTableServo.setPosition(0);
         Actions.runBlocking(
                 new SequentialAction(
@@ -481,7 +481,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+1));
         sleep(500);
-        scoop.setPosition(0);
+         scoop.setPosition(1);
 
         if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
             sleep(250);
@@ -490,7 +490,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+2));
         sleep(500);
-        scoop.setPosition(0);
+         scoop.setPosition(1);
 
         if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
             sleep(250);
@@ -499,7 +499,7 @@ public class CloseRedAutoRoadRunner extends LinearOpMode {
         sleep(500);
         launch(launcherSpeedd);
         sleep(500);
-        scoop.setPosition(0);
+         scoop.setPosition(1);
         launchMotorOff();
     }
     private void launch(double launcherSpeedd) {
