@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.MMHS26Lib.*;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.debug;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.motion;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.utils;
@@ -23,6 +26,11 @@ public class _26LibTest extends LinearOpMode{
 
         waitForStart();
         //26Lib test script
-        motion.strafeLeft(speed, time);
+        while(opModeIsActive()){
+            telemetry.addData("X", MMHS26Lib.currentPose().position.x);
+            telemetry.addData("Y", MMHS26Lib.currentPose().position.y);
+            telemetry.addData("", MMHS26Lib.currentPose().heading.log());
+            telemetry.update();
+        }
     }
 }

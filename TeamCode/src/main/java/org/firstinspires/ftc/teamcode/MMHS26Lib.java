@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -8,6 +7,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -59,6 +60,7 @@ public class MMHS26Lib {
 
     //Internal variables
     private static HardwareMap hwMap;
+    private static Telemetry telemetry;
 
     //External Variables
     public static int count = 0;
@@ -142,6 +144,7 @@ public class MMHS26Lib {
 
     //Gets the robots current position on the field
     public static Pose2d currentPose() {
+        pinpoint.update();
         return (new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH), pinpoint.getPosY(DistanceUnit.INCH)), pinpoint.getHeading(AngleUnit.RADIANS)));
     }
 
@@ -419,7 +422,6 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 splineToConstantHeading.build()));
 
-
                 return (currentPose());
             }
 
@@ -431,8 +433,7 @@ public class MMHS26Lib {
                         new SequentialAction(
                                 splineToLinearHeading.build()));
 
-
-                return (currentPose());
+                return currentPose();
             }
 
             public static Pose2d splineToSplineHeading(double x, double y, double angle, double tangent, Pose2d startingPose) {
