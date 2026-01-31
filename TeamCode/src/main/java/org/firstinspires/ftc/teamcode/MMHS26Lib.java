@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -113,10 +112,10 @@ public class MMHS26Lib {
         //Lift/Skis Config
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //Odometry Config
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, initPose.position.x, initPose.position.y, AngleUnit.DEGREES, initPose.heading.log()));
-        pinpoint.setHeading(initPose.heading.log(), AngleUnit.RADIANS);
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.initialize(); //Initializes odometry for use in code
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, initPose.position.x, initPose.position.y, AngleUnit.DEGREES, initPose.heading.log()));
+        pinpoint.setHeading(initPose.heading.log(), AngleUnit.RADIANS);
         //LED Config
         LED1 = hardwareMap.get(CRServo.class, "Led1");
         leds = new ArrayList<>(Arrays.asList(null, LED1)); //creates a list of LEDs for ledManager to use
@@ -1113,7 +1112,6 @@ public class MMHS26Lib {
                 pinpoint.update();
                 double xvalue = pinpoint.getEncoderX();
                 while (xvalue - pinpoint.getEncoderX() <= tic) {
-                    pinpoint.update();
                     leftBack.setPower(-Speed);
                     leftFront.setPower(-Speed);
                     rightBack.setPower(-Speed);
