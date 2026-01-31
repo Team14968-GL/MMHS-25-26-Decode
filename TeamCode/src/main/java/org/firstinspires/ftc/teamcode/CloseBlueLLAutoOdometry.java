@@ -108,10 +108,6 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
 
-        if (false) {
-
-
-        }
         waitForStart();
 
         if (opModeIsActive()) {

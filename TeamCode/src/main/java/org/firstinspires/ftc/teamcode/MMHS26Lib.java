@@ -37,7 +37,6 @@ public class MMHS26Lib {
     private static DcMotor leftFront;
     private static DcMotor rightFront;
     private static GoBildaPinpointDriver pinpoint;
-    private static CRServo LED1;
     private static ArrayList<CRServo> leds;
     private static Limelight3A limelight;
     private static DcMotor intakeMotor;
@@ -50,8 +49,6 @@ public class MMHS26Lib {
     private static Servo backDoor;
     private static Servo scoop;
     private static Servo turnTableServo;
-    private static TouchSensor TopBump;
-    private static TouchSensor BottomBump;
     private static TouchSensor intakeBump1;
     private static TouchSensor intakeBump2;
 
@@ -81,8 +78,8 @@ public class MMHS26Lib {
         rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
         launchLiftRight = hardwareMap.get(CRServo.class, "launchLiftRight");
         launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
-        TopBump = hardwareMap.get(TouchSensor.class, "TopBump");
-        BottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
+        TouchSensor topBump = hardwareMap.get(TouchSensor.class, "TopBump");
+        TouchSensor bottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
         backDoor = hardwareMap.get(Servo.class, "backDoor");
         scoop = hardwareMap.get(Servo.class, "scoop");
         //Lift/Skis Definition
@@ -117,7 +114,7 @@ public class MMHS26Lib {
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, initPose.position.x, initPose.position.y, AngleUnit.DEGREES, initPose.heading.log()));
         pinpoint.setHeading(initPose.heading.log(), AngleUnit.RADIANS);
         //LED Config
-        LED1 = hardwareMap.get(CRServo.class, "Led1");
+        CRServo LED1 = hardwareMap.get(CRServo.class, "Led1");
         leds = new ArrayList<>(Arrays.asList(null, LED1)); //creates a list of LEDs for ledManager to use
         //Limelight Config/Setup
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -127,6 +124,9 @@ public class MMHS26Lib {
 
         //Internal Hardware Map (DO NOT TOUCH)
         hwMap = hardwareMap;
+
+        telemetry.addData("Initialization Finished", true);
+        telemetry.update();
     }
 
     //Optional flag(s) to enable internal debugging tools
@@ -245,8 +245,8 @@ public class MMHS26Lib {
                 LLResult result = limelight.getLatestResult();
                 double txMax = 14.700;
                 double txMin = 14.400;
-                double tyMax = 13.5;
-                double tyMin = 12;
+                //double tyMax = 13.5;
+                //double tyMin = 12;
                 double taMax = .88;
                 double taMin = .91;
                 double tx;
@@ -294,7 +294,7 @@ public class MMHS26Lib {
 
             boolean processTrig = true;
 
-            int id = 0;
+            int id;
 
             ArrayList<Integer> IDs = new ArrayList<>();
 
@@ -376,9 +376,6 @@ public class MMHS26Lib {
 
             LLResult result = limelight.getLatestResult();
             Pose3D pose;
-            double x = 0;
-            double y = 0;
-            double yaw = 0;
 
             if (result != null && result.isValid()) {
                 pose = result.getBotpose();
@@ -451,6 +448,7 @@ public class MMHS26Lib {
         }
 
         //Creates a horizontal path for the robot to move along
+        @SuppressWarnings("unused")
         public static class strafe {
             public strafe() {super();}
 
@@ -1124,8 +1122,7 @@ public class MMHS26Lib {
             }
 
             public int BackwardsTillBump(double Speed, int delay) {
-                int count = 0;
-                int returnSave = 2;
+                int returnSave;
 
                 ElapsedTime BackwardsTillBumpClock = new ElapsedTime();
 
@@ -1138,16 +1135,15 @@ public class MMHS26Lib {
                     sleep(1);
                     count++;
                 }
+                count = 0;
+
                 if (!intakeBump1.isPressed() || intakeBump2.isPressed()) {
                     returnSave = 1;
-                }
-
-                if (BackwardsTillBumpClock.seconds() >= 2) {
+                } else if (BackwardsTillBumpClock.seconds() >= 2) {
                     returnSave = 0;
                 } else {
                     returnSave = 1;
                 }
-
 
                 leftBack.setPower(0);
                 leftFront.setPower(0);
