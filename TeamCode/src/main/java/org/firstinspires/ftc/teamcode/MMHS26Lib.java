@@ -62,6 +62,7 @@ public class MMHS26Lib {
 
     //Internal variables
     private static HardwareMap hwMap;
+    private static Pose2d startPose;
     private static Telemetry telemetry;
 
     //External Variables
@@ -127,8 +128,10 @@ public class MMHS26Lib {
         limelight.setPollRateHz(100); //Limelight data polling rate
         limelight.start(); //Initializes limelight for use in code
 
-        //Internal Hardware Map (DO NOT TOUCH)
+        //Internal Data (DO NOT TOUCH)
         hwMap = hardwareMap;
+
+        startPose = initPose;
 
         telemetry.addData("Initialization Finished", true);
         telemetry.update();
@@ -152,12 +155,52 @@ public class MMHS26Lib {
     //Gets the robots current position on the field
     public static Pose2d currentPose() {
         pinpoint.update();
-        return (new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH), pinpoint.getPosY(DistanceUnit.INCH)), pinpoint.getHeading(AngleUnit.RADIANS)));
+        return (new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH) + startPose.position.x, pinpoint.getPosY(DistanceUnit.INCH) + startPose.position.y), pinpoint.getHeading(AngleUnit.RADIANS) + Math.toRadians(startPose.heading.log())));
     }
+    public static class conversions {
+        public conversions() {
+            super();
+        }
 
-    public static Pose2d Pose2DtoPose2d(Pose2D Pose2D) {return new Pose2d(new Vector2d(Pose2D.getX(DistanceUnit.INCH), Pose2D.getY(DistanceUnit.INCH)), Pose2D.getHeading(AngleUnit.DEGREES));}
+        public static class pose {
+            public pose() {
+                super();
+            }
 
-    public static Pose2D Pose2dToPose2D(Pose2d Pose2d) {return new Pose2D(DistanceUnit.INCH, Pose2d.position.x, Pose2d.position.y, AngleUnit.DEGREES, Pose2d.heading.log());}
+            //Converts FTC Pose2D to RoadRunner Pose2d
+            public static Pose2d Pose2DToPose2d(Pose2D Pose2D) {
+                return new Pose2d(new Vector2d(Pose2D.getX(DistanceUnit.INCH), Pose2D.getY(DistanceUnit.INCH)), Pose2D.getHeading(AngleUnit.DEGREES));
+            }
+
+            //Converts RoadRunner Pose2d to FTC Pose2D
+            public static Pose2D Pose2dToPose2D(Pose2d Pose2d) {
+                return new Pose2D(DistanceUnit.INCH, Pose2d.position.x, Pose2d.position.y, AngleUnit.DEGREES, Pose2d.heading.log());
+            }
+
+            //Converts FTC Pose3D to FTC Pose2D
+            public static Pose2D Pose3DToPose2D(Pose3D pose3D) {
+                return new Pose2D(pose3D.getPosition().unit, pose3D.getPosition().x, pose3D.getPosition().y, AngleUnit.DEGREES, pose3D.getOrientation().getYaw(AngleUnit.DEGREES));
+            }
+
+            //Converts FTC Pose3D to RoadRunner Pose2d
+            public static Pose2d Pose3DtoPose2d(Pose3D pose3D) {
+                return Pose2DToPose2d(Pose3DToPose2D(pose3D));
+            }
+        }
+        public static class units {
+            public units() {super();}
+
+            //Converts millimeters to inches
+            public static double millimeterToInch(double millimeter) {
+                return (millimeter / 25.4);
+            }
+
+            //Converts inches to millimeters
+            public static double inchToMillimeter(double inch) {
+                return (inch * 25.4);
+            }
+        }
+    }
 
     //Class for managing basic functions relating to movement
     public static class motion {
@@ -397,9 +440,10 @@ public class MMHS26Lib {
                 telemetry.addData("Rotation",  pose.getOrientation().getYaw());
                 telemetry.update();
 
-                return new Pose2d((pose.getPosition().x * 39.37), (pose.getPosition().y * 39.37), (pose.getOrientation().getYaw() - 180));
+                return new Pose2d(pose.getPosition().x * 39.37, pose.getPosition().y * 39.37, pose.getOrientation().getYaw() - 180);
             } else {
                 telemetry.addData("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
+                telemetry.update();
                 return new Pose2d(0, 0, 0);
             }
         }
