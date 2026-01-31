@@ -14,6 +14,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,8 +75,6 @@ public class FarRedAuto3BallRR extends LinearOpMode {
     double taMin = .91;
 
     public void runOpMode() {
-        new MMHS26Lib(hardwareMap);
-
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
@@ -124,6 +126,7 @@ public class FarRedAuto3BallRR extends LinearOpMode {
         Pose2d leavePose = new Pose2d(49, 12, Math.toRadians(-20));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
+        new MMHS26Lib(hardwareMap, beginPose);
 
         waitForStart();
 

@@ -24,6 +24,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class MMHS26Lib {
     //External Variables
     public static int count = 0;
 
-    public MMHS26Lib(HardwareMap hardwareMap) {
+    public MMHS26Lib(HardwareMap hardwareMap, Pose2d initPose) {
         //Drive Definitions
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
@@ -112,6 +113,8 @@ public class MMHS26Lib {
         //Lift/Skis Config
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //Odometry Config
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, initPose.position.x, initPose.position.y, AngleUnit.DEGREES, initPose.heading.log()));
+        pinpoint.setHeading(initPose.heading.log(), AngleUnit.RADIANS);
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.initialize(); //Initializes odometry for use in code
         //LED Config

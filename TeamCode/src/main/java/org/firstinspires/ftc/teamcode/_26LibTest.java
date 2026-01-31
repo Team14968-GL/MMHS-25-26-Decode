@@ -6,6 +6,9 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.*;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.debug;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.motion;
@@ -21,7 +24,7 @@ public class _26LibTest extends LinearOpMode{
     @Override
     public void runOpMode(){
         //setup
-        new MMHS26Lib(hardwareMap);
+        new MMHS26Lib(hardwareMap, startingPose);
         debug.debugTelemetry = true;
 
         waitForStart();

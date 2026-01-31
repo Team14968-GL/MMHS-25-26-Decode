@@ -17,6 +17,8 @@ import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.debug;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.motion;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.utils;
@@ -124,7 +126,7 @@ public class CloseRedAutoRRLib extends LinearOpMode {
         Pose2d beginPose = new Pose2d(-52, 48, Math.toRadians(308));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        new MMHS26Lib(hardwareMap);
+        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0));
 
 
         waitForStart();

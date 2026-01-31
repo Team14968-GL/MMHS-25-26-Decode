@@ -1,4 +1,7 @@
 package org.firstinspires.ftc.teamcode;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.debug;
 import org.firstinspires.ftc.teamcode.MMHS26Lib.motion;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -15,7 +18,7 @@ public class ME_Suffering extends LinearOpMode {
     public void runOpMode() {
         //setup
         //noinspection InstantiationOfUtilityClass
-        new MMHS26Lib(hardwareMap);
+        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0));
         debug.debugTelemetry = true;
 
         waitForStart();

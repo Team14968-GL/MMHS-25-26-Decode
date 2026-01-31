@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -159,7 +160,7 @@ public class ShowOffTelop extends LinearOpMode {
 
         pinpoint.initialize();
 
-        new MMHS26Lib(hardwareMap);
+        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0));
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {

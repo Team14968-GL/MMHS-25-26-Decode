@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -18,6 +19,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -158,7 +160,7 @@ public class MainTeleOp extends LinearOpMode {
 
         pinpoint.initialize();
 
-        new MMHS26Lib(hardwareMap);
+        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0));
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
