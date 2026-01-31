@@ -119,6 +119,7 @@ public class MMHS26Lib {
         pinpoint.initialize(); //Initializes odometry for use in code
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, initPose.position.x, initPose.position.y, AngleUnit.DEGREES, initPose.heading.log()));
         pinpoint.setHeading(initPose.heading.log(), AngleUnit.RADIANS);
+        pinpoint.update();
         //LED Config
         CRServo LED1 = hardwareMap.get(CRServo.class, "Led1");
         leds = new ArrayList<>(Arrays.asList(null, LED1)); //creates a list of LEDs for ledManager to use
@@ -142,10 +143,11 @@ public class MMHS26Lib {
     //Optional flag(s) to enable internal debugging tools
     @Config
     public static class debug {
+        //debug telemetry has to be static to appear on ftc dashboard
         public static boolean debugTelemetry = false;
     }
 
-    //Sleep function taken from LinearOpMode (importing this from LinearOpMode doesn't work)
+    //Sleep function taken from LinearOpMode as extending LinearOpMode doesn't work on static classes
     private static void sleep(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -214,10 +216,7 @@ public class MMHS26Lib {
             rightBack.setPower(Speed);
             rightFront.setPower(-Speed);
             sleep(time);
-            leftBack.setPower(0);
-            leftFront.setPower(0);
-            rightBack.setPower(0);
-            rightFront.setPower(0);
+            motion.halt();
         }
         //DO NOT USE STRAFE UNLESS NEEDED
         public static void strafeRight(double Speed, long time) {
@@ -226,10 +225,7 @@ public class MMHS26Lib {
             rightBack.setPower(-Speed);
             rightFront.setPower(Speed);
             sleep(time);
-            leftBack.setPower(0);
-            leftFront.setPower(0);
-            rightBack.setPower(0);
-            rightFront.setPower(0);
+            motion.halt();
         }
 
         public static void turnRight(double Speed, long time) {
@@ -238,10 +234,7 @@ public class MMHS26Lib {
             rightBack.setPower(Speed);
             rightFront.setPower(Speed);
             sleep(time);
-            leftBack.setPower(0);
-            leftFront.setPower(0);
-            rightBack.setPower(0);
-            rightFront.setPower(0);
+            motion.halt();
         }
 
         public static void turnLeft(double Speed, long time) {
@@ -250,10 +243,7 @@ public class MMHS26Lib {
             rightBack.setPower(-Speed);
             rightFront.setPower(-Speed);
             sleep(time);
-            leftBack.setPower(0);
-            leftFront.setPower(0);
-            rightBack.setPower(0);
-            rightFront.setPower(0);
+            motion.halt();
         }
 
         public static void moveBackward(double Speed, long time) {
@@ -262,10 +252,7 @@ public class MMHS26Lib {
             rightBack.setPower(Speed);
             rightFront.setPower(Speed);
             sleep(time);
-            leftBack.setPower(0);
-            leftFront.setPower(0);
-            rightBack.setPower(0);
-            rightFront.setPower(0);
+            motion.halt();
         }
 
         public static void moveForward(double Speed, long time) {
@@ -274,10 +261,7 @@ public class MMHS26Lib {
             rightBack.setPower(-Speed);
             rightFront.setPower(-Speed);
             sleep(time);
-            leftBack.setPower(0);
-            leftFront.setPower(0);
-            rightBack.setPower(0);
-            rightFront.setPower(0);
+            motion.halt();
         }
 
         public static void halt() {
@@ -294,9 +278,10 @@ public class MMHS26Lib {
 
         //moves to a predetermined point on the field
         public static void localizer(double localPower, int sleepTime) {
-            //boolean localizing = true;
+            //loops until escaped
             while (true) {
                 LLResult result = limelight.getLatestResult();
+                //vertical min & max of the april tag
                 double txMax = 14.700;
                 double txMin = 14.400;
                 /*
@@ -304,13 +289,16 @@ public class MMHS26Lib {
                 double tyMax = 13.5;
                 double tyMin = 12;
                 */
+                //min & max % of the camera that the april tag takes up
                 double taMax = .88;
                 double taMin = .91;
+                //current values of tx, ty, ta
                 double tx;
                 double ty;
                 double ta;
+                //ensures non-null results
                 if (result != null && result.isValid()) {
-                    tx = result.getTx();
+                    tx = result.getTx(); // How far left or right the target is (degrees)
                     ty = result.getTy(); // How far up or down the target is (degrees)
                     ta = result.getTa(); // How big the target looks (0%-100% of the image)
                     if (debug.debugTelemetry) {
@@ -347,26 +335,25 @@ public class MMHS26Lib {
 
         //Outputs a list of AprilTag IDs that the limelight can see
         public static int processLimeLightMotif() {
-            int Motif;
-
+            //determines whether or not to run the function
             boolean processTrig = true;
-
+            //array and individual ids
             int id;
-
             ArrayList<Integer> IDs = new ArrayList<>();
-
+            int Motif;
+            //current values of tx, ty, ta
             double tx;
             double ty;
             double ta;
-
+            //processing trig allows loop to escape early or ends if the loop has exceeded 1000 iterations
             while (count <= 1000 && processTrig) {
-
                 LLResult result = limelight.getLatestResult();
+                //ensures non-null results
                 if (result != null && result.isValid()) {
-                    // Get the list of ALL detected fiducials (AprilTags)
+                    // Get the list of all AprilTags
                     List<LLResultTypes.FiducialResult> fiducialList = result.getFiducialResults();
 
-                    tx = result.getTx();
+                    tx = result.getTx(); // How far left or right the target is (degrees)
                     ty = result.getTy(); // How far up or down the target is (degrees)
                     ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
@@ -376,7 +363,7 @@ public class MMHS26Lib {
                         telemetry.addData("Target Area", ta);
                         telemetry.update();
                     }
-
+                    //checks if there are april tags
                     if (!fiducialList.isEmpty()) {
                         if (debug.debugTelemetry) {
                             telemetry.addData("Detections Found", fiducialList.size());
@@ -390,6 +377,7 @@ public class MMHS26Lib {
                                 telemetry.addData("Tag ID", id);
                                 telemetry.update();
                             }
+                            //early escape
                             processTrig = false;
                         }
                     } else {
@@ -409,9 +397,11 @@ public class MMHS26Lib {
                 if (debug.debugTelemetry) {
                     telemetry.update();
                 }
+                //increments count
                 count++;
                 sleep(1);
             }
+            //checks for motif ids
             if (IDs.contains(21)) {
                 Motif = 1;
                 telemetry.addData("Motif", "GPP " + Motif);
@@ -430,20 +420,20 @@ public class MMHS26Lib {
             return Motif;
         }
         public static Pose2d poseLimelight() {
-
             LLResult result = limelight.getLatestResult();
             Pose3D pose;
-
+            //ensures non-null results
             if (result != null && result.isValid()) {
                 pose = result.getBotpose();
-
+                //gets robot's 3D position and orientation
                 telemetry.addData("X", (pose.getPosition().x * 39.37));
                 telemetry.addData("Y",  (pose.getPosition().y * 39.37));
                 telemetry.addData("Rotation",  pose.getOrientation().getYaw());
                 telemetry.update();
-
+                //converts Pose3D to a Pose2d usable with RoadRunner
                 return new Pose2d(pose.getPosition().x * 39.37, pose.getPosition().y * 39.37, pose.getOrientation().getYaw() - 180);
             } else {
+                //failsafe if pose can't be obtained
                 telemetry.addData("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
                 telemetry.update();
                 return new Pose2d(0, 0, 0);
@@ -458,7 +448,7 @@ public class MMHS26Lib {
         //Creates a curved path for the robot to automatically follow
         public static class spline {
             public spline() {super();}
-
+            //follows the arc of a circle when going to a 2d point
             public static Pose2d splineTo(double x, double y, double tangent, Pose2d startingPose) {
 
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
@@ -470,7 +460,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //follows the arc of a circle when going to a 2d point while facing a single angle
             public static Pose2d splineToConstantHeading(double x, double y, double tangent, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder splineToConstantHeading = drive.actionBuilder(startingPose)
@@ -481,7 +471,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //follows the arc of a circle when going to a 2d point while allowing for an ending angle, similar to if splineTo and turnTo are chained
             public static Pose2d splineToLinearHeading(double x, double y, double angle, double tangent, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder splineToLinearHeading = drive.actionBuilder(startingPose)
@@ -492,7 +482,7 @@ public class MMHS26Lib {
 
                 return currentPose();
             }
-
+            //follows the arc of a circle when going to a 2d point while always facing a user determined angle
             public static Pose2d splineToSplineHeading(double x, double y, double angle, double tangent, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder splineToSplineHeading = drive.actionBuilder(startingPose)
@@ -508,7 +498,7 @@ public class MMHS26Lib {
         //Creates a horizontal path for the robot to move along
         public static class strafe {
             public strafe() {super();}
-
+            //strafes to a 2d point
             public static Pose2d strafeTo(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder strafeTo;
@@ -532,7 +522,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //strafes to a 2d point while maintaining heading
             public static Pose2d strafeToConstantHeading(double x, double y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder strafeToConstantHeading;
@@ -556,7 +546,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //strafes to a 2d point and ending at a user determined heading
             public static Pose2d strafeToLinearHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder strafeToLinearHeading;
@@ -580,7 +570,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //strafes to a 2d point while facing a user determined heading
             public static Pose2d strafeToSplineHeading(double x, double y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder strafeToSplineHeading;
@@ -609,7 +599,7 @@ public class MMHS26Lib {
         //takes a line to a point on a specified axis (x or y)
         public static class lineTo {
             public lineTo() {super();}
-
+            //takes a linear path on the x-axis to a given x value
             public static Pose2d lineToX(double X, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToX;
@@ -633,7 +623,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //takes a linear path on the x-axis to a given x value while maintaining its starting heading
             public static Pose2d lineToXConstantHeading(double X, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToXConstantHeading;
@@ -657,7 +647,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //takes a linear path on the x-axis to a given x value and ending at a specified heading
             public static Pose2d lineToXLinearHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToXLinearHeading;
@@ -681,7 +671,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //takes a linear path on the x-axis to a given x value while facing a user defined direction
             public static Pose2d lineToXSplineHeading(double X, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToXSplineHeading;
@@ -705,7 +695,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //takes a linear path on the y-axis to a given y value
             public static Pose2d lineToY(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToY;
@@ -729,7 +719,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //takes a linear path on the x-axis to a given x value while maintaining its starting heading
             public static Pose2d lineToYConstantHeading(double Y, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToYConstantHeading;
@@ -753,7 +743,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //takes a linear path on the x-axis to a given x value and ending at a specified heading
             public static Pose2d lineToYLinearHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToYLinearHeading;
@@ -777,7 +767,7 @@ public class MMHS26Lib {
 
                 return (currentPose());
             }
-
+            //takes a linear path on the x-axis to a given x value while facing a user defined direction
             public static Pose2d lineToYSplineHeading(double Y, double angle, boolean VelCon, boolean AccCon, Pose2d startingPose) {
                 MecanumDrive drive = new MecanumDrive(hwMap, startingPose);
                 TrajectoryActionBuilder lineToYSplineHeading;
@@ -835,7 +825,7 @@ public class MMHS26Lib {
         //Class for managing telemetry systems
         public static class telemetrySys {
             telemetrySys() {super();}
-
+            //outputs motor telemetry
             public static class motor {
                 motor() {super();}
                 public static void leftBackMotor() {
@@ -855,6 +845,7 @@ public class MMHS26Lib {
                     telemetry.addData("Left Back", leftBack.getPowerFloat());
                     telemetry.addData("Left Back", leftBack.getTargetPosition());
                     telemetry.addData("Left Back", leftBack.getZeroPowerBehavior());
+                    telemetry.update();
                 }
                 public static void rightBackMotor() {
                     telemetry.addData("Right Back", rightBack);
@@ -873,6 +864,7 @@ public class MMHS26Lib {
                     telemetry.addData("Right Back", rightBack.getPowerFloat());
                     telemetry.addData("Right Back", rightBack.getTargetPosition());
                     telemetry.addData("Right Back", rightBack.getZeroPowerBehavior());
+                    telemetry.update();
                 }
                 public static void rightFrontMotor() {
                     telemetry.addData("Right Front", rightFront);
@@ -891,6 +883,7 @@ public class MMHS26Lib {
                     telemetry.addData("Right Front", rightFront.getPowerFloat());
                     telemetry.addData("Right Front", rightFront.getTargetPosition());
                     telemetry.addData("Right Front", rightFront.getZeroPowerBehavior());
+                    telemetry.update();
                 }
                 public static void leftFrontMotor() {
                     telemetry.addData("Left Front", leftFront);
@@ -909,6 +902,7 @@ public class MMHS26Lib {
                     telemetry.addData("Left Front", leftFront.getPowerFloat());
                     telemetry.addData("Left Front", leftFront.getTargetPosition());
                     telemetry.addData("Left Front", leftFront.getZeroPowerBehavior());
+                    telemetry.update();
                 }
                 public static void leftLauncherMotor() {
                     telemetry.addData("Left Launcher", leftLauncher);
@@ -927,6 +921,7 @@ public class MMHS26Lib {
                     telemetry.addData("Left Launcher", leftLauncher.getPowerFloat());
                     telemetry.addData("Left Launcher", leftLauncher.getTargetPosition());
                     telemetry.addData("Left Launcher", leftLauncher.getZeroPowerBehavior());
+                    telemetry.update();
                 }
                 public static void rightLauncherMotor() {
                     telemetry.addData("Right Launcher", rightLauncher);
@@ -945,6 +940,7 @@ public class MMHS26Lib {
                     telemetry.addData("Right Launcher", rightLauncher.getPowerFloat());
                     telemetry.addData("Right Launcher", rightLauncher.getTargetPosition());
                     telemetry.addData("Right Launcher", rightLauncher.getZeroPowerBehavior());
+                    telemetry.update();
                 }
                 public static void liftMotor() {
                     telemetry.addData("Lift", lift);
@@ -963,6 +959,7 @@ public class MMHS26Lib {
                     telemetry.addData("Lift", lift.getPowerFloat());
                     telemetry.addData("Lift", lift.getTargetPosition());
                     telemetry.addData("Lift", lift.getZeroPowerBehavior());
+                    telemetry.update();
                 }
                 public static void intakeMotor() {
                     telemetry.addData("Intake", intakeMotor);
@@ -981,8 +978,10 @@ public class MMHS26Lib {
                     telemetry.addData("Intake", intakeMotor.getPowerFloat());
                     telemetry.addData("Intake", intakeMotor.getTargetPosition());
                     telemetry.addData("Intake", intakeMotor.getZeroPowerBehavior());
+                    telemetry.update();
                 }
             }
+            //outputs servo telemetry
             public static class servos {
                 servos() {super();}
                 public static void turnTable() {
@@ -996,8 +995,8 @@ public class MMHS26Lib {
                     telemetry.addData("Turn Table", turnTableServo.getManufacturer());
                     telemetry.addData("Turn Table", turnTableServo.getVersion());
                     telemetry.addData("Turn Table", turnTableServo.getClass());
+                    telemetry.update();
                 }
-
                 public static void intakeDoor() {
                     telemetry.addData("Front Door", frontDoor);
                     telemetry.addData("Front Door", frontDoor.getController());
@@ -1009,6 +1008,7 @@ public class MMHS26Lib {
                     telemetry.addData("Front Door", frontDoor.getManufacturer());
                     telemetry.addData("Front Door", frontDoor.getVersion());
                     telemetry.addData("Front Door", frontDoor.getClass());
+                    telemetry.update();
                 }
                 public static void launchDoor() {
                     telemetry.addData("Back Door", backDoor);
@@ -1021,6 +1021,7 @@ public class MMHS26Lib {
                     telemetry.addData("Back Door", backDoor.getManufacturer());
                     telemetry.addData("Back Door", backDoor.getVersion());
                     telemetry.addData("Back Door", backDoor.getClass());
+                    telemetry.update();
                 }
                 public static void launchScoop() {
                     telemetry.addData("Scoop", scoop);
@@ -1033,6 +1034,7 @@ public class MMHS26Lib {
                     telemetry.addData("Scoop", scoop.getManufacturer());
                     telemetry.addData("Scoop", scoop.getVersion());
                     telemetry.addData("Scoop", scoop.getClass());
+                    telemetry.update();
                 }
                 public static void leftLaunchLift() {
                     telemetry.addData("Left Launch Lift", launchLiftLeft);
@@ -1045,6 +1047,7 @@ public class MMHS26Lib {
                     telemetry.addData("Left Launch Lift", launchLiftLeft.getManufacturer());
                     telemetry.addData("Left Launch Lift", launchLiftLeft.getVersion());
                     telemetry.addData("Left Launch Lift", launchLiftLeft.getClass());
+                    telemetry.update();
                 }
                 public static void rightLaunchLift() {
                     telemetry.addData("Right Launch Lift", launchLiftRight);
@@ -1057,6 +1060,7 @@ public class MMHS26Lib {
                     telemetry.addData("Right Launch Lift", launchLiftRight.getManufacturer());
                     telemetry.addData("Right Launch Lift", launchLiftRight.getVersion());
                     telemetry.addData("Right Launch Lift", launchLiftRight.getClass());
+                    telemetry.update();
                 }
             }
         }
@@ -1117,7 +1121,7 @@ public class MMHS26Lib {
 
         public static class auto {
             public auto() {super();}
-
+            //automatically intakes based on if the launcher is up or down
             public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance, int kickTime) {
                 int safeTrig;
                 turnTableServo.setPosition(0);
@@ -1158,7 +1162,7 @@ public class MMHS26Lib {
                     intakeMotor.setPower(0);
                 }
             }
-
+            //moves backwards for a certain of tics
             private void moveForwardTics(double Speed, double tic) {
                 pinpoint.update();
                 double xvalue = pinpoint.getEncoderX();
@@ -1168,12 +1172,9 @@ public class MMHS26Lib {
                     rightBack.setPower(-Speed);
                     rightFront.setPower(-Speed);
                 }
-                leftBack.setPower(0);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
+                motion.halt();
             }
-
+            //moves backwards until a sensor is triggered
             public int BackwardsTillBump(double Speed, int delay) {
                 int returnSave;
 
@@ -1204,6 +1205,7 @@ public class MMHS26Lib {
                 rightFront.setPower(0);
                 return returnSave;
             }
+            //moves kicker inside before returning it to door position
             public void halfKick(int time) {
                 frontDoor.setPosition(0);
                 sleep(time);
