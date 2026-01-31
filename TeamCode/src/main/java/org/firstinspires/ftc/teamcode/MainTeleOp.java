@@ -749,6 +749,7 @@ public class MainTeleOp extends LinearOpMode {
                 LaunchMotiffTrig = 0;
             }
         }
+
     }
 
 
@@ -817,14 +818,159 @@ public class MainTeleOp extends LinearOpMode {
         ((DcMotorEx) leftLauncher).setVelocity(launcherSpeedd);
         ((DcMotorEx) rightLauncher).setVelocity(launcherSpeedd);
 
+
     }
     private void launchMotorOff() {
         ((DcMotorEx) leftLauncher).setVelocity(0);
         ((DcMotorEx) rightLauncher).setVelocity(0);
+
     }
     private void toClose() {
         if (gamepad1.options){
             MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24, 22.5, 0, MMHS26Lib.Limelight.poseLimelight());
         }
     }
+    /*
+    public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance, int kickTime) {
+        int safeTrig;
+        turnTableServo.setPosition(0);
+        goofyAhhhhFrontDoor.setPosition(1);
+        intakeOn();
+        intake3BallsClock.reset();
+        int intakeCount = 1;
+
+        if (intakeCount == 1) {
+            if
+            intake3BallsClock.reset();
+            if (intake3BallsClock.seconds() <= 500){
+                goofyAhhhhFrontDoor.setPosition(0);
+            }
+
+            if (intake3BallsClock.seconds() >= 500 && intake3BallsClock.seconds() <= 510){
+                goofyAhhhhFrontDoor.setPosition(.5);
+            }
+
+            if (intake3BallsClock.seconds() >= 510){
+                turnTableServo.setPosition(0.5);
+                goofyAhhhhFrontDoor.setPosition(1);
+                intakeCount = 2;
+            }
+
+        }else if (intakeCount == 2) {
+
+        } if (intakeCount == 3){
+
+        }
+        safeTrig = BackwardsTillBump(searchSpeed, 0);
+        if (safeTrig == 1) {
+            moveForwardTics(returnSpeed, returnDistance * ticPerIn);
+            halfKick(kickTime);
+            sleep(250);
+            turnTableServo.setPosition(0.5);
+            goofyAhhhhFrontDoor.setPosition(1);
+
+            safeTrig = BackwardsTillBump(searchSpeed, 0);
+            if (safeTrig == 1) {
+                moveForwardTics(returnSpeed, returnDistance * ticPerIn);
+                halfKick(kickTime);
+                sleep(250);
+                turnTableServo.setPosition(1);
+                goofyAhhhhFrontDoor.setPosition(1);
+                safeTrig = BackwardsTillBump(searchSpeed, 0);
+                if (safeTrig == 1) {
+                    halfKick(kickTime);
+                    intakeOff();
+
+                } else {
+
+                    goofyAhhhhFrontDoor.setPosition(.5);
+                    intakeOff();
+                }
+
+            } else {
+
+                goofyAhhhhFrontDoor.setPosition(.5);
+                intakeOff();
+            }
+        } else {
+
+            goofyAhhhhFrontDoor.setPosition(.5);
+            intakeOff();
+        }
+    }
+
+
+
+
+    public void intakeOn() {
+        intakeMotor.setPower(0.8);
+    }
+
+    public void intakeOff() {
+        intakeMotor.setPower(0);
+
+    }
+
+    public int BackwardsTillBump(double Speed, int delay) {
+        int count = 0;
+        int returnSave = 2;
+        BackwardsTillBumpClock.reset();
+        while (BackwardsTillBumpClock.seconds() <= 2 && !(!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+            backLeft.setPower(Speed);
+            frontLeft.setPower(Speed);
+            backRight.setPower(Speed);
+            frontRight.setPower(Speed);
+            sleep(1);
+            count++;
+        }
+        if (!intakeBump1.isPressed() || intakeBump2.isPressed()) {
+            returnSave = 1;
+        }
+
+        if (BackwardsTillBumpClock.seconds() >= 2) {
+            returnSave = 0;
+        } else {
+            returnSave = 1;
+        }
+
+
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+        return returnSave;
+    }
+    public void moveBackward(double Speed, int time) {
+        backLeft.setPower(Speed);
+        frontLeft.setPower(Speed);
+        backRight.setPower(Speed);
+        frontRight.setPower(Speed);
+        sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+    public void moveForwardTics(double Speed, double tic) {
+        pinpoint.update();
+        double xvalue = pinpoint.getEncoderX();
+        while (xvalue - pinpoint.getEncoderX() <= tic) {
+            pinpoint.update();
+            backLeft.setPower(-Speed);
+            frontLeft.setPower(-Speed);
+            backRight.setPower(-Speed);
+            frontRight.setPower(-Speed);
+        }
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+    public void halfKick(int time) {
+        goofyAhhhhFrontDoor.setPosition(0);
+        sleep(time);
+        goofyAhhhhFrontDoor.setPosition(.5);
+    }
+   
+     */
 }

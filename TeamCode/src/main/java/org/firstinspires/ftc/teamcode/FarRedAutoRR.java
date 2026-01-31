@@ -130,7 +130,7 @@ public class FarRedAutoRR extends LinearOpMode {
         Pose2d afterLaunchPose = new Pose2d(startX * (1 - .125), 12, Math.toRadians(-28));
 
         Pose2d turnPos = new Pose2d(49, 12, Math.toRadians(90));
-        Pose2d leavePose = new Pose2d(49, 12, Math.toRadians(-20));
+        Pose2d leavePose = new Pose2d(60, 8, Math.toRadians(-35));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         new MMHS26Lib(hardwareMap, beginPose, telemetry);
@@ -183,7 +183,7 @@ public class FarRedAutoRR extends LinearOpMode {
         localize(.3, 10);
         launchMotif(Motif, launcherSpeed, true);
 
-           //MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, 48, Math.toRadians(0), Math.toRadians(0),  leavePose);
+        MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, 48, Math.toRadians(0), Math.toRadians(0),  leavePose);
        // }
     }
 
