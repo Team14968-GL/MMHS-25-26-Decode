@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.messages;
 
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 
+@SuppressWarnings("ALL")
 public final class ThreeDeadWheelInputsMessage {
     public long timestamp;
     public PositionVelocityPair par0;

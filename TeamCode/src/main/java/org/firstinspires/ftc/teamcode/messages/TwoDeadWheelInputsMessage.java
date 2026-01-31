@@ -6,6 +6,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+@SuppressWarnings("ALL")
 public final class TwoDeadWheelInputsMessage {
     public long timestamp;
     public PositionVelocityPair par;

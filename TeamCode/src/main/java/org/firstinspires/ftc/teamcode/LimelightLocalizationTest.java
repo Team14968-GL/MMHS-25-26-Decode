@@ -19,8 +19,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 @Config
 class config {
-    public double xAxis = 18;
-    public double yAxis = -18;
+    public static double xAxis = 18;
+    public static double yAxis = -18;
 }
 
 @Autonomous(name = "LimelightLocalizationTest")

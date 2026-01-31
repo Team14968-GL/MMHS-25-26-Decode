@@ -63,9 +63,9 @@ public class limelightTest extends LinearOpMode {
         //boolean localizing = true;
 
             LLResult result = limelight.getLatestResult();
-            double tx = 0;
+            double tx;
             double ty;
-            double ta = 0;
+            double ta;
             if (result != null && result.isValid()) {
                 tx = result.getTx();
                 ty = result.getTy(); // How far up or down the target is (degrees)

@@ -9,6 +9,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,9 @@ public class LimelightAprilTagTest extends LinearOpMode {
         while (opModeIsActive()) {
             LLResult result = limelight.getLatestResult();
             if (result != null && result.isValid()){
+                assert false;
                 telemetry.addData("Tag ID", fiducialResult.getFiducialId());
-                log.info("Tag ID", fiducialResult.getFiducialId());
+                RobotLog.i("Tag ID", fiducialResult.getFiducialId());
             }
             telemetry.update();
         }

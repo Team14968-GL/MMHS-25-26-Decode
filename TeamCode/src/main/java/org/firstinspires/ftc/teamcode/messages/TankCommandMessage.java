@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.messages;
 
+@SuppressWarnings("ALL")
 public final class TankCommandMessage {
     public long timestamp;
     public double voltage;

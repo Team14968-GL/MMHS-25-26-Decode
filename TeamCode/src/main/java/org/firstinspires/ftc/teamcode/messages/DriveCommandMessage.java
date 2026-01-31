@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.messages;
 import com.acmerobotics.roadrunner.PoseVelocity2dDual;
 import com.acmerobotics.roadrunner.Time;
 
+@SuppressWarnings("ALL")
 public final class DriveCommandMessage {
     public long timestamp;
     public double forwardVelocity;

@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public final class TankLocalizerInputsMessage {
     public long timestamp;
     public PositionVelocityPair[] left;

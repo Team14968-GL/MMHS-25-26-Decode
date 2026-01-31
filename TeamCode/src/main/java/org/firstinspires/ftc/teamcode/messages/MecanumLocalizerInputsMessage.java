@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+@SuppressWarnings("All")
 public final class MecanumLocalizerInputsMessage {
     public long timestamp;
     public PositionVelocityPair leftFront;

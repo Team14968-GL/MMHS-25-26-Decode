@@ -53,6 +53,7 @@ import java.util.List;
 
 import org.firstinspires.ftc.teamcode.PinpointLocalizer;
 
+@SuppressWarnings("ALL")
 @Config
 public final class MecanumDrive {
     public static class Params {

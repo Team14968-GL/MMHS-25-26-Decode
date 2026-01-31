@@ -53,16 +53,16 @@ public class movementTest extends LinearOpMode {
     }
     public void strafeLeftTics(double Speed, int tic) {
         pinpoint.update();
-        int yvalue = pinpoint.getEncoderY();
-        while (yvalue - pinpoint.getEncoderY() <= tic) {
+        int yValue = pinpoint.getEncoderY();
+        while (yValue - pinpoint.getEncoderY() <= tic) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(-Speed);
             backRight.setPower(-Speed);
             frontRight.setPower(Speed);
-            telemetry.addData("yencoder", pinpoint.getEncoderY());
-            telemetry.addData("yvalue", yvalue);
-            telemetry.addData("y", pinpoint.getEncoderY()-yvalue);
+            telemetry.addData("yEncoder", pinpoint.getEncoderY());
+            telemetry.addData("yValue", yValue);
+            telemetry.addData("y", pinpoint.getEncoderY()-yValue);
             telemetry.update();
         }
         backLeft.setPower(0);
@@ -72,8 +72,8 @@ public class movementTest extends LinearOpMode {
     }
     public void strafeRightTics(double Speed, int tic) {
         pinpoint.update();
-        int yvalue = pinpoint.getEncoderY();
-        while (pinpoint.getEncoderY() - yvalue <= tic) {
+        int yValue = pinpoint.getEncoderY();
+        while (pinpoint.getEncoderY() - yValue <= tic) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(Speed);
@@ -87,8 +87,8 @@ public class movementTest extends LinearOpMode {
     }
     public void turnRightTics(double Speed, double deg) {
         pinpoint.update();
-        double degvalue = pinpoint.getHeading(AngleUnit.DEGREES);
-        while (degvalue - pinpoint.getHeading(AngleUnit.DEGREES) <= deg) {
+        double degValue = pinpoint.getHeading(AngleUnit.DEGREES);
+        while (degValue - pinpoint.getHeading(AngleUnit.DEGREES) <= deg) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(Speed);
@@ -102,8 +102,8 @@ public class movementTest extends LinearOpMode {
     }
     public void turnLeftTics(double Speed, double deg) {
         pinpoint.update();
-        double degvalue = pinpoint.getHeading(AngleUnit.DEGREES);
-        while (pinpoint.getHeading(AngleUnit.DEGREES) - degvalue <= deg) {
+        double degValue = pinpoint.getHeading(AngleUnit.DEGREES);
+        while (pinpoint.getHeading(AngleUnit.DEGREES) - degValue <= deg) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(-Speed);
@@ -117,15 +117,15 @@ public class movementTest extends LinearOpMode {
     }
     public void moveBackwardTics(double Speed, int tic) {
         pinpoint.update();
-        int xvalue = pinpoint.getEncoderX(); // \/
-        while (pinpoint.getEncoderX() - xvalue <= tic) {
+        int xValue = pinpoint.getEncoderX(); // \/
+        while (pinpoint.getEncoderX() - xValue <= tic) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(Speed);
             backRight.setPower(Speed);
             frontRight.setPower(Speed);
-            telemetry.addData("xencoder", pinpoint.getEncoderX());
-            telemetry.addData("xvalue", xvalue);
+            telemetry.addData("xEncoder", pinpoint.getEncoderX());
+            telemetry.addData("xValue", xValue);
             telemetry.update();
         }
         backLeft.setPower(0);
@@ -135,8 +135,8 @@ public class movementTest extends LinearOpMode {
     }
     public void moveForwardTics(double Speed, int tic) {
         pinpoint.update();
-        int xvalue = pinpoint.getEncoderX();
-        while (xvalue - pinpoint.getEncoderX() <= tic) {
+        int xValue = pinpoint.getEncoderX();
+        while (xValue - pinpoint.getEncoderX() <= tic) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(-Speed);
