@@ -128,11 +128,12 @@ public class FarRedAutoRR extends LinearOpMode {
 
         Pose2d beginPose = new Pose2d(startX, 12, Math.toRadians(0));
         Pose2d afterLaunchPose = new Pose2d(startX * (1 - .125), 12, Math.toRadians(-28));
-        Pose2d PickUp1Pose = new Pose2d(35, 60, Math.toRadians(90));
+
+        Pose2d turnPos = new Pose2d(49, 12, Math.toRadians(90));
         Pose2d leavePose = new Pose2d(49, 12, Math.toRadians(-20));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        new MMHS26Lib(hardwareMap, beginPose);
+        new MMHS26Lib(hardwareMap, beginPose, telemetry);
 
         waitForStart();
 
@@ -148,29 +149,39 @@ public class FarRedAutoRR extends LinearOpMode {
 
         //if (localize(.3, 10)) {
 
-            if (IDs.size() == 1) {
-                Motif = IDs.get(0) - 21;
-            } else if (IDs.size() == 2) {
-                Motif = IDs.get(1) - 21;
-            } else {
-                Motif = 0;
-            }
-            telemetry.addData("IDs", IDs);
-            telemetry.addData("Motif", Motif);
-            telemetry.update();
+        if (IDs.size() == 1) {
+            Motif = IDs.get(0) - 21;
+        } else if (IDs.size() == 2) {
+            Motif = IDs.get(1) - 21;
+        } else {
+            Motif = 0;
+        }
+        telemetry.addData("IDs", IDs);
+        telemetry.addData("Motif", Motif);
+        telemetry.update();
 
-            launchMotif(Motif, launcherSpeed);
-            goofyAhhhhFrontDoor.setPosition(1);
-            turnTableServo.setPosition(0);
-            sleep(300);
+        launchMotif(Motif, launcherSpeed, false);
+        goofyAhhhhFrontDoor.setPosition(1);
+        turnTableServo.setPosition(0);
+        sleep(300);
 
-            MMHS26Lib.roadRunner.spline.splineToLinearHeading(30, 19, Math.toRadians(90), Math.toRadians(0),  afterLaunchPose);
+        MMHS26Lib.roadRunner.spline.splineToLinearHeading(28.5, 19, Math.toRadians(90), Math.toRadians(0),  afterLaunchPose);
+        //MMHS26Lib.roadRunner.turnTo(Math.toRadians(90), MMHS26Lib.currentPose());
+        int intitalXPose = pinpoint.getEncoderX();
+        pinpoint.update();
 
-            sleep(1000);
+
             intake3Balls(.6, .5, .5, 400);
-            moveBackward(.3,1000);
-        //MMHS26Lib.roadRunner.turnTo(Math.toRadians(-28),
-         //       MMHS26Lib.roadRunner.spline.splineToConstantHeading(startX * (1 - .125), 12, Math.toRadians(0), PickUp1Pose));
+            //moveBackward(.3,1000);
+        pinpoint.update();
+        int Xpose = 24;
+        Xpose = pinpoint.getEncoderX() - intitalXPose;
+        Pose2d PickUp1Pose = new Pose2d(29, 19+(Xpose*0.001978), Math.toRadians(90));
+        MMHS26Lib.roadRunner.turnTo(Math.toRadians(-117),
+                MMHS26Lib.roadRunner.spline.splineToLinearHeading(50, 8, Math.toRadians(0), Math.toRadians(0), PickUp1Pose));
+
+        localize(.3, 10);
+        launchMotif(Motif, launcherSpeed, true);
 
            //MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, 48, Math.toRadians(0), Math.toRadians(0),  leavePose);
        // }
@@ -297,58 +308,123 @@ public class FarRedAutoRR extends LinearOpMode {
 
         return id;
     }
+    private double filter(double input) {
+        double output = 0.0;
+        if (input == 0.5) {
+            output = 0.0;
+        } else if (input == 0.0) {
+            output = 0.5;
+        } else {
+            output = input;
+        }
 
-    private void launchMotif(int motiff, double launcherSpeedd) {
+        return output;
+    }
+
+    private void launchMotif(int motiff, double launcherSpeedd, boolean displacedGreen) {
         ArrayList<String> launchOrder = new ArrayList<>(Collections.emptyList());
-        backDoor.setPosition(0);
-        turnTableServo.setPosition(motifArray.get(motiff*3)); //motifArray.get(motiff*3)
-        sleep(1000);
-        launchMotorOn(launcherSpeedd);
-        sleep(250);
-
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(750);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(10);
-
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        scoop.setPosition(0.5);
-
-        turnTableServo.setPosition(motifArray.get((motiff*3)+1)); //motifArray.get((motiff*3)+1)
-        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1) {
+        if (displacedGreen) {
+            backDoor.setPosition(0);
+            turnTableServo.setPosition(filter(motifArray.get(motiff*3))); //motifArray.get(motiff*3)
+            sleep(1000);
+            launchMotorOn(launcherSpeedd);
             sleep(250);
-        }
-        sleep(500);
-        scoop.setPosition(1);
-        backDoor.setPosition(0);
-        sleep(250);
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(750);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(10);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        scoop.setPosition(0.5);
 
-        turnTableServo.setPosition(motifArray.get((motiff*3)+2));
-        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
+            goofyAhhhhFrontDoor.setPosition(0);
+            sleep(750);
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            sleep(10);
+
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            scoop.setPosition(0.5);
+
+            turnTableServo.setPosition(filter(motifArray.get((motiff*3)+1))); //motifArray.get((motiff*3)+1)
+            if ( Math.abs(filter(motifArray.get(motiff*3)) - filter(motifArray.get((motiff*3)+1))) == 1) {
+                sleep(250);
+            }
+            sleep(500);
+            scoop.setPosition(1);
+            backDoor.setPosition(0);
             sleep(250);
-        }
-        sleep(500);
-        scoop.setPosition(1);
-        backDoor.setPosition(0);
-        sleep(250);
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(750);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(200);
+            goofyAhhhhFrontDoor.setPosition(0);
+            sleep(750);
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            sleep(10);
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            scoop.setPosition(0.5);
 
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        scoop.setPosition(0.5);
-        sleep(500);
-        scoop.setPosition(1);
-        backDoor.setPosition(.5);
-        turnTableServo.setPosition(0);
-        launchMotorOff();
+            turnTableServo.setPosition(filter(motifArray.get((motiff*3)+2)));
+            if ( Math.abs(filter(motifArray.get((motiff*3)+1)) - filter(motifArray.get((motiff*3)+2))) == 1){
+                sleep(250);
+            }
+            sleep(500);
+            scoop.setPosition(1);
+            backDoor.setPosition(0);
+            sleep(250);
+            goofyAhhhhFrontDoor.setPosition(0);
+            sleep(750);
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            sleep(200);
+
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            scoop.setPosition(0.5);
+            sleep(500);
+            scoop.setPosition(1);
+            backDoor.setPosition(.5);
+            turnTableServo.setPosition(0);
+            launchMotorOff();
+        } else {
+            backDoor.setPosition(0);
+            turnTableServo.setPosition(motifArray.get(motiff*3)); //motifArray.get(motiff*3)
+            sleep(1000);
+            launchMotorOn(launcherSpeedd);
+            sleep(250);
+
+            goofyAhhhhFrontDoor.setPosition(0);
+            sleep(750);
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            sleep(10);
+
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            scoop.setPosition(0.5);
+
+            turnTableServo.setPosition(motifArray.get((motiff*3)+1)); //motifArray.get((motiff*3)+1)
+            if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1) {
+                sleep(250);
+            }
+            sleep(500);
+            scoop.setPosition(1);
+            backDoor.setPosition(0);
+            sleep(250);
+            goofyAhhhhFrontDoor.setPosition(0);
+            sleep(750);
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            sleep(10);
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            scoop.setPosition(0.5);
+
+            turnTableServo.setPosition(motifArray.get((motiff*3)+2));
+            if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
+                sleep(250);
+            }
+            sleep(500);
+            scoop.setPosition(1);
+            backDoor.setPosition(0);
+            sleep(250);
+            goofyAhhhhFrontDoor.setPosition(0);
+            sleep(750);
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            sleep(200);
+
+            goofyAhhhhFrontDoor.setPosition(0.5);
+            scoop.setPosition(0.5);
+            sleep(500);
+            scoop.setPosition(1);
+            backDoor.setPosition(.5);
+            turnTableServo.setPosition(0);
+            launchMotorOff();
+        }
+
         /*
         if (motiff == 1) {
             launchMotorOn(launcherSpeedd);

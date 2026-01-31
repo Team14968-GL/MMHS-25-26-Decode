@@ -15,7 +15,7 @@ public class ME_Suffering extends LinearOpMode {
     public void runOpMode() {
         //setup
         //noinspection InstantiationOfUtilityClass
-        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0));
+        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0), telemetry);
         debug.debugTelemetry = true;
 
         waitForStart();

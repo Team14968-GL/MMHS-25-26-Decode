@@ -68,7 +68,7 @@ public class MMHS26Lib {
     //External Variables
     public static int count = 0;
 
-    public MMHS26Lib(HardwareMap hardwareMap, Pose2d initPose) {
+    public MMHS26Lib(HardwareMap hardwareMap, Pose2d initPose, Telemetry initTelemetry) {
         //Drive Definitions
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
@@ -76,7 +76,7 @@ public class MMHS26Lib {
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         //Intake Definitions
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        frontDoor = hardwareMap.get(Servo.class, "frontDoor");
+        frontDoor = hardwareMap.get(Servo.class, "goofyAhhhhFrontDoor");
         intakeBump1 = hardwareMap.get(TouchSensor.class, "intakeBump1");
         intakeBump2 = hardwareMap.get(TouchSensor.class, "intakeBump2");
         //Launcher Definitions
@@ -132,6 +132,8 @@ public class MMHS26Lib {
         hwMap = hardwareMap;
 
         startPose = initPose;
+
+        telemetry = initTelemetry;
 
         telemetry.addData("Initialization Finished", true);
         telemetry.update();

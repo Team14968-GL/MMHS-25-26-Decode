@@ -110,7 +110,7 @@ public class CloseRedAutoRRLib extends LinearOpMode {
         Pose2d beginPose = new Pose2d(-52, 48, Math.toRadians(308));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0));
+        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0), telemetry);
 
 
         waitForStart();

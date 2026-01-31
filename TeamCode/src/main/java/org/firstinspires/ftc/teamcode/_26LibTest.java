@@ -15,7 +15,7 @@ public class _26LibTest extends LinearOpMode{
     @Override
     public void runOpMode(){
         //setup
-        new MMHS26Lib(hardwareMap, startingPose);
+        new MMHS26Lib(hardwareMap, startingPose, telemetry);
         debug.debugTelemetry = true;
 
         waitForStart();

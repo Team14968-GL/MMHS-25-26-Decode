@@ -160,7 +160,7 @@ public class ShowOffTelop extends LinearOpMode {
 
         pinpoint.initialize();
 
-        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0));
+        new MMHS26Lib(hardwareMap, new Pose2d(0, 0, 0),telemetry);
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {

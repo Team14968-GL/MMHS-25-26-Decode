@@ -122,7 +122,7 @@ public class FarRedAuto3BallRR extends LinearOpMode {
         Pose2d leavePose = new Pose2d(49, 12, Math.toRadians(-20));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        new MMHS26Lib(hardwareMap, beginPose);
+        new MMHS26Lib(hardwareMap, beginPose, telemetry);
 
         waitForStart();
 
