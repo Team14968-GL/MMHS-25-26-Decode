@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class MMHS26Lib {
     //Hardware variables
     private static DcMotor leftBack;
@@ -40,7 +41,7 @@ public class MMHS26Lib {
     private static ArrayList<CRServo> leds;
     private static Limelight3A limelight;
     private static DcMotor intakeMotor;
-    private static Servo goofyAhhhhFrontDoor;
+    private static Servo frontDoor;
     private static DcMotor leftLauncher;
     private static DcMotor rightLauncher;
     private static DcMotor lift;
@@ -51,6 +52,10 @@ public class MMHS26Lib {
     private static Servo turnTableServo;
     private static TouchSensor intakeBump1;
     private static TouchSensor intakeBump2;
+    @SuppressWarnings("FieldCanBeLocal")
+    private static TouchSensor topBump;
+    @SuppressWarnings("FieldCanBeLocal")
+    private static TouchSensor bottomBump;
 
     //Constants
     private static final double ticPerIn = 254.7;
@@ -70,7 +75,7 @@ public class MMHS26Lib {
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         //Intake Definitions
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        goofyAhhhhFrontDoor = hardwareMap.get(Servo.class, "goofyAhhhhFrontDoor");
+        frontDoor = hardwareMap.get(Servo.class, "frontDoor");
         intakeBump1 = hardwareMap.get(TouchSensor.class, "intakeBump1");
         intakeBump2 = hardwareMap.get(TouchSensor.class, "intakeBump2");
         //Launcher Definitions
@@ -78,8 +83,8 @@ public class MMHS26Lib {
         rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
         launchLiftRight = hardwareMap.get(CRServo.class, "launchLiftRight");
         launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
-        TouchSensor topBump = hardwareMap.get(TouchSensor.class, "TopBump");
-        TouchSensor bottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
+        topBump = hardwareMap.get(TouchSensor.class, "TopBump");
+        bottomBump = hardwareMap.get(TouchSensor.class, "BottomBump");
         backDoor = hardwareMap.get(Servo.class, "backDoor");
         scoop = hardwareMap.get(Servo.class, "scoop");
         //Lift/Skis Definition
@@ -149,6 +154,10 @@ public class MMHS26Lib {
         pinpoint.update();
         return (new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH), pinpoint.getPosY(DistanceUnit.INCH)), pinpoint.getHeading(AngleUnit.RADIANS)));
     }
+
+    public static Pose2d Pose2DtoPose2d(Pose2D Pose2D) {return new Pose2d(new Vector2d(Pose2D.getX(DistanceUnit.INCH), Pose2D.getY(DistanceUnit.INCH)), Pose2D.getHeading(AngleUnit.DEGREES));}
+
+    public static Pose2D Pose2dToPose2D(Pose2d Pose2d) {return new Pose2D(DistanceUnit.INCH, Pose2d.position.x, Pose2d.position.y, AngleUnit.DEGREES, Pose2d.heading.log());}
 
     //Class for managing basic functions relating to movement
     public static class motion {
@@ -245,8 +254,11 @@ public class MMHS26Lib {
                 LLResult result = limelight.getLatestResult();
                 double txMax = 14.700;
                 double txMin = 14.400;
-                //double tyMax = 13.5;
-                //double tyMin = 12;
+                /*
+                not currently used, ty would be used for strafing
+                double tyMax = 13.5;
+                double tyMin = 12;
+                */
                 double taMax = .88;
                 double taMin = .91;
                 double tx;
@@ -448,7 +460,6 @@ public class MMHS26Lib {
         }
 
         //Creates a horizontal path for the robot to move along
-        @SuppressWarnings("unused")
         public static class strafe {
             public strafe() {super();}
 
@@ -777,9 +788,7 @@ public class MMHS26Lib {
         public utils() {super();}
         //Class for managing telemetry systems
         public static class telemetrySys {
-            telemetrySys() {
-                super();
-            }
+            telemetrySys() {super();}
 
             public static class motor {
                 motor() {super();}
@@ -943,17 +952,17 @@ public class MMHS26Lib {
                     telemetry.addData("Turn Table", turnTableServo.getClass());
                 }
 
-                public static void frontDoor() {
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor);
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getController());
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getDirection());
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getPortNumber());
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getPosition());
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getConnectionInfo());
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getDeviceName());
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getManufacturer());
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getVersion());
-                    telemetry.addData("Front Door", goofyAhhhhFrontDoor.getClass());
+                public static void intakeDoor() {
+                    telemetry.addData("Front Door", frontDoor);
+                    telemetry.addData("Front Door", frontDoor.getController());
+                    telemetry.addData("Front Door", frontDoor.getDirection());
+                    telemetry.addData("Front Door", frontDoor.getPortNumber());
+                    telemetry.addData("Front Door", frontDoor.getPosition());
+                    telemetry.addData("Front Door", frontDoor.getConnectionInfo());
+                    telemetry.addData("Front Door", frontDoor.getDeviceName());
+                    telemetry.addData("Front Door", frontDoor.getManufacturer());
+                    telemetry.addData("Front Door", frontDoor.getVersion());
+                    telemetry.addData("Front Door", frontDoor.getClass());
                 }
                 public static void launchDoor() {
                     telemetry.addData("Back Door", backDoor);
@@ -1061,14 +1070,12 @@ public class MMHS26Lib {
         }
 
         public static class auto {
-            public auto() {
-                super();
-            }
+            public auto() {super();}
 
             public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance, int kickTime) {
                 int safeTrig;
                 turnTableServo.setPosition(0);
-                goofyAhhhhFrontDoor.setPosition(1);
+                frontDoor.setPosition(1);
                 intakeMotor.setPower(0.8);
                 safeTrig = BackwardsTillBump(searchSpeed, 0);
                 if (safeTrig == 1) {
@@ -1076,7 +1083,7 @@ public class MMHS26Lib {
                     halfKick(kickTime);
                     sleep(250);
                     turnTableServo.setPosition(0.5);
-                    goofyAhhhhFrontDoor.setPosition(1);
+                    frontDoor.setPosition(1);
 
                     safeTrig = BackwardsTillBump(searchSpeed, 0);
                     if (safeTrig == 1) {
@@ -1084,7 +1091,7 @@ public class MMHS26Lib {
                         halfKick(kickTime);
                         sleep(250);
                         turnTableServo.setPosition(1);
-                        goofyAhhhhFrontDoor.setPosition(1);
+                        frontDoor.setPosition(1);
                         safeTrig = BackwardsTillBump(searchSpeed, 0);
                         if (safeTrig == 1) {
                             halfKick(kickTime);
@@ -1092,16 +1099,16 @@ public class MMHS26Lib {
 
                         } else {
 
-                            goofyAhhhhFrontDoor.setPosition(.5);
+                            frontDoor.setPosition(.5);
                             intakeMotor.setPower(0);
                         }
 
                     } else {
-                        goofyAhhhhFrontDoor.setPosition(.5);
+                        frontDoor.setPosition(.5);
                         intakeMotor.setPower(0);
                     }
                 } else {
-                    goofyAhhhhFrontDoor.setPosition(.5);
+                    frontDoor.setPosition(.5);
                     intakeMotor.setPower(0);
                 }
             }
@@ -1152,9 +1159,9 @@ public class MMHS26Lib {
                 return returnSave;
             }
             public void halfKick(int time) {
-                goofyAhhhhFrontDoor.setPosition(0);
+                frontDoor.setPosition(0);
                 sleep(time);
-                goofyAhhhhFrontDoor.setPosition(.5);
+                frontDoor.setPosition(.5);
             }
         }
     }

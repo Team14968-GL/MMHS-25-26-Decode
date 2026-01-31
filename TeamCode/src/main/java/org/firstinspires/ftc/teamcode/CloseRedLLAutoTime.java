@@ -6,12 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import java.util.ArrayList;
@@ -54,7 +51,7 @@ public class CloseRedLLAutoTime extends LinearOpMode {
 
     double power = .5;
     double localPower = .3;
-    double launcherSpeed = (1750 * 28) / 60;
+    double launcherSpeed = (1750 * 28) / 60.0;
 
     int sleepTime = 50;
     boolean processTrig = true;

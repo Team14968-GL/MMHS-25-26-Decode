@@ -9,10 +9,6 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-import java.lang.Math;
-
 @Autonomous
 public class RoadRunnerAutoTest2 extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
@@ -28,8 +24,6 @@ public class RoadRunnerAutoTest2 extends LinearOpMode {
                 //.splineTo(new Vector2d(1,1), pinpoint.getHeading(AngleUnit.RADIANS));
 
         TrajectoryActionBuilder Move2 = drive.actionBuilder(beginPose);
-
-        while (!isStopRequested() && !opModeIsActive());
 
         waitForStart();
 

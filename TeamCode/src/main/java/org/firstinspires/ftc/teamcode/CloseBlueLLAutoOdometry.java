@@ -6,12 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -55,7 +52,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (1750 * 28) / 60;
+    double launcherSpeed = (1750 * 28) / 60.0;
 
     int sleepTime = 50;
     boolean processTrig = true;
@@ -279,8 +276,8 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
     }
     public void turnRightTics(double Speed, double deg) {
         pinpoint.update();
-        double degvalue = pinpoint.getHeading(AngleUnit.DEGREES);
-        while (degvalue - pinpoint.getHeading(AngleUnit.DEGREES) <= deg) {
+        double degValue = pinpoint.getHeading(AngleUnit.DEGREES);
+        while (degValue - pinpoint.getHeading(AngleUnit.DEGREES) <= deg) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(Speed);
@@ -294,8 +291,8 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
     }
     public void turnLeftTics(double Speed, double deg) {
         pinpoint.update();
-        double degvalue = pinpoint.getHeading(AngleUnit.DEGREES);
-        while (pinpoint.getHeading(AngleUnit.DEGREES) - degvalue <= deg) {
+        double degValue = pinpoint.getHeading(AngleUnit.DEGREES);
+        while (pinpoint.getHeading(AngleUnit.DEGREES) - degValue <= deg) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(-Speed);
@@ -316,7 +313,7 @@ public class CloseBlueLLAutoOdometry extends LinearOpMode {
             frontLeft.setPower(Speed);
             backRight.setPower(Speed);
             frontRight.setPower(Speed);
-            telemetry.addData("xencoder", pinpoint.getEncoderX());
+            telemetry.addData("xEncoder", pinpoint.getEncoderX());
             telemetry.addData("xvalue", xvalue);
             telemetry.update();
         }

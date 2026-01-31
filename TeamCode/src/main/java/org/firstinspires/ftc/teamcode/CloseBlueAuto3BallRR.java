@@ -17,9 +17,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -277,7 +274,7 @@ public class CloseBlueAuto3BallRR extends LinearOpMode {
             leftFront.setPower(Speed);
             rightBack.setPower(Speed);
             rightFront.setPower(Speed);
-            telemetry.addData("xencoder", pinpoint.getEncoderX());
+            telemetry.addData("xEncoder", pinpoint.getEncoderX());
             telemetry.addData("xvalue", xvalue);
             telemetry.update();
         }

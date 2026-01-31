@@ -3,16 +3,15 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.List;
+import java.util.Objects;
 
 @Autonomous(name = "limelight Telemetry")
 public class limelightTelemetry extends LinearOpMode {
@@ -96,7 +95,7 @@ public class limelightTelemetry extends LinearOpMode {
             }
         } else {
             telemetry.addData("Limelight Data", "Invalid or Stale");
-            telemetry.addData("Staleness", result.getStaleness());
+            telemetry.addData("Staleness", Objects.requireNonNull(result).getStaleness());
         }
         telemetry.update();
     }

@@ -804,9 +804,11 @@ public class ShowOffTelop extends LinearOpMode {
             if (manualMotif > 2) {
                 manualMotif = 0;
             }
+            /* Is there a reason for this?
             if (manualMotif == 3) {
                 motifTrig = 1;
             }
+             */
 
             gamepad2.rumbleBlips(manualMotif+1);
 

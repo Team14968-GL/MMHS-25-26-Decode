@@ -14,11 +14,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,7 +52,7 @@ public class FarRedAutoRR extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (2350 * 28) / 60;
+    double launcherSpeed = (2350 * 28) / 60.0;
 
     int sleepTime = 50;
     boolean processTrig = true;
@@ -223,14 +218,12 @@ public class FarRedAutoRR extends LinearOpMode {
                     telemetry.update();
 
                     finished = true;
-                    return (true);
                 }
-            } else {
+            } else if (result == null || !result.isValid()) {
                 telemetry.addData("Limelight", "No Targets");
                 // count = count + sleepTimeMilli;
                 telemetry.update();
                 finished = false;
-                return (false);
             }
         }
         return (finished);
@@ -306,7 +299,7 @@ public class FarRedAutoRR extends LinearOpMode {
     }
 
     private void launchMotif(int motiff, double launcherSpeedd) {
-        ArrayList<String> launchOrder = new ArrayList<String>(Collections.emptyList());
+        ArrayList<String> launchOrder = new ArrayList<>(Collections.emptyList());
         backDoor.setPosition(0);
         turnTableServo.setPosition(motifArray.get(motiff*3)); //motifArray.get(motiff*3)
         sleep(1000);
@@ -438,9 +431,11 @@ public class FarRedAutoRR extends LinearOpMode {
             sleep(500);
             scoop.setPosition(1);
             launchMotorOff();
+
         }
     */
-
+        telemetry.addData("launch order", launchOrder);
+        telemetry.update();
     }
     private void launch(double launcherSpeedd) {
         backDoor.setPosition(0);

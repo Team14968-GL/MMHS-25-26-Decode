@@ -28,6 +28,7 @@ public class VelocityDriveTest extends LinearOpMode {
         if (opModeIsActive()) {
             rpm = 1000;
             while (opModeIsActive()) {
+                //noinspection SuspiciousNameCombination
                 controlY = gamepad1.left_stick_x;
                 controlX = gamepad1.right_stick_x;
                 controlRX = gamepad1.right_stick_y;

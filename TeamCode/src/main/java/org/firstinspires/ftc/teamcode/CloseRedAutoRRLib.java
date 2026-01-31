@@ -1,35 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.limelightvision.LLStatus;
-import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.MMHS26Lib.debug;
-import org.firstinspires.ftc.teamcode.MMHS26Lib.motion;
-import org.firstinspires.ftc.teamcode.MMHS26Lib.utils;
-import org.firstinspires.ftc.teamcode.MMHS26Lib.roadRunner;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.ArrayList;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Autonomous(name = "CloseRedAutoRRLib", preselectTeleOp = "MainTeleOp")
 public class CloseRedAutoRRLib extends LinearOpMode {
@@ -68,7 +52,7 @@ public class CloseRedAutoRRLib extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (1750 * 28) / 60;
+    double launcherSpeed = (1750 * 28) / 60.0;
 
     int sleepTime = 50;
     boolean processTrig = true;

@@ -9,15 +9,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 @Config
@@ -36,15 +33,15 @@ public class LimelightLocalizationTest extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor frontRight;
 
-    private int sleepTime = 30;
-    private double power = .35;
+    private final int sleepTime = 30;
+    private final double power = .35;
 
-    private double txMax = 15;
-    private double txMin = 9;
-    private double tyMax = 13.5;
-    private double tyMin = 12;
-    private double taMax = 2.35;
-    private double taMin = 2.07;
+    private final double txMax = 15;
+    private final double txMin = 9;
+    private final double tyMax = 13.5;
+    private final double tyMin = 12;
+    private final double taMax = 2.35;
+    private final double taMin = 2.07;
 
 
 
@@ -111,8 +108,9 @@ public class LimelightLocalizationTest extends LinearOpMode {
             telemetry.addData("Rotation",positon[2]);
             telemetry.addData("Position:", localizePose);
             telemetry.update();
-            while(opModeIsActive());
-
+            while(opModeIsActive()) {
+                requestOpModeStop();
+            }
         }
     }
 

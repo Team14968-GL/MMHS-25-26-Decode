@@ -19,7 +19,6 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -804,12 +803,13 @@ public class MainTeleOp extends LinearOpMode {
             if (manualMotif > 2) {
                 manualMotif = 0;
             }
+            /* Is there a reason for this?
             if (manualMotif == 3) {
                 motifTrig = 1;
             }
+             */
 
             gamepad2.rumbleBlips(manualMotif+1);
-
         }
     }
 

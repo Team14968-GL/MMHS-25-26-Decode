@@ -14,14 +14,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -229,16 +225,16 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
     }
     public void strafeLeftTics(double Speed, double tic) {
         pinpoint.update();
-        int yvalue = pinpoint.getEncoderY();
-        while (yvalue - pinpoint.getEncoderY() <= tic) {
+        int yValue = pinpoint.getEncoderY();
+        while (yValue - pinpoint.getEncoderY() <= tic) {
             pinpoint.update();
             leftBack.setPower(Speed);
             leftFront.setPower(-Speed);
             rightBack.setPower(-Speed);
             rightFront.setPower(Speed);
-            telemetry.addData("yencoder", pinpoint.getEncoderY());
-            telemetry.addData("yvalue", yvalue);
-            telemetry.addData("y", pinpoint.getEncoderY()-yvalue);
+            telemetry.addData("yEncoder", pinpoint.getEncoderY());
+            telemetry.addData("yValue", yValue);
+            telemetry.addData("y", pinpoint.getEncoderY()-yValue);
             telemetry.update();
         }
         leftBack.setPower(0);
@@ -545,34 +541,22 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
                     intakeOff();
 
                 } else {
-
                     goofyAhhhhFrontDoor.setPosition(.5);
                     intakeOff();
                 }
-
             } else {
-
                 goofyAhhhhFrontDoor.setPosition(.5);
                 intakeOff();
             }
         } else {
-
             goofyAhhhhFrontDoor.setPosition(.5);
             intakeOff();
         }
-
-
     }
 
+    public void intakeOn() {intakeMotor.setPower(0.8);}
 
-    public void intakeOn() {
-        intakeMotor.setPower(0.8);
-    }
-
-    public void intakeOff() {
-        intakeMotor.setPower(0);
-
-    }
+    public void intakeOff() {intakeMotor.setPower(0);}
 
     public int BackwardsTillBump(double Speed, int delay) {
         int count = 0;

@@ -61,7 +61,7 @@ public class RedLLAutoTest extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (1750 * 28) / 60;
+    double launcherSpeed = (1750 * 28) / 60.0;
 
     int sleepTime = 50;
     boolean processTrig = true;
@@ -127,8 +127,8 @@ public class RedLLAutoTest extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-
-            launchMotif(0, launcherSpeed);
+            int a = ((int) (Math.random() * 1000));
+            launchMotif(a, launcherSpeed);
 
         }
     }
@@ -230,16 +230,16 @@ public class RedLLAutoTest extends LinearOpMode {
     }
     public void strafeLeftTics(double Speed, double tic) {
         pinpoint.update();
-        int yvalue = pinpoint.getEncoderY();
-        while (yvalue - pinpoint.getEncoderY() <= tic) {
+        int yValue = pinpoint.getEncoderY();
+        while (yValue - pinpoint.getEncoderY() <= tic) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(-Speed);
             backRight.setPower(-Speed);
             frontRight.setPower(Speed);
-            telemetry.addData("yencoder", pinpoint.getEncoderY());
-            telemetry.addData("yvalue", yvalue);
-            telemetry.addData("y", pinpoint.getEncoderY()-yvalue);
+            telemetry.addData("yEncoder", pinpoint.getEncoderY());
+            telemetry.addData("yValue", yValue);
+            telemetry.addData("y", pinpoint.getEncoderY()-yValue);
             telemetry.update();
         }
         backLeft.setPower(0);
@@ -249,8 +249,8 @@ public class RedLLAutoTest extends LinearOpMode {
     }
     public void strafeRightTics(double Speed, double tic) {
         pinpoint.update();
-        int yvalue = pinpoint.getEncoderY();
-        while (pinpoint.getEncoderY() - yvalue <= tic) {
+        int yValue = pinpoint.getEncoderY();
+        while (pinpoint.getEncoderY() - yValue <= tic) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(Speed);
@@ -264,8 +264,8 @@ public class RedLLAutoTest extends LinearOpMode {
     }
     public void turnRightTics(double Speed, double deg) {
         pinpoint.update();
-        double degvalue = pinpoint.getHeading(AngleUnit.DEGREES);
-        while (degvalue - pinpoint.getHeading(AngleUnit.DEGREES) <= deg) {
+        double degValue = pinpoint.getHeading(AngleUnit.DEGREES);
+        while (degValue - pinpoint.getHeading(AngleUnit.DEGREES) <= deg) {
             pinpoint.update();
             backLeft.setPower(Speed);
             frontLeft.setPower(Speed);
@@ -279,8 +279,8 @@ public class RedLLAutoTest extends LinearOpMode {
     }
     public void turnLeftTics(double Speed, double deg) {
         pinpoint.update();
-        double degvalue = pinpoint.getHeading(AngleUnit.DEGREES);
-        while (pinpoint.getHeading(AngleUnit.DEGREES) - degvalue <= deg) {
+        double degValue = pinpoint.getHeading(AngleUnit.DEGREES);
+        while (pinpoint.getHeading(AngleUnit.DEGREES) - degValue <= deg) {
             pinpoint.update();
             backLeft.setPower(-Speed);
             frontLeft.setPower(-Speed);
@@ -301,7 +301,7 @@ public class RedLLAutoTest extends LinearOpMode {
             frontLeft.setPower(Speed);
             backRight.setPower(Speed);
             frontRight.setPower(Speed);
-            telemetry.addData("xencoder", pinpoint.getEncoderX());
+            telemetry.addData("xEncoder", pinpoint.getEncoderX());
             telemetry.addData("xvalue", xvalue);
             telemetry.update();
         }

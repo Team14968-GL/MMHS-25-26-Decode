@@ -10,15 +10,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +50,7 @@ public class FarRedAuto3BallRR extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (2350 * 28) / 60;
+    double launcherSpeed = (2350 * 28) / 60.0;
 
     int sleepTime = 50;
     boolean processTrig = true;
@@ -202,14 +198,11 @@ public class FarRedAuto3BallRR extends LinearOpMode {
                     telemetry.update();
 
                     finished = true;
-                    return (true);
                 }
             } else {
                 telemetry.addData("Limelight", "No Targets");
                 // count = count + sleepTimeMilli;
                 telemetry.update();
-                finished = false;
-                return (false);
             }
         }
         return (finished);
@@ -285,7 +278,7 @@ public class FarRedAuto3BallRR extends LinearOpMode {
     }
 
     private void launchMotif(int motiff, double launcherSpeedd) {
-        ArrayList<String> launchOrder = new ArrayList<String>(Collections.emptyList());
+        ArrayList<String> launchOrder = new ArrayList<>(Collections.emptyList());
         if (motiff == 1) {
             launchMotorOn(launcherSpeedd);
             turnTableServo.setPosition(0);
@@ -391,6 +384,9 @@ public class FarRedAuto3BallRR extends LinearOpMode {
             sleep(500);
             scoop.setPosition(1);
             launchMotorOff();
+
+            telemetry.addData("launch order", launchOrder);
+            telemetry.update();
         }
 
     }

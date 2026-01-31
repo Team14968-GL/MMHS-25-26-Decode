@@ -58,7 +58,8 @@ public class LimelightFiducialExample extends LinearOpMode {
             }
         } else {
             telemetry.addData("Limelight Data", "Invalid or Stale");
-            telemetry.addData("Staleness",result.getStaleness());
+            assert result != null;
+            telemetry.addData("Staleness", result.getStaleness());
         }
         telemetry.update();
     }
