@@ -58,7 +58,9 @@ public class MMHS26Lib {
     private static TouchSensor bottomBump;
 
     //Constants
-    private static final double ticPerIn = 254.7;
+    public static final double ticPerIn = 254.7;
+    public static ElapsedTime runtime26Lib = new ElapsedTime();
+
 
     //Internal variables
     private static HardwareMap hwMap;
@@ -131,11 +133,17 @@ public class MMHS26Lib {
 
         //Internal Data (DO NOT TOUCH)
         hwMap = hardwareMap;
+        initTelemetry.addData("HW Map Initialized", hwMap);
+        initTelemetry.update();
 
         startPose = initPose;
+        initTelemetry.addData("Start Pose Initialized", initPose);
+        initTelemetry.update();
 
         telemetry = initTelemetry;
-
+        initTelemetry.addData("Internal Telemetry Initialized", hwMap);
+        initTelemetry.update();
+        
         telemetry.addData("Initialization Finished", true);
         telemetry.update();
     }
@@ -159,7 +167,7 @@ public class MMHS26Lib {
     //Gets the robots current position on the field
     public static Pose2d currentPose() {
         pinpoint.update();
-        return new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH) + startPose.position.x, pinpoint.getPosY(DistanceUnit.INCH) + startPose.position.y), pinpoint.getHeading(AngleUnit.RADIANS) + Math.toRadians(startPose.heading.toDouble()));
+        return new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH) + startPose.position.x, pinpoint.getPosY(DistanceUnit.INCH) + startPose.position.y), pinpoint.getHeading(AngleUnit.RADIANS) + startPose.heading.toDouble());
     }
     public static class conversions {
         public conversions() {
