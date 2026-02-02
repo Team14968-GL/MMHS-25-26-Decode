@@ -159,7 +159,7 @@ public class MMHS26Lib {
     //Gets the robots current position on the field
     public static Pose2d currentPose() {
         pinpoint.update();
-        return (new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH) + startPose.position.x, pinpoint.getPosY(DistanceUnit.INCH) + startPose.position.y), pinpoint.getHeading(AngleUnit.RADIANS) + Math.toRadians(startPose.heading.log())));
+        return new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH) + startPose.position.x, pinpoint.getPosY(DistanceUnit.INCH) + startPose.position.y), pinpoint.getHeading(AngleUnit.RADIANS) + Math.toRadians(startPose.heading.toDouble()));
     }
     public static class conversions {
         public conversions() {

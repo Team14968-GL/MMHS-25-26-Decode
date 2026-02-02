@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.MMHS26Lib.*;
 public class _26LibTest extends LinearOpMode{
     long time = 1000;
     double speed = .5;
-    final Pose2d startingPose = new Pose2d(0,0,0);
+    final Pose2d startingPose = new Pose2d(0,0, Math.PI);
 
     @Override
     public void runOpMode(){
@@ -23,7 +23,7 @@ public class _26LibTest extends LinearOpMode{
         while(opModeIsActive()){
             telemetry.addData("X", MMHS26Lib.currentPose().position.x);
             telemetry.addData("Y", MMHS26Lib.currentPose().position.y);
-            telemetry.addData("", MMHS26Lib.currentPose().heading.log());
+            telemetry.addData("θ", MMHS26Lib.currentPose().heading.log());
             telemetry.update();
         }
     }
