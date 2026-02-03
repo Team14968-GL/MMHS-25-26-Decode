@@ -119,8 +119,9 @@ public class MMHS26Lib {
         //Odometry Config
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.initialize(); //Initializes odometry for use in code
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, initPose.position.x, initPose.position.y, AngleUnit.DEGREES, initPose.heading.log()));
-        pinpoint.setHeading(initPose.heading.log(), AngleUnit.RADIANS);
+        pinpoint.update();
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, initPose.position.x, initPose.position.y, AngleUnit.DEGREES, Math.toDegrees(initPose.heading.toDouble())));
+        pinpoint.setHeading(initPose.heading.toDouble(), AngleUnit.RADIANS);
         pinpoint.update();
         //LED Config
         CRServo LED1 = hardwareMap.get(CRServo.class, "Led1");
@@ -143,7 +144,7 @@ public class MMHS26Lib {
         telemetry = initTelemetry;
         initTelemetry.addData("Internal Telemetry Initialized", hwMap);
         initTelemetry.update();
-        
+
         telemetry.addData("Initialization Finished", true);
         telemetry.update();
     }
@@ -170,14 +171,10 @@ public class MMHS26Lib {
         return new Pose2d(new Vector2d(pinpoint.getPosX(DistanceUnit.INCH) + startPose.position.x, pinpoint.getPosY(DistanceUnit.INCH) + startPose.position.y), pinpoint.getHeading(AngleUnit.RADIANS) + startPose.heading.toDouble());
     }
     public static class conversions {
-        public conversions() {
-            super();
-        }
+        public conversions() {super();}
 
         public static class pose {
-            public pose() {
-                super();
-            }
+            public pose() {super();}
 
             //Converts FTC Pose2D to RoadRunner Pose2d
             public static Pose2d Pose2DToPose2d(Pose2D Pose2D) {
