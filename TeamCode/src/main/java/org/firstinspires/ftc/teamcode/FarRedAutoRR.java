@@ -183,7 +183,7 @@ public class FarRedAutoRR extends LinearOpMode {
         localize(.3, 10);
         launchMotif(Motif, launcherSpeed, true);
 
-        MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, 48, Math.toRadians(0), Math.toRadians(0),  leavePose);
+        MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, 24, Math.toRadians(0), Math.toRadians(0),  leavePose);
        // }
     }
 
