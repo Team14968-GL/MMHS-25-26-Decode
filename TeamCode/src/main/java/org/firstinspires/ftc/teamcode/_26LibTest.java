@@ -6,9 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MMHS26Lib.*;
 
+@SuppressWarnings({"NonAsciiCharacters", "unused", "InstantiationOfUtilityClass"})
 @Autonomous
 public class _26LibTest extends LinearOpMode{
-    long time = 1000;
+    long time = 50;
     double speed = .5;
     final Pose2d startingPose = new Pose2d(0,0, 0);
     double X;
@@ -27,19 +28,19 @@ public class _26LibTest extends LinearOpMode{
             posUpdater();
             while (X <= -3 && opModeIsActive()){
                 posUpdater();
-                MMHS26Lib.motion.moveForward(0.3, 50);
+                MMHS26Lib.motion.moveForward(speed, time);
             }
             while (X >= 3 && opModeIsActive()){
                 posUpdater();
-                MMHS26Lib.motion.moveBackward(0.3, 50);
+                MMHS26Lib.motion.moveBackward(speed, time);
             }
             while (θ >= 2.5 && opModeIsActive()){
                 posUpdater();
-                MMHS26Lib.motion.turnLeft(.3, 10);
+                MMHS26Lib.motion.turnRight(speed - 0.2, time);
             }
             while (θ <= -2.5 && opModeIsActive()){
                 posUpdater();
-                MMHS26Lib.motion.turnRight(.3, 10);
+                MMHS26Lib.motion.turnLeft(speed - 0.2, time);
             }
         }
     }
