@@ -282,7 +282,7 @@ public class MMHS26Lib {
         public Limelight() {super();}
 
         //moves to a predetermined point on the field
-        public static void localizer(double localPower, int sleepTime) {
+        public static void localizer(double localPower, int sleepTime, boolean updatePose) {
             //loops until escaped
             while (true) {
                 LLResult result = limelight.getLatestResult();
@@ -326,6 +326,9 @@ public class MMHS26Lib {
                         motion.moveForward(localPower, sleepTime);
                     } else {
                         break;
+                    }
+                    if (updatePose){
+                        pinpoint.setPosition(MMHS26Lib.conversions.pose.Pose2dToPose2D((poseLimelight())));
                     }
                 } else {
                     if (debug.debugTelemetry) {
@@ -441,6 +444,8 @@ public class MMHS26Lib {
                 //failsafe if pose can't be obtained
                 telemetry.addData("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
                 telemetry.update();
+                RobotLog.ii("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
+                RobotLog.addGlobalWarningMessage("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
                 return new Pose2d(0, 0, 0);
             }
         }
