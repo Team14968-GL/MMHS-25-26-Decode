@@ -827,7 +827,7 @@ public class MainTeleOp extends LinearOpMode {
     }
     private void toClose() {
         if (gamepad1.options){
-            MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24, 22.5, 0, MMHS26Lib.Limelight.poseLimelight());
+            MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24, 22.5, 0, MMHS26Lib.Limelight.poseLimelight(false));
         }
     }
     /*

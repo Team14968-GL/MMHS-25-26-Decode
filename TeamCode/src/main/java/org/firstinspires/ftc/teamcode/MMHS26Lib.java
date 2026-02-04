@@ -157,13 +157,7 @@ public class MMHS26Lib {
     }
 
     //Sleep function taken from LinearOpMode as extending LinearOpMode doesn't work on static classes
-    private static void sleep(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
+    private static void sleep(long milliseconds) {try {Thread.sleep(milliseconds);} catch (InterruptedException e) {Thread.currentThread().interrupt();}}
 
     //Gets the robots current position on the field
     public static Pose2d currentPose() {
@@ -177,37 +171,25 @@ public class MMHS26Lib {
             public pose() {super();}
 
             //Converts FTC Pose2D to RoadRunner Pose2d
-            public static Pose2d Pose2DToPose2d(Pose2D Pose2D) {
-                return new Pose2d(new Vector2d(Pose2D.getX(DistanceUnit.INCH), Pose2D.getY(DistanceUnit.INCH)), Pose2D.getHeading(AngleUnit.DEGREES));
-            }
+            public static Pose2d Pose2DToPose2d(Pose2D Pose2D) {return new Pose2d(new Vector2d(Pose2D.getX(DistanceUnit.INCH), Pose2D.getY(DistanceUnit.INCH)), Pose2D.getHeading(AngleUnit.DEGREES));}
 
             //Converts RoadRunner Pose2d to FTC Pose2D
-            public static Pose2D Pose2dToPose2D(Pose2d Pose2d) {
-                return new Pose2D(DistanceUnit.INCH, Pose2d.position.x, Pose2d.position.y, AngleUnit.DEGREES, Pose2d.heading.log());
-            }
+            public static Pose2D Pose2dToPose2D(Pose2d Pose2d) {return new Pose2D(DistanceUnit.INCH, Pose2d.position.x, Pose2d.position.y, AngleUnit.DEGREES, Pose2d.heading.log());}
 
             //Converts FTC Pose3D to FTC Pose2D
-            public static Pose2D Pose3DToPose2D(Pose3D pose3D) {
-                return new Pose2D(pose3D.getPosition().unit, pose3D.getPosition().x, pose3D.getPosition().y, AngleUnit.DEGREES, pose3D.getOrientation().getYaw(AngleUnit.DEGREES));
-            }
+            public static Pose2D Pose3DToPose2D(Pose3D pose3D) {return new Pose2D(pose3D.getPosition().unit, pose3D.getPosition().x, pose3D.getPosition().y, AngleUnit.DEGREES, pose3D.getOrientation().getYaw(AngleUnit.DEGREES));}
 
             //Converts FTC Pose3D to RoadRunner Pose2d
-            public static Pose2d Pose3DtoPose2d(Pose3D pose3D) {
-                return Pose2DToPose2d(Pose3DToPose2D(pose3D));
-            }
+            public static Pose2d Pose3DtoPose2d(Pose3D pose3D) {return Pose2DToPose2d(Pose3DToPose2D(pose3D));}
         }
         public static class units {
             public units() {super();}
 
             //Converts millimeters to inches
-            public static double millimeterToInch(double millimeter) {
-                return (millimeter / 25.4);
-            }
+            public static double millimeterToInch(double millimeter) {return (millimeter / 25.4);}
 
             //Converts inches to millimeters
-            public static double inchToMillimeter(double inch) {
-                return (inch * 25.4);
-            }
+            public static double inchToMillimeter(double inch) {return (inch * 25.4);}
         }
     }
 
@@ -327,9 +309,7 @@ public class MMHS26Lib {
                     } else {
                         break;
                     }
-                    if (updatePose){
-                        pinpoint.setPosition(MMHS26Lib.conversions.pose.Pose2dToPose2D((poseLimelight())));
-                    }
+                    poseLimelight(updatePose);
                 } else {
                     if (debug.debugTelemetry) {
                         telemetry.addData("Limelight", "No Targets");
@@ -427,7 +407,7 @@ public class MMHS26Lib {
 
             return Motif;
         }
-        public static Pose2d poseLimelight() {
+        public static Pose2d poseLimelight(boolean updatePose) {
             LLResult result = limelight.getLatestResult();
             Pose3D pose;
             //ensures non-null results
@@ -438,14 +418,23 @@ public class MMHS26Lib {
                 telemetry.addData("Y",  (pose.getPosition().y * 39.37));
                 telemetry.addData("Rotation",  pose.getOrientation().getYaw());
                 telemetry.update();
+                if (updatePose){
+                    pinpoint.setPosition(conversions.pose.Pose3DToPose2D(pose));
+                }
                 //converts Pose3D to a Pose2d usable with RoadRunner
                 return new Pose2d(pose.getPosition().x * 39.37, pose.getPosition().y * 39.37, pose.getOrientation().getYaw() - 180);
             } else {
                 //failsafe if pose can't be obtained
                 telemetry.addData("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
-                telemetry.update();
                 RobotLog.ii("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
                 RobotLog.addGlobalWarningMessage("Limelight", "Failed to localize, defaulting to X:0 Y:0 θ:0");
+                if (updatePose) {
+                    telemetry.addData("Pinpoint", "Pose Not Updated due to localizer failure");
+                    RobotLog.ii("Pinpoint", "Pose Not Updated due to localizer failure");
+                    RobotLog.addGlobalWarningMessage("Pinpoint", "Pose Not Updated due to localizer failure");
+                }
+                telemetry.update();
+
                 return new Pose2d(0, 0, 0);
             }
         }
