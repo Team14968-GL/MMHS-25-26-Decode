@@ -33,29 +33,14 @@ import java.util.List;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class MMHS26Lib {
     //Hardware variables
-    private static DcMotor leftBack;
-    private static DcMotor rightBack;
-    private static DcMotor leftFront;
-    private static DcMotor rightFront;
+    private static DcMotor leftBack, rightBack, leftFront, rightFront, leftLauncher, rightLauncher, intakeMotor, lift;
+    private static CRServo launchLiftRight, launchLiftLeft;
+    private static Servo scoop, turnTableServo, backDoor, frontDoor;
     private static GoBildaPinpointDriver pinpoint;
-    private static ArrayList<CRServo> leds;
     private static Limelight3A limelight;
-    private static DcMotor intakeMotor;
-    private static Servo frontDoor;
-    private static DcMotor leftLauncher;
-    private static DcMotor rightLauncher;
-    private static DcMotor lift;
-    private static CRServo launchLiftRight;
-    private static CRServo launchLiftLeft;
-    private static Servo backDoor;
-    private static Servo scoop;
-    private static Servo turnTableServo;
-    private static TouchSensor intakeBump1;
-    private static TouchSensor intakeBump2;
     @SuppressWarnings("FieldCanBeLocal")
-    private static TouchSensor topBump;
-    @SuppressWarnings("FieldCanBeLocal")
-    private static TouchSensor bottomBump;
+    private static TouchSensor topBump, bottomBump, intakeBump1, intakeBump2;
+    private static ArrayList<CRServo> leds;
 
     //Constants
     public static final double ticPerIn = 254.7;
@@ -196,6 +181,47 @@ public class MMHS26Lib {
     //Class for managing basic functions relating to movement
     public static class motion {
         public motion() {super();}
+        public static void mecanumDrive(double X, double Y, double R, double maxSpeed, long T){
+            /// X, x movement; Y, y movement; R, turning; and maxSpeed all must be considered as percentages with T representing the time in milliseconds that the robot should move
+            //Ensures Y is within the range of -1 to 1
+            double controlY = Y;
+            if (controlY > 1){
+                controlY = 1;
+            } else if (controlY < 0){
+                controlY = 0;
+            }
+            //Ensures X is within the range of -1 to 1
+            double controlX = -X;
+            if (controlX > 1){
+                controlX = 1;
+            } else if (controlX < 0){
+                controlX = 0;
+            }
+            //Ensures R is within the range of -1 to 1
+            double controlRX = -R;
+            if (controlRX > 1){
+                controlRX = 1;
+            } else if (controlRX < 0){
+                controlRX = 0;
+            }
+            //Ensures maxSpeed is within the range of -1 to 1
+            if (maxSpeed > 1){
+                maxSpeed = 1;
+            } else if (maxSpeed < 0){
+                maxSpeed = 0;
+            }
+            //Ensures T is not less than zero
+            if (T < 0) {
+                T = 0;
+            }
+
+            leftFront.setPower(((controlY - controlX) + controlRX) * maxSpeed);
+            leftBack.setPower((controlY + controlX + controlRX) * maxSpeed);
+            rightFront.setPower(((controlY - controlX) - controlRX) * maxSpeed);
+            rightBack.setPower(((controlY + controlX) - controlRX) * maxSpeed);
+            sleep(T);
+            halt();
+        }
         //DO NOT USE STRAFE UNLESS NEEDED
         public static void strafeLeft(double Speed, long time) {
             leftBack.setPower(Speed);
@@ -203,7 +229,7 @@ public class MMHS26Lib {
             rightBack.setPower(Speed);
             rightFront.setPower(-Speed);
             sleep(time);
-            motion.halt();
+            halt();
         }
         //DO NOT USE STRAFE UNLESS NEEDED
         public static void strafeRight(double Speed, long time) {
@@ -212,7 +238,7 @@ public class MMHS26Lib {
             rightBack.setPower(-Speed);
             rightFront.setPower(Speed);
             sleep(time);
-            motion.halt();
+            halt();
         }
 
         public static void turnRight(double Speed, long time) {
@@ -221,7 +247,7 @@ public class MMHS26Lib {
             rightBack.setPower(Speed);
             rightFront.setPower(Speed);
             sleep(time);
-            motion.halt();
+            halt();
         }
 
         public static void turnLeft(double Speed, long time) {
@@ -230,7 +256,7 @@ public class MMHS26Lib {
             rightBack.setPower(-Speed);
             rightFront.setPower(-Speed);
             sleep(time);
-            motion.halt();
+            halt();
         }
 
         public static void moveBackward(double Speed, long time) {
@@ -239,7 +265,7 @@ public class MMHS26Lib {
             rightBack.setPower(Speed);
             rightFront.setPower(Speed);
             sleep(time);
-            motion.halt();
+            halt();
         }
 
         public static void moveForward(double Speed, long time) {
@@ -248,7 +274,7 @@ public class MMHS26Lib {
             rightBack.setPower(-Speed);
             rightFront.setPower(-Speed);
             sleep(time);
-            motion.halt();
+            halt();
         }
 
         public static void halt() {
