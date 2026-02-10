@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -17,13 +13,15 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Autonomous (preselectTeleOp = "MainTeleOp")
-public class CloseRedAuto3BallRR extends LinearOpMode {
+@Autonomous
+public class FarBlueAuto3BallRR extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
 
     Limelight3A limelight;
@@ -31,14 +29,13 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
     public int id;
     public ArrayList<Integer> IDs = new ArrayList<>();
     //.5=green | 1=p | 0=p
-    public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5));
+    public ArrayList<Double> motifArray = new ArrayList<>(Arrays.asList(.5, 0.0, 1.0, 1.0, .5, 0.0, 1.0, 0.0, .5, 0.0));
     //public double[] motifArray = {.5, 0, 1, 1, .5, 0, 1, 0, .5};
-
-    private DcMotor leftBack;
-    private DcMotor rightBack;
-    private DcMotor leftFront;
-    private DcMotor rightFront;
-    private DcMotor intakeMotor;
+    boolean telem = false;
+    public DcMotor backLeft;
+    public DcMotor backRight;
+    public DcMotor frontLeft;
+    public DcMotor frontRight;
     private DcMotor leftLauncher;
     private DcMotor rightLauncher;
     private Servo backDoor;
@@ -51,38 +48,40 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
     private TouchSensor BottomBump;
 
 
-    double txMax = 15;
-    double txMin = 9;
-    double tyMax = 13.5;
-    double tyMin = 12;
-    double taMax = 2.35;
-    double taMin = 2.07;
-
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (1750.0 * 28.0) / 60;
+    double launcherSpeed = (2350 * 28) / 60.0;
 
     int sleepTime = 50;
     boolean processTrig = true;
 
     double xValue = 0;
     double ticPerIn = 254.7;
-
+    double startX = (24 * 3) - (17.25 / 2);
 
     int Motif;
+    int failCount;
+
+
+    double txMax = 12.500;
+    double txMin = 11.400;
+    double tyMax = 13.5;
+    double tyMin = 12;
+    double taMax = .88;
+    double taMin = .91;
 
 
     public void runOpMode() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
-        limelight.start(); //
+        limelight.start(); // This tells Limelight to start looking!
 
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
 
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        backLeft = hardwareMap.get(DcMotor.class, "leftBack");
+        backRight = hardwareMap.get(DcMotor.class, "rightBack");
+        frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
+        frontRight = hardwareMap.get(DcMotor.class, "rightFront");
+
         leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
         rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
         backDoor = hardwareMap.get(Servo.class, "backDoor");
@@ -95,13 +94,11 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
         launchLiftLeft = hardwareMap.get(CRServo.class, "launchLiftLeft");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
 
-
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         leftLauncher.setDirection(DcMotor.Direction.REVERSE);
         rightLauncher.setDirection(DcMotor.Direction.FORWARD);
         launchLiftRight.setDirection(CRServo.Direction.REVERSE);
@@ -111,53 +108,24 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        scoop.setPosition(1);
+        backDoor.setPosition(1);
+        turnTableServo.setPosition(0.5);
+        goofyAhhhhFrontDoor.setPosition(0.5);
         limelight.pipelineSwitch(0);
         pinpoint.initialize();
 
-
         LLResultTypes.FiducialResult fiducialResult = null;
-         scoop.setPosition(1);
-       backDoor.setPosition(1);
-        turnTableServo.setPosition(0.5);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-
-
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        Pose2d beginPose = new Pose2d(-52, 48, Math.toRadians(308));
-        Pose2d PickUp1Pose = new Pose2d(-12, 52, Math.toRadians(90));
+
+        Pose2d beginPose = new Pose2d(startX, -12, Math.toRadians(0));
+        Pose2d leavePose = new Pose2d(49, -12, Math.toRadians(20));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        TrajectoryActionBuilder MoveToScan = drive.actionBuilder(beginPose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(22.5));
-
-        TrajectoryActionBuilder MoveToScan2 = drive.actionBuilder(PickUp1Pose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(11.25));
-
-
-
-                /*
-                .lineToX(10)
-                .lineToY(20)
-                .splineTo(new Vector2d(15, 15), 0)
-                .splineTo(new Vector2d(-15, -15), 0)
-                .splineTo(new Vector2d(0,0),Math.PI/4);
-                */
-
-
-        TrajectoryActionBuilder Turn = drive.actionBuilder(beginPose)
-                .turn(Math.toRadians(-10));
-
-
-        TrajectoryActionBuilder PickUp1 = drive.actionBuilder(beginPose)
-                .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(-34, 68));
+        new MMHS26Lib(hardwareMap, beginPose, telemetry);
 
         waitForStart();
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        MoveToScan.build()));
 
         int count = 0;
         processTrig = true;
@@ -166,49 +134,51 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
             count++;
             sleep(1);
         }
+        MMHS26Lib.roadRunner.turn(Math.toRadians(20),
+                MMHS26Lib.roadRunner.spline.splineToConstantHeading(startX * (1 - .125), -12, Math.toRadians(0), beginPose));
 
-        Actions.runBlocking(
-                new SequentialAction(
-                        Turn.build()));
+        if (localize(.3, 10)) {
 
-        localize();
+            if (IDs.contains(21)) {
+                Motif = 0;
+                telemetry.addData("Motif", "GPP " + Motif);
+            } else if (IDs.contains(22)) {
+                Motif = 1;
+                telemetry.addData("Motif", "PGP " + Motif);
+            } else if (IDs.contains(23)) {
+                Motif = 2;
+                telemetry.addData("Motif", "PPG " + Motif);
+            } else {
+                Motif = 0;
+                telemetry.addData("Motif", "Check failed " + Motif);
+            }
+            telemetry.update();
 
-        if (IDs.contains(21)) {
-            Motif = 0;
-            telemetry.addData("Motif", "GPP " + Motif);
-        } else if (IDs.contains(22)) {
-            Motif = 1;
-            telemetry.addData("Motif", "PGP " + Motif);
-        } else if (IDs.contains(23)) {
-            Motif = 2;
-            telemetry.addData("Motif", "PPG " + Motif);
-        } else {
-            Motif = 0;
-            telemetry.addData("Motif", "Check failed " + Motif);
+            telemetry.addData("IDs", IDs);
+            telemetry.addData("Motif", Motif);
+            telemetry.update();
+
+
+            launchMotif(Motif, launcherSpeed, false);
+            sleep(250);
+
+            MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, -48, Math.toRadians(0), Math.toRadians(0),  leavePose);
         }
-        telemetry.update();
-
-        telemetry.addData("IDs", IDs);
-        telemetry.addData("Motif", Motif);
-        telemetry.update();
-
-
-        launchMotif(Motif, launcherSpeed, false);
-        sleep(250);
-        Actions.runBlocking(
-                new SequentialAction(
-                        PickUp1.build()));
-        moveBackwardTics(.3,ticPerIn*3);
     }
 
-    public void localize() {
-        while (true) {
+    public boolean localize(double localizerMotorPower, int sleepTimeMilli) {
+        int count = 0;
+        boolean finished = false;
+        while (count <= 2000) {
+            //boolean localizing = true;
+
+
             LLResult result = limelight.getLatestResult();
             double tx;
             double ty;
             double ta;
             if (result != null && result.isValid()) {
-                tx = result.getTx();
+                tx = result.getTx(); // How far left or right the target is (degrees)
                 ty = result.getTy(); // How far up or down the target is (degrees)
                 ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
@@ -219,82 +189,57 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
 
                 if (tx < txMin) {
                     // turn right
-                    leftBack.setPower(-localPower);
-                    leftFront.setPower(-localPower);
-                    rightBack.setPower(localPower);
-                    rightFront.setPower(localPower);
-                    sleep(sleepTime);
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
+                    telemetry.addData("Left", 0);
+                    telemetry.update();
+                    turnLeft(localizerMotorPower, sleepTimeMilli);
+                    count = count + sleepTimeMilli;
+
                 } else if (tx > txMax) {
                     //turn left
-                    leftBack.setPower(localPower);
-                    leftFront.setPower(localPower);
-                    rightBack.setPower(-localPower);
-                    rightFront.setPower(-localPower);
-                    sleep(sleepTime);
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
-                } else if (ta > taMax) {
-                    //move backward
-                    leftBack.setPower(localPower);
-                    leftFront.setPower(localPower);
-                    rightBack.setPower(localPower);
-                    rightFront.setPower(localPower);
-                    sleep(sleepTime);
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
-                } else if (ta < taMin) {
-                    //move Forward
-                    leftBack.setPower(-localPower);
-                    leftFront.setPower(-localPower);
-                    rightBack.setPower(-localPower);
-                    rightFront.setPower(-localPower);
-                    sleep(sleepTime);
-                    leftBack.setPower(0);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                    rightFront.setPower(0);
-                } else {
-                    break;
-                }
+                    telemetry.addData("Right", 0);
+                    telemetry.update();
+                    turnRight(localizerMotorPower, sleepTimeMilli);
 
+                    count = count + sleepTimeMilli;
+
+                } else {
+                    telemetry.addData("done", 0);
+                    count = count + sleepTimeMilli;
+                    telemetry.update();
+
+                    finished = true;
+                }
             } else {
                 telemetry.addData("Limelight", "No Targets");
+                // count = count + sleepTimeMilli;
                 telemetry.update();
-
-                leftBack.setPower(0);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
             }
         }
-    }
-    public void moveBackwardTics(double Speed, double tic) {
-        pinpoint.update();
-        int xValue = pinpoint.getEncoderX(); // \/
-        while (pinpoint.getEncoderX() - xValue <= tic) {
-            pinpoint.update();
-            leftBack.setPower(Speed);
-            leftFront.setPower(Speed);
-            rightBack.setPower(Speed);
-            rightFront.setPower(Speed);
-            telemetry.addData("xEncoder", pinpoint.getEncoderX());
-            telemetry.addData("xValue", xValue);
-            telemetry.update();
-        }
-        leftBack.setPower(0);
-        leftFront.setPower(0);
-        rightBack.setPower(0);
-        rightFront.setPower(0);
+        return (finished);
     }
 
+    public void turnRight(double Speed, int time) {
+        backLeft.setPower(Speed);
+        frontLeft.setPower(Speed);
+        backRight.setPower(-Speed);
+        frontRight.setPower(-Speed);
+        sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
+    public void turnLeft(double Speed, int time) {
+        backLeft.setPower(-Speed);
+        frontLeft.setPower(-Speed);
+        backRight.setPower(Speed);
+        frontRight.setPower(Speed);
+        sleep(time);
+        backLeft.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+    }
 
     private int processLimeLightResults() {
         double tx;
@@ -340,40 +285,6 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
         telemetry.update();
 
         return id;
-    }
-    private void timeLaunchMotif(int motiff, double launcherSpeedd) { // old launch function
-
-
-        launchMotorOn(launcherSpeedd);
-        turnTableServo.setPosition(motifArray.get(motiff*3));
-        sleep(250);
-        launch(launcherSpeedd);
-        turnTableServo.setPosition(motifArray.get((motiff*3)+1));
-        sleep(500);
-        scoop.setPosition(1);
-                /*
-        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
-            sleep(250);
-        }
-                */
-
-        launch(launcherSpeedd);
-        turnTableServo.setPosition(motifArray.get((motiff*3)+2));
-        sleep(500);
-        scoop.setPosition(1);
-        /*
-        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
-            sleep(250);
-        }
-        */
-
-        sleep(500);
-        launch(launcherSpeedd);
-        sleep(500);
-        scoop.setPosition(1);
-        launchMotorOff();
-
-
     }
     private double filter(double input) {
         double output = 0.0;
@@ -493,55 +404,116 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
     }
 
     private void launchMotif(int motiff, double launcherSpeedd) {
-        backDoor.setPosition(0);
-        turnTableServo.setPosition(motifArray.get(motiff*3)); //motifArray.get(motiff*3)
-        sleep(1000);
-        launchMotorOn(launcherSpeedd);
-        sleep(250);
+        ArrayList<String> launchOrder = new ArrayList<>(Collections.emptyList());
+        if (motiff == 1) {
+            launchMotorOn(launcherSpeedd);
+            turnTableServo.setPosition(0);
+            launchOrder.add("Purple");
+            sleep(250);
+            launch(launcherSpeedd);
+            turnTableServo.setPosition(0.5);
+            launchOrder.add("Green");
 
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(750);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(10);
-
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        scoop.setPosition(0.5);
-
-        turnTableServo.setPosition(motifArray.get((motiff*3)+1)); //motifArray.get((motiff*3)+1)
-        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1) {
+            sleep(500);
+            scoop.setPosition(1);
+                /*
+        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
             sleep(250);
         }
-        sleep(500);
-        scoop.setPosition(1);
-        backDoor.setPosition(0);
-        sleep(250);
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(750);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(10);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        scoop.setPosition(0.5);
+                */
 
-        turnTableServo.setPosition(motifArray.get((motiff*3)+2));
+            launch(launcherSpeedd);
+            turnTableServo.setPosition(1);
+            launchOrder.add("Purple");
+
+            sleep(500);
+            scoop.setPosition(1);
+        /*
         if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
             sleep(250);
         }
-        sleep(500);
-        scoop.setPosition(1);
-        backDoor.setPosition(0);
-        sleep(250);
-        goofyAhhhhFrontDoor.setPosition(0);
-        sleep(750);
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        sleep(200);
+        */
 
-        goofyAhhhhFrontDoor.setPosition(0.5);
-        scoop.setPosition(0.5);
-        sleep(500);
-        scoop.setPosition(1);
-       backDoor.setPosition(1);
-        turnTableServo.setPosition(0);
-        launchMotorOff();
+            sleep(500);
+            launch(launcherSpeedd);
+            sleep(500);
+            scoop.setPosition(1);
+            launchMotorOff();
+
+        } else if (motiff == 2) {
+            launchMotorOn(launcherSpeedd);
+            turnTableServo.setPosition(0);
+            launchOrder.add("Purple");
+            sleep(250);
+
+            launch(launcherSpeedd);
+            turnTableServo.setPosition(1);
+            launchOrder.add("Purple");
+
+            sleep(500);
+            scoop.setPosition(1);
+                /*
+        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
+            sleep(250);
+        }
+                */
+
+            launch(launcherSpeedd);
+            turnTableServo.setPosition(0.5);
+            launchOrder.add("Green");
+
+            sleep(500);
+            scoop.setPosition(1);
+        /*
+        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
+            sleep(250);
+        }
+        */
+
+            sleep(500);
+            launch(launcherSpeedd);
+            sleep(500);
+            scoop.setPosition(1);
+            launchMotorOff();
+        } else {
+            launchMotorOn(launcherSpeedd);
+            turnTableServo.setPosition(.5);
+            launchOrder.add("Green");
+            sleep(250);
+
+            launch(launcherSpeedd);
+            turnTableServo.setPosition(0);
+            launchOrder.add("Purple");
+
+            sleep(500);
+            scoop.setPosition(1);
+                /*
+        if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
+            sleep(250);
+        }
+                */
+
+            launch(launcherSpeedd);
+            turnTableServo.setPosition(1);
+            launchOrder.add("Purple");
+
+            sleep(500);
+            scoop.setPosition(1);
+        /*
+        if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
+            sleep(250);
+        }
+        */
+
+            sleep(500);
+            launch(launcherSpeedd);
+            sleep(500);
+            scoop.setPosition(1);
+            launchMotorOff();
+
+            telemetry.addData("launch order", launchOrder);
+            telemetry.update();
+        }
 
     }
     private void launch(double launcherSpeedd) {
@@ -561,4 +533,91 @@ public class CloseRedAuto3BallRR extends LinearOpMode {
         ((DcMotorEx) leftLauncher).setVelocity(0);
         ((DcMotorEx) rightLauncher).setVelocity(0);
     }
+    public void localize() {
+        //boolean localizing = true;
+        int count = 0;
+        while (count <= 3000) {
+            LLResult result = limelight.getLatestResult();
+            double tx ;
+            double ty;
+            double ta;
+            if (result != null && result.isValid()) {
+                tx = result.getTx();
+                ty = result.getTy(); // How far up or down the target is (degrees)
+                ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                telemetry.addData("Target X", tx);
+                telemetry.addData("Target Y", ty);
+                telemetry.addData("Target Area", ta);
+                telemetry.update();
+
+                if (tx < txMin) {
+                    // turn right
+                    backLeft.setPower(-localPower);
+                    frontLeft.setPower(-localPower);
+                    backRight.setPower(localPower);
+                    frontRight.setPower(localPower);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (tx > txMax) {
+                    //turn left
+                    backLeft.setPower(localPower);
+                    frontLeft.setPower(localPower);
+                    backRight.setPower(-localPower);
+                    frontRight.setPower(-localPower);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (ta > taMax) {
+                    //move backward
+                    backLeft.setPower(localPower);
+                    frontLeft.setPower(localPower);
+                    backRight.setPower(localPower);
+                    frontRight.setPower(localPower);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else if (ta < taMin) {
+                    //move Forward
+                    backLeft.setPower(-localPower);
+                    frontLeft.setPower(-localPower);
+                    backRight.setPower(-localPower);
+                    frontRight.setPower(-localPower);
+                    sleep(sleepTime);
+                    backLeft.setPower(0);
+                    frontLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontRight.setPower(0);
+                    count = count + sleepTime;
+                } else {
+                    count++;
+                }
+
+            } else {
+                telemetry.addData("Limelight", "No Targets");
+                telemetry.update();
+
+                backLeft.setPower(0);
+                frontLeft.setPower(0);
+                backRight.setPower(0);
+                frontRight.setPower(0);
+            }
+        }
+        telemetry.addData("done", 0);
+        telemetry.update();
+    }
+
+
+
+
 }

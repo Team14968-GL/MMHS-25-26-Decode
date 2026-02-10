@@ -117,7 +117,7 @@ public class CloseBlueAuto3BallRR extends LinearOpMode {
 
         LLResultTypes.FiducialResult fiducialResult = null;
          scoop.setPosition(1);
-        backDoor.setPosition(.5);
+       backDoor.setPosition(1);
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
 
@@ -172,13 +172,25 @@ public class CloseBlueAuto3BallRR extends LinearOpMode {
                         Turn.build()));
         localize();
 
-        if (IDs.size() == 1) {
-            Motif = IDs.get(0) - 21;
-        } else if (IDs.size() == 2) {
-            Motif = IDs.get(0) - 21;
+        if (IDs.contains(21)) {
+            Motif = 0;
+            telemetry.addData("Motif", "GPP " + Motif);
+        } else if (IDs.contains(22)) {
+            Motif = 1;
+            telemetry.addData("Motif", "PGP " + Motif);
+        } else if (IDs.contains(23)) {
+            Motif = 2;
+            telemetry.addData("Motif", "PPG " + Motif);
         } else {
             Motif = 0;
+            telemetry.addData("Motif", "Check failed " + Motif);
         }
+        telemetry.update();
+
+        telemetry.addData("IDs", IDs);
+        telemetry.addData("Motif", Motif);
+        telemetry.update();
+
 
         launchMotif(Motif, launcherSpeed);
         sleep(250);
@@ -366,7 +378,7 @@ public class CloseBlueAuto3BallRR extends LinearOpMode {
         sleep(250);
         goofyAhhhhFrontDoor.setPosition(0);
         sleep(1250);
-        backDoor.setPosition(0.5);
+       backDoor.setPosition(1);
         goofyAhhhhFrontDoor.setPosition(0.5);
         scoop.setPosition(0.5);
     }

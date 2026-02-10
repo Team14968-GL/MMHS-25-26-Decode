@@ -56,7 +56,7 @@ public class MainTeleOp extends LinearOpMode {
     private TouchSensor intakeBump2;
 
     int highLauncherSpeed = 2350;//2400;
-    int lowLauncherSpeed = 1700;
+    int lowLauncherSpeed = 1750;
     int triangleFuncRunning = 0;
     double turnTablePos2 = 0;
     int launcherSpeed = 0;
@@ -93,6 +93,7 @@ public class MainTeleOp extends LinearOpMode {
     boolean launchAbort = false;
     boolean safeTrig = true;
     boolean resetTrig = false;
+    boolean reverseLaunchTrig = true;
 
     double txMax = 14.700;
     double txMin = 14.400;
@@ -100,6 +101,9 @@ public class MainTeleOp extends LinearOpMode {
     double tyMin = 12;
     double taMax = .88;
     double taMin = .91;
+
+    Pose2d redParkPose = new Pose2d(60, -60, Math.toRadians(0));
+    Pose2d blueParkPose = new Pose2d(60, 60, Math.toRadians(0));
 
 
     @Override
@@ -158,6 +162,7 @@ public class MainTeleOp extends LinearOpMode {
         limelight.start();
         ledManager("Null");
 
+
         waitForStart();
         speed = 0.75;
         backDoor.setPosition(1);
@@ -201,7 +206,9 @@ public class MainTeleOp extends LinearOpMode {
                 motifControl();
                 timeLaunchMotif(manualMotif, launcherSpeed);
                 toClose();
-               // intake3Balls();
+                intake3Balls();
+                reverseLaunch();
+                park();
 
                 /*
 
@@ -846,29 +853,65 @@ public class MainTeleOp extends LinearOpMode {
     }
     private void toClose() {
         if (gamepad1.options){
-            MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24, 22.5, 0, MMHS26Lib.Limelight.poseLimelight(false));
+            MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24,  Math.toRadians(25), 0, MMHS26Lib.Limelight.poseLimelight(false));
         }
     }
-/*
+    private void reverseLaunch(){
+
+        if (gamepad1.shareWasPressed()){
+            leftLauncher.setPower(-.3);
+            rightLauncher.setPower(-.3);
+            reverseLaunchTrig = true;
+        } else if (gamepad1.shareWasReleased()){
+            leftLauncher.setPower(0);
+            rightLauncher.setPower(0);
+
+        }
+    }
+    private void park() {
+        if(gamepad1.optionsWasReleased()){
+            MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24, Math.toRadians(25), 0, redParkPose);
+        }
+        /*
+        if(gamepad1.shareWasReleased()){
+            MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24, Math.toRadians(25), 0, blueParkPose);
+        }
+
+         */
+    }
+
     public void intake3Balls() {
 
 
-
-        if (gamepad1.triangleWasPressed() && safeTrig) {
+        if (gamepad1.triangleWasPressed()) {
 
             turnTableServo.setPosition(0);
-            goofyAhhhhFrontDoor.setPosition(1);
+            //goofyAhhhhFrontDoor.setPosition(1);
             intakeOn();
             intake3BallsClock.reset();
             intakeCount = 1;
+            ballCount = 0;
             resetTrig = true;
             safeTrig = false;
         }
-        if (intakeCount == 1 && (!intakeBump1.isPressed() || intakeBump2.isPressed()) {
+
+        if (intakeCount == 1 && (!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+            ballTrig = 1;
             ballCount = 1;
-        }
-        if (ballCount == 1 && gamepad1.triangle == true && ballTrig) {
             intake3BallsClock.reset();
+        } else if (intakeCount == 2 && (!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+            ballTrig = 1;
+            ballCount = 2;
+            intake3BallsClock.reset();
+        } else if (intakeCount == 3 && (!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+            ballTrig = 1;
+            ballCount = 3;
+            intake3BallsClock.reset();
+        }
+
+        if (ballCount == 1 && gamepad1.triangle == true && ballTrig == 1) {
+
+
             if (intake3BallsClock.seconds() >= 0 && intake3BallsClock.seconds() <= .500 && gamepad1.triangle == true) {
                 goofyAhhhhFrontDoor.setPosition(0);
             }
@@ -881,9 +924,56 @@ public class MainTeleOp extends LinearOpMode {
                 turnTableServo.setPosition(0.5);
                 goofyAhhhhFrontDoor.setPosition(1);
                 intakeCount = 2;
+                ballTrig = 0;
+            }
+        } else if (ballCount == 2 && gamepad1.triangle == true && ballTrig == 1) {
+
+            if (intake3BallsClock.seconds() >= 0 && intake3BallsClock.seconds() <= .500 && gamepad1.triangle == true) {
+                goofyAhhhhFrontDoor.setPosition(0);
             }
 
+            if (intake3BallsClock.seconds() >= .500 && intake3BallsClock.seconds() <= .510 && gamepad1.triangle == true) {
+                goofyAhhhhFrontDoor.setPosition(.5);
+            }
+
+            if (intake3BallsClock.seconds() >= .510 && intake3BallsClock.seconds() <= .550 && gamepad1.triangle == true) {
+                turnTableServo.setPosition(1);
+                goofyAhhhhFrontDoor.setPosition(1);
+                intakeCount = 3;
+                ballTrig = 0;
+            }
+
+
+        } else if (ballCount == 3 && gamepad1.triangle == true && ballTrig == 1) {
+
+            if (intake3BallsClock.seconds() >= 0 && intake3BallsClock.seconds() <= .500 && gamepad1.triangle == true) {
+                goofyAhhhhFrontDoor.setPosition(0);
+            }
+
+            if (intake3BallsClock.seconds() >= .500 && intake3BallsClock.seconds() <= .510 && gamepad1.triangle == true) {
+                goofyAhhhhFrontDoor.setPosition(.5);
+            }
+
+            if (intake3BallsClock.seconds() >= .510 && intake3BallsClock.seconds() <= .550 && gamepad1.triangle == true) {
+                turnTableServo.setPosition(1);
+                goofyAhhhhFrontDoor.setPosition(.5);
+                intakeCount = 3;
+                ballTrig = 0;
+                intakeOff();
+            }
+
+
+
         }
+        if (gamepad1.triangleWasReleased()) {
+            intakeCount = 0;
+            goofyAhhhhFrontDoor.setPosition(.5);
+            intakeOff();
+            safeTrig = true;
+            resetTrig = false;
+        }
+        /*
+
 
         if (intakeCount == 1 && (!intakeBump1.isPressed() || intakeBump2.isPressed()) && gamepad1.triangle == true) {
             intake3BallsClock.reset();
@@ -944,39 +1034,39 @@ public class MainTeleOp extends LinearOpMode {
                 resetTrig = false;
             }
 
+         */
+
 
     }
 
 
 
-    public void intakeOn() {
-        intakeMotor.setPower(0.8);
-    }
-
-    public void intakeOff() {
-        intakeMotor.setPower(0);
-
-    }
-
-    public void moveForwardTics(double Speed, double tic) {
-        pinpoint.update();
-        double xvalue = pinpoint.getEncoderX();
-        while (xvalue - pinpoint.getEncoderX() <= tic) {
-            pinpoint.update();
-            leftBack.setPower(-Speed);
-            leftFront.setPower(-Speed);
-            rightBack.setPower(-Speed);
-            rightFront.setPower(-Speed);
+        public void intakeOn () {
+            intakeMotor.setPower(0.8);
         }
-        leftBack.setPower(0);
-        leftFront.setPower(0);
-        rightBack.setPower(0);
-        rightFront.setPower(0);
-    }
 
- */
+        public void intakeOff () {
+            intakeMotor.setPower(0);
+
+        }
+
+        public void moveForwardTics ( double Speed, double tic){
+            pinpoint.update();
+            double xvalue = pinpoint.getEncoderX();
+            while (xvalue - pinpoint.getEncoderX() <= tic) {
+                pinpoint.update();
+                leftBack.setPower(-Speed);
+                leftFront.setPower(-Speed);
+                rightBack.setPower(-Speed);
+                rightFront.setPower(-Speed);
+            }
+            leftBack.setPower(0);
+            leftFront.setPower(0);
+            rightBack.setPower(0);
+            rightFront.setPower(0);
+        }
+
+    }
 
 
    
-
-}

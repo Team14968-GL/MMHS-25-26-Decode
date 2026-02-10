@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Autonomous
-public class FarRedAutoRR extends LinearOpMode {
+public class FarBlueAutoRR extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
 
     Limelight3A limelight;
@@ -126,11 +126,11 @@ public class FarRedAutoRR extends LinearOpMode {
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        Pose2d beginPose = new Pose2d(startX, 12, Math.toRadians(0));
-        Pose2d afterLaunchPose = new Pose2d(startX * (1 - .125), 12, Math.toRadians(-28));
+        Pose2d beginPose = new Pose2d(startX, -12, Math.toRadians(0));
+        Pose2d afterLaunchPose = new Pose2d(startX * (1 - .125), -12, Math.toRadians(28));
 
-        Pose2d turnPos = new Pose2d(49, 12, Math.toRadians(90));
-        Pose2d leavePose = new Pose2d(60, 8, Math.toRadians(-35));
+        Pose2d turnPos = new Pose2d(49, -12, Math.toRadians(-90));
+        Pose2d leavePose = new Pose2d(60, -4, Math.toRadians(35));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         new MMHS26Lib(hardwareMap, beginPose, telemetry);
@@ -144,10 +144,21 @@ public class FarRedAutoRR extends LinearOpMode {
             count++;
             sleep(1);
         }
-        MMHS26Lib.roadRunner.turn(Math.toRadians(-28),
-                MMHS26Lib.roadRunner.spline.splineToConstantHeading(startX * (1 - .125), 12, Math.toRadians(0), beginPose));
+        MMHS26Lib.roadRunner.turn(Math.toRadians(28),
+                MMHS26Lib.roadRunner.spline.splineToConstantHeading(startX * (1 - .125), -12, Math.toRadians(0), beginPose));
 
         //if (localize(.3, 10)) {
+        /*
+
+        if (IDs.size() == 1) {
+            Motif = IDs.get(0) - 21;
+
+        } else if (IDs.size() == 2) {
+            Motif = IDs.get(1) - 21;
+        } else {
+            Motif = 0;
+        }
+         */
 
         if (IDs.contains(21)) {
             Motif = 0;
@@ -167,33 +178,36 @@ public class FarRedAutoRR extends LinearOpMode {
         telemetry.addData("IDs", IDs);
         telemetry.addData("Motif", Motif);
         telemetry.update();
-     
+
 
         launchMotif(Motif, launcherSpeed, false);
         goofyAhhhhFrontDoor.setPosition(1);
         turnTableServo.setPosition(0);
         sleep(300);
 
-        MMHS26Lib.roadRunner.spline.splineToLinearHeading(28.5, 19, Math.toRadians(90), Math.toRadians(0),  afterLaunchPose);
+        MMHS26Lib.roadRunner.spline.splineToLinearHeading(41, -32, Math.toRadians(-90), Math.toRadians(0),  afterLaunchPose);
         //MMHS26Lib.roadRunner.turnTo(Math.toRadians(90), MMHS26Lib.currentPose());
         int intitalXPose = pinpoint.getEncoderX();
         pinpoint.update();
 
 
-            intake3Balls(.6, .5, .5, 400);
-            //moveBackward(.3,1000);
+
+        intake3Balls(.6, .5, .5, 400);
+        //moveBackward(.3,1000);
         pinpoint.update();
         int Xpose = 24;
         Xpose = pinpoint.getEncoderX() - intitalXPose;
-        Pose2d PickUp1Pose = new Pose2d(29, 19+(Xpose*0.001978), Math.toRadians(90));
-        MMHS26Lib.roadRunner.turnTo(Math.toRadians(-117),
-                MMHS26Lib.roadRunner.spline.splineToLinearHeading(50, 8, Math.toRadians(0), Math.toRadians(0), PickUp1Pose));
+        Pose2d PickUp1Pose = new Pose2d(29, -32-(Xpose*0.001978), Math.toRadians(-90));
+        MMHS26Lib.roadRunner.turnTo(Math.toRadians(117),
+                MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, -4, Math.toRadians(0), Math.toRadians(0), PickUp1Pose));
 
         localize(.3, 10);
         launchMotif(Motif, launcherSpeed, true);
 
-        MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, 24, Math.toRadians(0), Math.toRadians(0),  leavePose);
-       // }
+        MMHS26Lib.roadRunner.spline.splineToLinearHeading(48, -24, Math.toRadians(0), Math.toRadians(0),  leavePose);
+        // }
+
+
     }
 
     public boolean localize(double localizerMotorPower, int sleepTimeMilli) {
@@ -429,7 +443,7 @@ public class FarRedAutoRR extends LinearOpMode {
             scoop.setPosition(0.5);
             sleep(500);
             scoop.setPosition(1);
-           backDoor.setPosition(1);
+            backDoor.setPosition(1);
             turnTableServo.setPosition(0);
             launchMotorOff();
         }
@@ -624,6 +638,7 @@ public class FarRedAutoRR extends LinearOpMode {
     }
     public void intake3Balls(double searchSpeed, double returnSpeed, double returnDistance, int kickTime) {
         int safeTrig;
+        backDoor.setPosition(1);
         turnTableServo.setPosition(0);
         goofyAhhhhFrontDoor.setPosition(1);
         intakeOn();
@@ -665,18 +680,18 @@ public class FarRedAutoRR extends LinearOpMode {
         }
     }
 
-        
-    
-    
+
+
+
     public void intakeOn() {
         intakeMotor.setPower(0.8);
     }
-    
+
     public void intakeOff() {
         intakeMotor.setPower(0);
-    
+
     }
-    
+
     public int BackwardsTillBump(double Speed, int delay) {
         int count = 0;
         int returnSave = 2;
@@ -692,14 +707,14 @@ public class FarRedAutoRR extends LinearOpMode {
         if (!intakeBump1.isPressed() || intakeBump2.isPressed()) {
             returnSave = 1;
         }
-    
+
         if (BackwardsTillBumpClock.seconds() >= 2) {
             returnSave = 0;
         } else {
             returnSave = 1;
         }
-    
-    
+
+
         backLeft.setPower(0);
         frontLeft.setPower(0);
         backRight.setPower(0);
@@ -737,7 +752,7 @@ public class FarRedAutoRR extends LinearOpMode {
         sleep(time);
         goofyAhhhhFrontDoor.setPosition(.5);
     }
-    }
-    
-    
-    
+}
+
+
+
