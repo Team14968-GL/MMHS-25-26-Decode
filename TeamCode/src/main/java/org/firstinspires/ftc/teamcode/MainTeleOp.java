@@ -201,7 +201,7 @@ public class MainTeleOp extends LinearOpMode {
                 motifControl();
                 timeLaunchMotif(manualMotif, launcherSpeed);
                 toClose();
-               // intake3Balls();
+                intake3Balls();
 
                 /*
 
@@ -849,7 +849,7 @@ public class MainTeleOp extends LinearOpMode {
             MMHS26Lib.roadRunner.spline.splineToLinearHeading(-28, 24, 22.5, 0, MMHS26Lib.Limelight.poseLimelight(false));
         }
     }
-/*
+
     public void intake3Balls() {
 
 
@@ -864,11 +864,22 @@ public class MainTeleOp extends LinearOpMode {
             resetTrig = true;
             safeTrig = false;
         }
-        if (intakeCount == 1 && (!intakeBump1.isPressed() || intakeBump2.isPressed()) {
+        if (intakeCount == 1 && (!intakeBump1.isPressed() || intakeBump2.isPressed())) {
             ballCount = 1;
-        }
-        if (ballCount == 1 && gamepad1.triangle == true && ballTrig) {
+            ballTrig = 1;
             intake3BallsClock.reset();
+        } else if (intakeCount == 2 && (!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+            ballCount = 2;
+            ballTrig = 1;
+            intake3BallsClock.reset();
+        } else if (intakeCount == 3 && (!intakeBump1.isPressed() || intakeBump2.isPressed())) {
+            ballCount = 3;
+            ballTrig = 1;
+            intake3BallsClock.reset();
+        }
+
+        if (ballCount == 1 && gamepad1.triangle == true && ballTrig == 1) {
+
             if (intake3BallsClock.seconds() >= 0 && intake3BallsClock.seconds() <= .500 && gamepad1.triangle == true) {
                 goofyAhhhhFrontDoor.setPosition(0);
             }
@@ -881,12 +892,48 @@ public class MainTeleOp extends LinearOpMode {
                 turnTableServo.setPosition(0.5);
                 goofyAhhhhFrontDoor.setPosition(1);
                 intakeCount = 2;
+                ballTrig = 0;
+            }
+
+        } else  if (ballCount == 2 && gamepad1.triangle == true && ballTrig == 1) {
+
+            if (intake3BallsClock.seconds() >= 0 && intake3BallsClock.seconds() <= .500 && gamepad1.triangle == true) {
+                goofyAhhhhFrontDoor.setPosition(0);
+            }
+
+            if (intake3BallsClock.seconds() >= .500 && intake3BallsClock.seconds() <= .510 && gamepad1.triangle == true) {
+                goofyAhhhhFrontDoor.setPosition(.5);
+            }
+
+            if (intake3BallsClock.seconds() >= .510 && intake3BallsClock.seconds() <= .550 && gamepad1.triangle == true) {
+                turnTableServo.setPosition(1);
+                goofyAhhhhFrontDoor.setPosition(1);
+                intakeCount = 3;
+                ballTrig = 0;
+            }
+
+        } else  if (ballCount == 3 && gamepad1.triangle == true && ballTrig == 1) {
+
+            if (intake3BallsClock.seconds() >= 0 && intake3BallsClock.seconds() <= .500 && gamepad1.triangle == true) {
+                goofyAhhhhFrontDoor.setPosition(0);
+            }
+
+            if (intake3BallsClock.seconds() >= .500 && intake3BallsClock.seconds() <= .510 && gamepad1.triangle == true) {
+                goofyAhhhhFrontDoor.setPosition(.5);
+            }
+
+            if (intake3BallsClock.seconds() >= .510 && intake3BallsClock.seconds() <= .550 && gamepad1.triangle == true) {
+                turnTableServo.setPosition(1);
+                goofyAhhhhFrontDoor.setPosition(1);
+                intakeCount = 0;
+                ballTrig = 0;
             }
 
         }
+        /*
 
-        if (intakeCount == 1 && (!intakeBump1.isPressed() || intakeBump2.isPressed()) && gamepad1.triangle == true) {
-            intake3BallsClock.reset();
+        if (intakeCount == 2 && (!intakeBump1.isPressed() || intakeBump2.isPressed()) && gamepad1.triangle == true) {
+
             if (intake3BallsClock.seconds() >= 0 && intake3BallsClock.seconds() <= .500 && gamepad1.triangle == true) {
                 goofyAhhhhFrontDoor.setPosition(0);
             }
@@ -933,10 +980,10 @@ public class MainTeleOp extends LinearOpMode {
                 intakeOff();
             }
 
+            */
 
-        }
 
-            if (gamepad1.triangle == false && resetTrig == true) {
+            if (gamepad1.triangleWasReleased() && resetTrig == true) {
                 intakeCount = 0;
                 goofyAhhhhFrontDoor.setPosition(.5);
                 intakeOff();
@@ -974,7 +1021,6 @@ public class MainTeleOp extends LinearOpMode {
         rightFront.setPower(0);
     }
 
- */
 
 
    

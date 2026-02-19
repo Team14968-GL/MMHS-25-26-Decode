@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Autonomous
-public class CloseRedAuto6BallRR extends LinearOpMode {
+public class CloseBlueAuto6BallRR extends LinearOpMode {
     private GoBildaPinpointDriver pinpoint;
 
     Limelight3A limelight;
@@ -54,8 +54,8 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
     private TouchSensor intakeBump1;
     private TouchSensor intakeBump2;
 
-    double txMax = 15;
-    double txMin = 9;
+    double txMax = 14;
+    double txMin = 8.5;
     double tyMax = 13.5;
     double tyMin = 12;
     double taMax = 2.35;
@@ -124,7 +124,7 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
 
 
         LLResultTypes.FiducialResult fiducialResult = null;
-         scoop.setPosition(1);
+        scoop.setPosition(1);
         backDoor.setPosition(.5);
         turnTableServo.setPosition(0.5);
         goofyAhhhhFrontDoor.setPosition(0.5);
@@ -132,16 +132,16 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
 
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        Pose2d beginPose = new Pose2d(-52, 48, Math.toRadians(308));
-        Pose2d PickUp1Pose = new Pose2d(-12, 52, Math.toRadians(90));
-        Pose2d launchPose = new Pose2d(-24, 24,  Math.toRadians(308));
+        Pose2d beginPose = new Pose2d(-52, -48, Math.toRadians(52));
+        Pose2d PickUp1Pose = new Pose2d(-12, -52, Math.toRadians(-90));
+        Pose2d launchPose = new Pose2d(-24, -24,  Math.toRadians(52));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         TrajectoryActionBuilder MoveToScan = drive.actionBuilder(beginPose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(22.5));
+                .splineTo(new Vector2d(-24, -24), Math.toRadians(-22.5));
 
         TrajectoryActionBuilder MoveToLaunch = drive.actionBuilder(PickUp1Pose)
-                .splineTo(new Vector2d(-24, 24), Math.toRadians(308));
+                .splineTo(new Vector2d(-24, -24), Math.toRadians(52));
 
 
 
@@ -158,11 +158,11 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
 
 
         TrajectoryActionBuilder Turn = drive.actionBuilder(beginPose)
-                .turn(Math.toRadians(-11.25));
+                .turn(Math.toRadians(7));
 
 
         TrajectoryActionBuilder PickUp1 = drive.actionBuilder(launchPose)
-                .splineTo(new Vector2d(-16, 33), Math.toRadians(90));
+                .splineTo(new Vector2d(-4, -30), Math.toRadians(-90));
         /*
                 .turnTo(Math.toRadians(90))
                 .strafeTo(new Vector2d(-8, 35));
@@ -214,19 +214,19 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
                         PickUp1.build()));
 
 
-        intake3Balls(.4, .5, .5, 400);
+        intake3Balls(.5, .5, .5, 400);
 
 
 
         Actions.runBlocking(
                 new SequentialAction(
                         MoveToLaunch.build()));
-        
+
         localize();
-        
+
         launchMotif(Motif, launcherSpeed, true);
 
-        strafeLeftTics(1,ticPerIn*60);
+        strafeRightTics(1,ticPerIn*49);
 
 
 
@@ -234,19 +234,15 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
 
 
     }
-    public void strafeLeftTics(double Speed, double tic) {
+    public void strafeRightTics(double Speed, double tic) {
         pinpoint.update();
         int yValue = pinpoint.getEncoderY();
-        while (yValue - pinpoint.getEncoderY() <= tic) {
+        while (pinpoint.getEncoderY() - yValue <= tic) {
             pinpoint.update();
-            leftBack.setPower(Speed);
-            leftFront.setPower(-Speed);
-            rightBack.setPower(-Speed);
-            rightFront.setPower(Speed);
-            telemetry.addData("yEncoder", pinpoint.getEncoderY());
-            telemetry.addData("yValue", yValue);
-            telemetry.addData("y", pinpoint.getEncoderY()-yValue);
-            telemetry.update();
+            leftBack.setPower(-Speed);
+            leftFront.setPower(Speed);
+            rightBack.setPower(Speed);
+            rightFront.setPower(-Speed);
         }
         leftBack.setPower(0);
         leftFront.setPower(0);
@@ -488,7 +484,7 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+1));
         sleep(500);
-         scoop.setPosition(1);
+        scoop.setPosition(1);
 
         if ( Math.abs(motifArray.get(motiff*3) - motifArray.get((motiff*3)+1)) == 1){
             sleep(250);
@@ -497,7 +493,7 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
         launch(launcherSpeedd);
         turnTableServo.setPosition(motifArray.get((motiff*3)+2));
         sleep(500);
-         scoop.setPosition(1);
+        scoop.setPosition(1);
 
         if ( Math.abs(motifArray.get((motiff*3)+1) - motifArray.get((motiff*3)+2)) == 1){
             sleep(250);
@@ -506,7 +502,7 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
         sleep(500);
         launch(launcherSpeedd);
         sleep(500);
-         scoop.setPosition(1);
+        scoop.setPosition(1);
         launchMotorOff();
     }
     private void launch(double launcherSpeedd) {
@@ -528,10 +524,10 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
     }
     private double filter(double input) {
         double output = 0.0;
-        if (input == 0.5) {
-            output = 1.0;
-        } else if (input == 1.0) {
+        if (input == 1.0) {
             output = 0.5;
+        } else if (input == 0.5) {
+            output = 1.0;
         } else {
             output = input;
         }
@@ -714,7 +710,7 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
         rightFront.setPower(0);
         return returnSave;
     }
-   
+
     public void moveForwardTics(double Speed, double tic) {
         pinpoint.update();
         double xvalue = pinpoint.getEncoderX();
