@@ -63,7 +63,7 @@ public class CloseRedAuto6BallRR extends LinearOpMode {
 
     double power = .7;
     double localPower = .3;
-    double launcherSpeed = (1750.0 * 28.0) / 60;
+    double launcherSpeed = (1800.0 * 28.0) / 60;
 
     int sleepTime = 50;
     boolean processTrig = true;
